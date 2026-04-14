@@ -67,13 +67,18 @@ Have an idea?
 Feel free to open an **issue** and suggest improvements.
 
 ---
+> 💡 Tip: You can restrict the extension to PW only by changing:
+> `"matches": ["<all_urls>"]`
+> to `"matches": ["*://*.pw.live/*"]`
+
+> Open That File in NotePad and Edit 
+---
 
 ## 🚀 Future Improvements
 
 - UI improvements
 - More keyboard shortcuts
 - Custom speed presets
-
 ---
 
 ## ⭐ Support
