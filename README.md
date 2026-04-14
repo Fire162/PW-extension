@@ -26,7 +26,7 @@ Enhance your video watching experience with simple but powerful controls.
 
 ---
 
-## 📦 Installation
+## 📦 Installation (Chrome)
 
 1. Go to `chrome://extensions/`
 2. Enable **Developer Mode**
@@ -35,9 +35,22 @@ Enhance your video watching experience with simple but powerful controls.
 
 ---
 
+## 🌐 Installation (Microsoft Edge)
+
+1. Open `edge://extensions/`
+2. Enable **Developer Mode**
+3. Click **Load unpacked**
+4. Select this project folder
+
+> ✅ Works the same as Chrome since Edge is Chromium-based
+
+---
+
 ## 📹 Demo
 
-Check the demo video in this repository to see all features in action.
+![Demo](https://chopology.store/pw-extension/demo.gif)
+
+👉 [Watch full video](https://chopology.store/pw-extension/demo.mp4)
 
 ---
 
