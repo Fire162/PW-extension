@@ -2,14 +2,21 @@
 
 Enhance your video watching experience with simple but powerful controls.
 
+---
+
 ## ✨ Features
 
 - ⏱️ **Remaining Time Display**
   - Shows how much time is left in the video/lecture
 
-- ⚡ **Speed Control (Alt + Scroll)**
-  - Hold `Alt` and scroll to adjust playback speed
-  - Works with both **mouse** and **trackpad**
+- ⚡ **Speed Control**
+  - Adjust playback speed using:
+    - `Alt + Scroll`
+    - `Alt + ← / →` (with hold support)
+
+- ☀️ **Brightness Control**
+  - Adjust video brightness using:
+    - `Alt + ↑ / ↓`
 
 - 🧠 **Lightweight & Fast**
   - No lag, no UI clutter
@@ -19,10 +26,12 @@ Enhance your video watching experience with simple but powerful controls.
 
 ## 🎮 Controls
 
-| Action            | Result                |
-|------------------|----------------------|
-| `Alt + Scroll`   | Change video speed   |
-| `R`              | Toggle remaining time|
+| Action              | Result                  |
+|--------------------|------------------------|
+| `Alt + Scroll`     | Change video speed     |
+| `Alt + → / ←`      | Speed up / slow down   |
+| `Alt + ↑ / ↓`      | Increase / decrease brightness |
+| `R`                | Toggle remaining time  |
 
 ---
 
