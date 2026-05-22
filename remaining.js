@@ -1,4 +1,4 @@
-(function () {
+(function () { 
   let show = true;
   let el = null;
 
@@ -8,7 +8,6 @@
 
     if (!video || !durationEl) return;
 
-    // prevent duplicate
     if (document.querySelector("#remaining-time")) return;
 
     el = document.createElement("span");
@@ -48,16 +47,20 @@
 
       if (!duration || isNaN(duration)) return;
 
-      const left = duration - current;
-      el.innerText = ` (-${format(left)})`;
+      const remaining = duration - current;
+      const speed = video.playbackRate || 1;
+
+      // 🔥 correct adjustment
+      const adjusted = remaining / speed;
+
+      el.innerText = ` (-${format(remaining)} | ${format(adjusted)})`;
     }
 
     video.addEventListener("timeupdate", update);
 
-    console.log("✅ Remaining time + toggle ready (press R)");
+    console.log("✅ Remaining + Adjusted Time ready (press R)");
   }
 
-  // 🔥 Wait for player to load (important for PW)
   const wait = setInterval(() => {
     if (document.querySelector("video") && document.querySelector(".vjs-duration")) {
       clearInterval(wait);
@@ -65,7 +68,6 @@
     }
   }, 500);
 
-  // 🔥 Toggle with R key
   document.addEventListener("keydown", (e) => {
     if (e.key.toLowerCase() === "r") {
       show = !show;
