@@ -295,6 +295,16 @@ document.addEventListener("keydown", e => {
 // 🎯 KEYUP
 document.addEventListener("keyup", e => {
 
+    // ⛔ Ignore typing areas
+    const active = document.activeElement;
+
+    if (
+        ["INPUT", "TEXTAREA"].includes(active.tagName) ||
+        active.isContentEditable
+    ) {
+        return;
+    }
+
     const video = document.querySelector("video");
 
     if (holdInterval) {
