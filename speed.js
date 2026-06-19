@@ -59,6 +59,11 @@ function clamp(val, min, max) {
     return Math.max(min, Math.min(max, val));
 }
 
+// Format numbers to at most 3 decimal places, removing trailing zeros
+function formatNum(val) {
+    return parseFloat(val.toFixed(3));
+}
+
 // 🛑 Stop Ramp
 function clearRampProgression() {
     if (rampTimeout) clearTimeout(rampTimeout);
@@ -72,7 +77,7 @@ function toggleRampProgression(video) {
 
     if (isRampRunning) {
         clearRampProgression();
-        showHUD(`🛑 Ramp Stopped at ${video.playbackRate.toFixed(1)}x`);
+        showHUD(`🛑 Ramp Stopped at ${formatNum(video.playbackRate)}x`);
         return;
     }
 
@@ -80,7 +85,7 @@ function toggleRampProgression(video) {
 
     function planNextStep() {
 
-        const currentSpeed = parseFloat(video.playbackRate.toFixed(1));
+        const currentSpeed = formatNum(video.playbackRate);
 
         if (currentSpeed >= 2.5) {
             showHUD(`⚡ Target Max Reached: 2.5x`);
@@ -94,13 +99,13 @@ function toggleRampProgression(video) {
 
         let waitTime = currentStep * 25000;
 
-        showHUD(`📈 Ramp Active: ${currentSpeed.toFixed(1)}x (Next delay: ${currentStep * 20}s)`);
+        showHUD(`📈 Ramp Active: ${formatNum(currentSpeed)}x (Next delay: ${currentStep * 20}s)`);
 
         rampTimeout = setTimeout(() => {
 
             if (!isRampRunning) return;
 
-            video.playbackRate = clamp(video.playbackRate + 0.1, 1, 2.0);
+            video.playbackRate = formatNum(clamp(video.playbackRate + 0.1, 1, 2.0));
 
             planNextStep();
 
@@ -126,9 +131,9 @@ document.addEventListener("wheel", e => {
 
     let change = e.deltaY < 0 ? 0.1 : -0.1;
 
-    video.playbackRate = clamp(video.playbackRate + change, 1, 3.5);
+    video.playbackRate = formatNum(clamp(video.playbackRate + change, 1, 3.5));
 
-    showHUD(`⚡ ${video.playbackRate.toFixed(1)}x`);
+    showHUD(`⚡ ${formatNum(video.playbackRate)}x`);
 
 }, { passive: false });
 
@@ -217,7 +222,7 @@ document.addEventListener("keydown", e => {
 
                 video.playbackRate = 2.0;
 
-                showHUD(`⚡ 2.0x (Held)`);
+                showHUD(`⚡ ${formatNum(video.playbackRate)}x (Held)`);
 
                 if (video.paused) {
                     video.play();
@@ -252,34 +257,34 @@ document.addEventListener("keydown", e => {
 
         if (action === "speedUp") {
 
-            video.playbackRate = clamp(video.playbackRate + 0.1, 1, 3.5);
+            video.playbackRate = formatNum(clamp(video.playbackRate + 0.1, 1, 3.5));
 
-            showHUD(`⚡ ${video.playbackRate.toFixed(1)}x`);
+            showHUD(`⚡ ${formatNum(video.playbackRate)}x`);
         }
 
         if (action === "speedDown") {
 
-            video.playbackRate = clamp(video.playbackRate - 0.1, 1, 3.5);
+            video.playbackRate = formatNum(clamp(video.playbackRate - 0.1, 1, 3.5));
 
-            showHUD(`⚡ ${video.playbackRate.toFixed(1)}x`);
+            showHUD(`⚡ ${formatNum(video.playbackRate)}x`);
         }
 
         if (action === "brightUp") {
 
-            brightness = clamp(brightness + brightnessStep, 0.5, 2);
+            brightness = formatNum(clamp(brightness + brightnessStep, 0.5, 2));
 
             video.style.filter = `brightness(${brightness})`;
 
-            showHUD(`☀️ ${brightness.toFixed(1)}x`);
+            showHUD(`☀️ ${formatNum(brightness)}x`);
         }
 
         if (action === "brightDown") {
 
-            brightness = clamp(brightness - brightnessStep, 0.5, 2);
+            brightness = formatNum(clamp(brightness - brightnessStep, 0.5, 2));
 
             video.style.filter = `brightness(${brightness})`;
 
-            showHUD(`☀️ ${brightness.toFixed(1)}x`);
+            showHUD(`☀️ ${formatNum(brightness)}x`);
         }
     }
 
@@ -327,9 +332,9 @@ document.addEventListener("keyup", e => {
 
             if (video && originalSpeed !== null) {
 
-                video.playbackRate = originalSpeed;
+                video.playbackRate = formatNum(originalSpeed);
 
-                showHUD(`⚡ ${video.playbackRate.toFixed(1)}x`);
+                showHUD(`⚡ ${formatNum(video.playbackRate)}x`);
             }
 
             isHoldingSpace = false;
