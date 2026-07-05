@@ -1,0 +1,12 @@
+/* ==========================================================================
+   PhysicsWallah Custom Enhancements - Stylesheet
+   ========================================================================== */
+
+#rohit-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#rohit-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.2);
+}

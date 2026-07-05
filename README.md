@@ -1,95 +1,118 @@
-# 🎥 Video Player Enhancement Extension
+# 🎥 Video Speed HUD & Question Time Watcher
 
-Enhance your video watching experience with simple but powerful controls.
+> An open-source, lightweight Chrome/Edge Extension to master online video lectures with precision speed controls, HUD overlays, video time calculators, and an interactive **Question Time Watcher** stopwatch.
 
 ---
 
 ## ✨ Features
 
-- ⏱️ **Remaining Time Display**
-  - Shows how much time is left in the video/lecture
+- ⚡ **Precision Speed Control**
+  - Adjust speed smoothly using `Alt + Scroll` or `Alt + ← / →`.
+  - Smart HUD notification displays the active playback speed in real time.
 
-- ⚡ **Speed Control**
-  - Adjust playback speed using:
-    - `Alt + Scroll`
-    - `Alt + ← / →` (with hold support)
+- 🚀 **Hold Space to Fast-Forward (2.0x)**
+  - Hold `Spacebar` to temporarily speed up to 2.0x while watching. Releasing returns to your previous speed!
+  - Quick tap toggles Play / Pause without lag.
 
-- ☀️ **Brightness Control**
-  - Adjust video brightness using:
-    - `Alt + ↑ / ↓`
+- ⏱️ **Question Time Watcher (Stopwatch)**
+  - Track exactly how much time you spend solving each practice question during lectures.
+  - Works universally across all video sites (**YouTube**, **PhysicsWallah**, **Coursera**, **Udemy**, etc.).
+  - **💧 Liquid Frosted Glass Water UI**: Translucent glass design so underlying video content remains visible.
+  - **🖐️ Fully Draggable & Minimizable**: Drag the stopwatch widget anywhere on the screen; minimize or hide it whenever needed.
+  - **🎯 Click-Through Mode**: Pass mouse clicks directly through the overlay to interact with video controls behind it!
+  - **Per-URL Persistent Storage**: Auto-saves your stopwatch progress and question logs for each video URL so you can resume timing even after page refreshes or browser restarts.
+  - Copy formatted time stats to clipboard or export question timing summaries with one click.
 
-- 🧠 **Lightweight & Fast**
-  - No lag, no UI clutter
-  - Works directly with existing video players
+- 📈 **Automatic Speed Ramping**
+  - Toggle `Ctrl + /` to gradually increase playback speed over time in steps until reaching 2.5x max.
 
----
+- ⏳ **Remaining & Playback-Adjusted Time Display**
+  - Shows how much actual time remains in the video, plus speed-adjusted time (e.g. `-10:00 | 05:00 at 2.0x`).
+  - Toggle visibility instantly with `R`.
 
-## 🎮 Controls
+- ☀️ **Video Brightness Control**
+  - Easily adjust video screen brightness using `Alt + ↑ / ↓`.
 
-| Action              | Result                  |
-|--------------------|------------------------|
-| `Alt + Scroll`     | Change video speed     |
-| `Alt + → / ←`      | Speed up / slow down   |
-| `Alt + ↑ / ↓`      | Increase / decrease brightness |
-| `R`                | Toggle remaining time  |
-
----
-
-## 📦 Installation (Chrome)
-
-1. Go to `chrome://extensions/`
-2. Enable **Developer Mode**
-3. Click **Load Unpacked**
-4. Select this project folder
+- 🎯 **Domain-Scoped Plugins**
+  - Isolated site plugins for PhysicsWallah (PW) batch view layout cleanup & custom shortcuts (`\`, `'`, `/`).
 
 ---
 
-## 🌐 Installation (Microsoft Edge)
+## 🎮 Keyboard Controls
 
-1. Open `edge://extensions/`
-2. Enable **Developer Mode**
-3. Click **Load unpacked**
-4. Select this project folder
+### 🎥 Video Playback & HUD Controls
 
-> ✅ Works the same as Chrome since Edge is Chromium-based
+| Shortcut | Action |
+| :--- | :--- |
+| `Alt + Scroll` | Adjust video playback rate (0.25x - 4.0x) |
+| `Alt + → / ←` | Increase / decrease video speed |
+| `Alt + ↑ / ↓` | Increase / decrease video brightness |
+| `Hold Space` | Fast forward at 2.0x speed while held |
+| `Tap Space` | Toggle Play / Pause |
+| `Ctrl + /` | Toggle Automatic Speed Ramp progression |
+| `R` | Toggle remaining video time display |
+
+### ⏱️ Question Time Watcher Controls
+
+| Shortcut | Action |
+| :--- | :--- |
+| `T` | Start / Pause / Resume Question Stopwatch |
+| `Shift + T` | Log current question time (Lap) & start timing next question |
+| `Alt + T` | Open / Close Question Log Summary modal |
+| `Alt + C` | Toggle Click-Through Mode (pass clicks to underlying video) |
+| `Shift + H` | Toggle Hide / Show Stopwatch Overlay |
+| `Alt + Shift + T` | Reset stopwatch & clear question history |
+
+---
+
+## 📦 Installation Guide
+
+### Chrome & Chromium Browsers (Edge, Brave, Opera)
+
+1. Clone or download this repository:
+   ```bash
+   git clone https://github.com/your-username/video-speed-extension.git
+   ```
+2. Open your browser extensions page:
+   - Chrome: `chrome://extensions/`
+   - Edge: `edge://extensions/`
+   - Brave: `brave://extensions/`
+3. Enable **Developer Mode** (toggle in top right corner).
+4. Click **Load Unpacked**.
+5. Select the `video-speed-extension` folder.
 
 ---
 
-## 📹 Demo
+## 🏗️ Architecture & Folder Structure
 
-![Demo](https://chopology.store/pw-extension/demo.gif)
-
-👉 [Watch full video](https://chopology.store/pw-extension/demo.mp4)
+```
+video-speed-extension/
+├── manifest.json            # Manifest V3 configuration with domain-scoped scripts
+├── icons/                   # Extension icons (16px, 48px, 128px)
+├── src/
+│   ├── styles/
+│   │   ├── hud.css          # Glassmorphism HUD, stopwatch overlay & modal styling
+│   │   └── pw-custom.css    # Scoped site plugin styles
+│   ├── core/
+│   │   ├── hud.js           # Encapsulated HUD notification manager
+│   │   ├── speed-controller.js # Speed, brightness, hold space & ramp logic
+│   │   ├── remaining-time.js   # Universal video remaining time tracker
+│   │   └── question-timer.js   # Question Time Watcher stopwatch module
+│   └── plugins/
+│       └── pw-enhancements.js  # Scoped PhysicsWallah DOM tweaks & shortcuts
+├── LICENSE                  # MIT License
+├── CONTRIBUTING.md          # Open source contribution guidelines
+└── README.md
+```
 
 ---
 
-## ⚠️ Notes
+## 💡 Contributing
 
-- This extension is designed to enhance the viewing experience only
-- Requests that violate platform terms (e.g., downloading protected content) will not be considered
-
----
-
-## 💡 Contributing / Feature Requests
-
-Have an idea?  
-Feel free to open an **issue** and suggest improvements.
+Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) before opening pull requests or issues.
 
 ---
-> 💡 Tip: You can restrict the extension to PW only by changing:
-> `"matches": ["<all_urls>"]`
-> to `"matches": ["*://*.pw.live/*"]`
 
-> Open That File in NotePad and Edit 
----
+## 📜 License
 
-## 🚀 Future Improvements
-
-- UI improvements
-- More keyboard shortcuts
-- Custom speed presets
----
-
-## ⭐ Support
-
-If you find this useful, consider giving it a ⭐ on GitHub!
+Distributed under the MIT License. See [LICENSE](LICENSE) for details.
