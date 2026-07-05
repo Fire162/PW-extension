@@ -42,79 +42,96 @@
   let hudEl = null;
   let modalEl = null;
 
+  function isContextValid() {
+    try {
+      return typeof chrome !== 'undefined' && chrome.runtime && !!chrome.runtime.id;
+    } catch (e) {
+      return false;
+    }
+  }
+
   function getStorageKey() {
     const cleanUrl = window.location.href.split('#')[0];
     return 'qt_log_' + encodeURIComponent(cleanUrl);
   }
 
   function saveToStorage() {
-    const key = getStorageKey();
-    const data = {
-      url: window.location.href,
-      currentQuestionNum,
-      elapsedTime,
-      isRunning,
-      startTime,
-      logs,
-      isMinimized,
-      isHidden,
-      isClickThrough,
-      posLeft,
-      posTop,
-      lastUpdated: Date.now()
-    };
+    if (!isContextValid()) return;
+    try {
+      const key = getStorageKey();
+      const data = {
+        url: window.location.href,
+        currentQuestionNum,
+        elapsedTime,
+        isRunning,
+        startTime,
+        logs,
+        isMinimized,
+        isHidden,
+        isClickThrough,
+        posLeft,
+        posTop,
+        lastUpdated: Date.now()
+      };
 
-    if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-      chrome.storage.local.set({ [key]: data, targetBenchmarkSec });
-    } else {
-      try {
+      if (chrome.storage && chrome.storage.local) {
+        chrome.storage.local.set({ [key]: data, targetBenchmarkSec });
+      } else {
         localStorage.setItem(key, JSON.stringify(data));
-      } catch (e) {
-        console.warn('QuestionTimer: Storage save failed', e);
       }
+    } catch (e) {
+      // Extension context invalidated or storage disabled
     }
   }
 
   function loadFromStorage(callback) {
-    const key = getStorageKey();
+    if (!isContextValid()) {
+      if (callback) callback();
+      return;
+    }
+    try {
+      const key = getStorageKey();
 
-    if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-      chrome.storage.local.get([key, 'autoTimerOnPause', 'targetBenchmarkSec'], result => {
-        if (result && result.autoTimerOnPause !== undefined) {
-          autoTimerOnPause = !!result.autoTimerOnPause;
-        }
-        if (result && result.targetBenchmarkSec !== undefined) {
-          targetBenchmarkSec = Number(result.targetBenchmarkSec) || 0;
-        }
-        if (result && result[key]) {
-          restoreState(result[key]);
-        }
-        if (callback) callback();
-      });
-    } else {
-      try {
+      if (chrome.storage && chrome.storage.local) {
+        chrome.storage.local.get([key, 'autoTimerOnPause', 'targetBenchmarkSec'], result => {
+          if (!isContextValid()) return;
+          if (result && result.autoTimerOnPause !== undefined) {
+            autoTimerOnPause = !!result.autoTimerOnPause;
+          }
+          if (result && result.targetBenchmarkSec !== undefined) {
+            targetBenchmarkSec = Number(result.targetBenchmarkSec) || 0;
+          }
+          if (result && result[key]) {
+            restoreState(result[key]);
+          }
+          if (callback) callback();
+        });
+      } else {
         const raw = localStorage.getItem(key);
         if (raw) restoreState(JSON.parse(raw));
-      } catch (e) {
-        console.warn('QuestionTimer: Storage load failed', e);
+        if (callback) callback();
       }
+    } catch (e) {
       if (callback) callback();
     }
   }
 
   // Listen for storage setting changes from Extension Popup Dashboard
-  if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.onChanged) {
-    chrome.storage.onChanged.addListener((changes, namespace) => {
-      if (namespace === 'local') {
-        if (changes.autoTimerOnPause) {
-          autoTimerOnPause = !!changes.autoTimerOnPause.newValue;
+  if (isContextValid() && chrome.storage && chrome.storage.onChanged) {
+    try {
+      chrome.storage.onChanged.addListener((changes, namespace) => {
+        if (!isContextValid()) return;
+        if (namespace === 'local') {
+          if (changes.autoTimerOnPause) {
+            autoTimerOnPause = !!changes.autoTimerOnPause.newValue;
+          }
+          if (changes.targetBenchmarkSec !== undefined) {
+            targetBenchmarkSec = Number(changes.targetBenchmarkSec.newValue) || 0;
+            updateHUDDisplay();
+          }
         }
-        if (changes.targetBenchmarkSec !== undefined) {
-          targetBenchmarkSec = Number(changes.targetBenchmarkSec.newValue) || 0;
-          updateHUDDisplay();
-        }
-      }
-    });
+      });
+    } catch (e) {}
   }
 
   function restoreState(saved) {
@@ -147,6 +164,10 @@
       if (isRunning) {
         clearInterval(timerInterval);
         timerInterval = setInterval(() => {
+          if (!isContextValid()) {
+            clearInterval(timerInterval);
+            return;
+          }
           updateHUDDisplay();
           saveToStorage();
         }, 1000);
@@ -311,8 +332,8 @@
     const nextIdx = (idx + 1) % targets.length;
     targetBenchmarkSec = targets[nextIdx];
 
-    if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-      chrome.storage.local.set({ targetBenchmarkSec });
+    if (isContextValid() && chrome.storage && chrome.storage.local) {
+      try { chrome.storage.local.set({ targetBenchmarkSec }); } catch (e) {}
     }
 
     const labelMap = { 0: 'OFF', 60: '1 min', 120: '2 mins', 180: '3 mins', 300: '5 mins' };
@@ -385,6 +406,10 @@
 
     clearInterval(timerInterval);
     timerInterval = setInterval(() => {
+      if (!isContextValid()) {
+        clearInterval(timerInterval);
+        return;
+      }
       updateHUDDisplay();
       saveToStorage();
     }, 1000);
@@ -453,6 +478,10 @@
 
     clearInterval(timerInterval);
     timerInterval = setInterval(() => {
+      if (!isContextValid()) {
+        clearInterval(timerInterval);
+        return;
+      }
       updateHUDDisplay();
       saveToStorage();
     }, 1000);
@@ -471,11 +500,14 @@
     isHidden = false;
     isClickThrough = false;
 
-    const key = getStorageKey();
-    if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-      chrome.storage.local.remove([key]);
+    if (isContextValid() && chrome.storage && chrome.storage.local) {
+      try {
+        const key = getStorageKey();
+        chrome.storage.local.remove([key]);
+      } catch (e) {}
     } else {
       try {
+        const key = getStorageKey();
         localStorage.removeItem(key);
       } catch (e) {}
     }
@@ -615,7 +647,13 @@
     });
   }
 
-  setInterval(attachVideoListeners, 1000);
+  const attachInterval = setInterval(() => {
+    if (!isContextValid()) {
+      clearInterval(attachInterval);
+      return;
+    }
+    attachVideoListeners();
+  }, 1000);
 
   // Keyboard shortcut listener
   document.addEventListener('keydown', e => {
@@ -681,7 +719,11 @@
 
   // Handle SPA navigation
   let currentUrl = window.location.href;
-  setInterval(() => {
+  const navInterval = setInterval(() => {
+    if (!isContextValid()) {
+      clearInterval(navInterval);
+      return;
+    }
     if (window.location.href !== currentUrl) {
       currentUrl = window.location.href;
       isRunning = false;

@@ -25,24 +25,37 @@
   let silenceStartTime = 0;
   let checkInterval = null;
 
-  function loadSettings() {
-    if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-      chrome.storage.local.get(['autoSkipSilence'], result => {
-        isEnabled = !!result.autoSkipSilence;
-      });
-
-      chrome.storage.onChanged.addListener((changes, namespace) => {
-        if (namespace === 'local' && changes.autoSkipSilence) {
-          isEnabled = !!changes.autoSkipSilence.newValue;
-          if (window.HUDManager) {
-            window.HUDManager.show(
-              `⏩ Auto-Skip Silence: ${isEnabled ? 'ENABLED' : 'DISABLED'}`
-            );
-          }
-          if (!isEnabled) stopSkipping();
-        }
-      });
+  function isContextValid() {
+    try {
+      return typeof chrome !== 'undefined' && chrome.runtime && !!chrome.runtime.id;
+    } catch (e) {
+      return false;
     }
+  }
+
+  function loadSettings() {
+    if (!isContextValid()) return;
+    try {
+      if (chrome.storage && chrome.storage.local) {
+        chrome.storage.local.get(['autoSkipSilence'], result => {
+          if (!isContextValid()) return;
+          isEnabled = !!result.autoSkipSilence;
+        });
+
+        chrome.storage.onChanged.addListener((changes, namespace) => {
+          if (!isContextValid()) return;
+          if (namespace === 'local' && changes.autoSkipSilence) {
+            isEnabled = !!changes.autoSkipSilence.newValue;
+            if (window.HUDManager) {
+              window.HUDManager.show(
+                `⏩ Auto-Skip Silence: ${isEnabled ? 'ENABLED' : 'DISABLED'}`
+              );
+            }
+            if (!isEnabled) stopSkipping();
+          }
+        });
+      }
+    } catch (e) {}
   }
 
   function initAudioAnalysis(video) {
@@ -84,12 +97,16 @@
     const dataArray = new Uint8Array(analyser.frequencyBinCount);
 
     checkInterval = setInterval(() => {
+      if (!isContextValid()) {
+        clearInterval(checkInterval);
+        return;
+      }
+
       if (!isEnabled || video.paused || video.ended) {
         if (isSkippingSilence) stopSkipping(video);
         return;
       }
 
-      // Resume AudioContext if suspended by browser autoplay policy
       if (audioCtx && audioCtx.state === 'suspended') {
         audioCtx.resume();
       }
@@ -108,7 +125,6 @@
           }
         }
       } else {
-        // Speech detected!
         silenceStartTime = 0;
         if (isSkippingSilence) {
           stopSkipping(video);
@@ -143,8 +159,8 @@
 
   function toggleAutoSkip() {
     isEnabled = !isEnabled;
-    if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-      chrome.storage.local.set({ autoSkipSilence: isEnabled });
+    if (isContextValid() && chrome.storage && chrome.storage.local) {
+      try { chrome.storage.local.set({ autoSkipSilence: isEnabled }); } catch (e) {}
     }
     if (window.HUDManager) {
       window.HUDManager.show(`⏩ Auto-Skip Silence: ${isEnabled ? 'ON' : 'OFF'}`);
@@ -183,5 +199,11 @@
   }
 
   loadSettings();
-  setInterval(attach, 1000);
+  const attachInterval = setInterval(() => {
+    if (!isContextValid()) {
+      clearInterval(attachInterval);
+      return;
+    }
+    attach();
+  }, 1000);
 })();
