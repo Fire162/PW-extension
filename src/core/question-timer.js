@@ -346,24 +346,30 @@
       hudEl.classList.add('timer-paused');
     }
 
-    // Benchmark Dynamic Glass Glow
+    // Benchmark Translucent Glass & Inner Digits Color State
     hudEl.classList.remove('qt-benchmark-green', 'qt-benchmark-yellow', 'qt-benchmark-red');
+    if (timeText) {
+      timeText.classList.remove('time-green', 'time-yellow', 'time-red');
+    }
 
     if (targetBenchmarkSec > 0) {
-      if (benchmarkBadge) {
-        benchmarkBadge.style.display = 'block';
-        benchmarkBadge.innerText = `🎯 ${Math.round(targetBenchmarkSec / 60)}m Target`;
-      }
-
       if (sec <= targetBenchmarkSec * 0.7) {
         hudEl.classList.add('qt-benchmark-green');
+        if (timeText) timeText.classList.add('time-green');
       } else if (sec <= targetBenchmarkSec) {
         hudEl.classList.add('qt-benchmark-yellow');
+        if (timeText) timeText.classList.add('time-yellow');
       } else {
         hudEl.classList.add('qt-benchmark-red');
+        if (timeText) timeText.classList.add('time-red');
       }
-    } else {
-      if (benchmarkBadge) benchmarkBadge.style.display = 'none';
+    }
+
+    if (targetBenchmarkSec > 0 && benchmarkBadge) {
+      benchmarkBadge.style.display = 'block';
+      benchmarkBadge.innerText = `🎯 ${Math.round(targetBenchmarkSec / 60)}m Target`;
+    } else if (benchmarkBadge) {
+      benchmarkBadge.style.display = 'none';
     }
   }
 

@@ -70,24 +70,35 @@
   border-color: rgba(234, 179, 8, 0.65);
 }
 
-/* Benchmark Target Glass States */
+/* Benchmark Target Translucent Glass Background & Border States */
 #question-timer-hud.qt-benchmark-green {
+  background: rgba(6, 78, 59, 0.40);
   border-color: rgba(52, 211, 153, 0.75);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35), 0 0 20px rgba(52, 211, 153, 0.35), inset 0 1px 1.5px rgba(255, 255, 255, 0.35);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35), 0 0 22px rgba(52, 211, 153, 0.4), inset 0 1px 1.5px rgba(255, 255, 255, 0.35);
 }
 #question-timer-hud.qt-benchmark-yellow {
+  background: rgba(120, 53, 15, 0.40);
   border-color: rgba(251, 191, 36, 0.85);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35), 0 0 20px rgba(251, 191, 36, 0.4), inset 0 1px 1.5px rgba(255, 255, 255, 0.35);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35), 0 0 22px rgba(251, 191, 36, 0.45), inset 0 1px 1.5px rgba(255, 255, 255, 0.35);
 }
 #question-timer-hud.qt-benchmark-red {
+  background: rgba(127, 29, 29, 0.45);
   border-color: rgba(248, 113, 113, 0.95);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35), 0 0 25px rgba(248, 113, 113, 0.5), inset 0 1px 1.5px rgba(255, 255, 255, 0.35);
-  animation: pulseBenchmarkRed 1.5s infinite alternate;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35), 0 0 28px rgba(248, 113, 113, 0.55), inset 0 1px 1.5px rgba(255, 255, 255, 0.35);
+  animation: pulseBenchmarkRed 1.5s infinite alternate ease-in-out;
 }
 
 @keyframes pulseBenchmarkRed {
-  0% { border-color: rgba(248, 113, 113, 0.6); box-shadow: 0 0 15px rgba(248, 113, 113, 0.3); }
-  100% { border-color: rgba(239, 68, 68, 1); box-shadow: 0 0 30px rgba(239, 68, 68, 0.7); }
+  0% {
+    background: rgba(127, 29, 29, 0.35);
+    border-color: rgba(248, 113, 113, 0.6);
+    box-shadow: 0 0 15px rgba(248, 113, 113, 0.3);
+  }
+  100% {
+    background: rgba(153, 27, 27, 0.55);
+    border-color: rgba(239, 68, 68, 1);
+    box-shadow: 0 0 32px rgba(239, 68, 68, 0.75);
+  }
 }
 
 /* Click-Through Mode */
@@ -151,13 +162,43 @@
   color: #FFF;
 }
 
+/* Glass Inner Timer Display Digits */
 .qt-time-display {
-  font-size: 24px;
-  font-weight: 700;
+  font-size: 26px;
+  font-weight: 800;
   letter-spacing: 1px;
   color: #38BDF8;
   font-variant-numeric: tabular-nums;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+/* Benchmark Target Inner Digits Color States */
+.qt-time-display.time-green {
+  color: #34D399;
+  text-shadow: 0 0 12px rgba(52, 211, 153, 0.7);
+}
+
+.qt-time-display.time-yellow {
+  color: #FBBF24;
+  text-shadow: 0 0 12px rgba(251, 191, 36, 0.7);
+}
+
+.qt-time-display.time-red {
+  color: #F87171;
+  text-shadow: 0 0 14px rgba(248, 113, 113, 0.85);
+  animation: pulseTimeRed 1.2s infinite alternate ease-in-out;
+}
+
+@keyframes pulseTimeRed {
+  0% {
+    color: #F87171;
+    text-shadow: 0 0 10px rgba(248, 113, 113, 0.6);
+  }
+  100% {
+    color: #EF4444;
+    text-shadow: 0 0 18px rgba(239, 68, 68, 1);
+  }
 }
 
 .qt-controls-hint {
