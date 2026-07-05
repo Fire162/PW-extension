@@ -27,6 +27,11 @@
   - Click the toolbar extension icon to open a sleek liquid-glass dashboard.
   - Toggle Smart Auto-Timer mode, inspect live session stats across all videos, copy stats, and export all study logs to `.csv`.
 
+- ⏩ **Auto-Skip Silence & Dead Air**
+  - Uses Web Audio API real-time audio analysis to detect silent moments in lectures (when the teacher is writing on the board or taking a break).
+  - Automatically speeds up to **3.0x** during silence, and instantly restores your normal speed when speech resumes.
+  - Toggle anytime via **`Alt + S`** or the Popup Dashboard.
+
 - 📈 **Automatic Speed Ramping**
   - Toggle `Ctrl + /` to gradually increase playback speed over time in steps until reaching 2.5x max.
 
@@ -53,6 +58,7 @@
 | `Alt + ↑ / ↓` | Increase / decrease video brightness |
 | `Hold Space` | Fast forward at 2.0x speed while held |
 | `Tap Space` | Toggle Play / Pause |
+| `Alt + S` | Toggle Auto-Skip Silence in lectures (3.0x skip speed) |
 | `Ctrl + /` | Toggle Automatic Speed Ramp progression |
 | `R` | Toggle remaining video time display |
 
@@ -105,7 +111,8 @@ PW-extension/
 │   │   ├── hud.js           # Encapsulated HUD notification manager
 │   │   ├── speed-controller.js # Speed, brightness, hold space & ramp logic
 │   │   ├── remaining-time.js   # Universal video remaining time tracker
-│   │   └── question-timer.js   # Question Time Watcher & Smart Auto-Timer module
+│   │   ├── question-timer.js   # Question Time Watcher & Smart Auto-Timer module
+│   │   └── silence-skipper.js  # Real-time Web Audio silence detection & auto-skip
 │   └── plugins/
 │       └── pw-enhancements.js  # Scoped PhysicsWallah DOM tweaks & shortcuts
 ├── LICENSE                  # MIT License
