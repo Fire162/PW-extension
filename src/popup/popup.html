@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Video Speed & Question Time Dashboard</title>
+  <link rel="stylesheet" href="../styles/popup.css" />
+</head>
+<body>
+  <div class="popup-container">
+    
+    <!-- Popup Header -->
+    <div class="popup-header">
+      <div class="popup-title">
+        <span>⚡</span> Video Speed & Time Dashboard
+      </div>
+      <span class="popup-version">v2.0</span>
+    </div>
+
+    <!-- Smart Auto-Timer Settings Card -->
+    <div class="glass-card">
+      <div class="card-title">
+        <span>⚙️ Smart Auto-Timer Settings</span>
+      </div>
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-label">Auto-Start on Pause</span>
+          <span class="setting-desc">Auto-start timer when video pauses; log question when video plays.</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="auto-timer-toggle" />
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Active Video Stats Card -->
+    <div class="glass-card">
+      <div class="card-title">
+        <span>📊 Current Video Session</span>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-box">
+          <span class="stat-value" id="stat-qcount">0</span>
+          <span class="stat-label">Questions Logged</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-value" id="stat-totaltime">00:00</span>
+          <span class="stat-label">Total Time</span>
+        </div>
+      </div>
+      <div class="action-grid" style="margin-top: 4px;">
+        <button class="btn btn-secondary" id="btn-copy-stats">📋 Copy Stats</button>
+        <button class="btn btn-danger" id="btn-clear-current">🗑️ Clear Current</button>
+      </div>
+    </div>
+
+    <!-- All-Time Study Sessions Card -->
+    <div class="glass-card">
+      <div class="card-title">
+        <span>📚 All Saved Sessions</span>
+        <button class="btn btn-secondary" id="btn-export-csv" style="padding: 2px 8px; font-size: 10px;">💾 Export CSV</button>
+      </div>
+      <div class="history-list" id="history-list">
+        <div style="text-align: center; color: #94A3B8; font-size: 11px; padding: 12px;">
+          No recorded video sessions yet.
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

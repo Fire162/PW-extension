@@ -20,8 +20,12 @@
   - **💧 Liquid Frosted Glass Water UI**: Translucent glass design so underlying video content remains visible.
   - **🖐️ Fully Draggable & Minimizable**: Drag the stopwatch widget anywhere on the screen; minimize or hide it whenever needed.
   - **🎯 Click-Through Mode**: Pass mouse clicks directly through the overlay to interact with video controls behind it!
+  - **🧠 Smart Auto-Timer Mode**: Option to auto-start stopwatch when you pause the video and log question laps when you hit play!
   - **Per-URL Persistent Storage**: Auto-saves your stopwatch progress and question logs for each video URL so you can resume timing even after page refreshes or browser restarts.
-  - Copy formatted time stats to clipboard or export question timing summaries with one click.
+
+- ⚙️ **Popup Dashboard & Master CSV Export**
+  - Click the toolbar extension icon to open a sleek liquid-glass dashboard.
+  - Toggle Smart Auto-Timer mode, inspect live session stats across all videos, copy stats, and export all study logs to `.csv`.
 
 - 📈 **Automatic Speed Ramping**
   - Toggle `Ctrl + /` to gradually increase playback speed over time in steps until reaching 2.5x max.
@@ -87,17 +91,21 @@
 
 ```
 PW-extension/
-├── manifest.json            # Manifest V3 configuration with domain-scoped scripts
+├── manifest.json            # Manifest V3 configuration with popup action & domain-scoped scripts
 ├── icons/                   # Extension icons (16px, 48px, 128px)
 ├── src/
+│   ├── popup/
+│   │   ├── popup.html       # Extension Popup Dashboard HTML
+│   │   └── popup.js         # Dashboard logic & CSV exporter
 │   ├── styles/
 │   │   ├── hud.css          # Glassmorphism HUD, stopwatch overlay & modal styling
+│   │   ├── popup.css        # Liquid glass popup dashboard stylesheet
 │   │   └── pw-custom.css    # Scoped site plugin styles
 │   ├── core/
 │   │   ├── hud.js           # Encapsulated HUD notification manager
 │   │   ├── speed-controller.js # Speed, brightness, hold space & ramp logic
 │   │   ├── remaining-time.js   # Universal video remaining time tracker
-│   │   └── question-timer.js   # Question Time Watcher stopwatch module
+│   │   └── question-timer.js   # Question Time Watcher & Smart Auto-Timer module
 │   └── plugins/
 │       └── pw-enhancements.js  # Scoped PhysicsWallah DOM tweaks & shortcuts
 ├── LICENSE                  # MIT License

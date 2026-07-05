@@ -6,6 +6,7 @@
  * - Minimizable & Hideable HUD
  * - Click-Through Mode (passes click events directly to underlying video content)
  * - Persistent per-URL storage
+ * - Smart Auto-Timer: Auto-start stopwatch when video pauses; log lap when video resumes.
  *
  * Controls:
  * - T: Toggle Start / Pause / Resume timer
@@ -31,6 +32,9 @@
   let isClickThrough = false;
   let posLeft = null;
   let posTop = null;
+
+  // Settings
+  let autoTimerOnPause = false;
 
   let hudEl = null;
   let modalEl = null;
@@ -72,7 +76,10 @@
     const key = getStorageKey();
 
     if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-      chrome.storage.local.get([key], result => {
+      chrome.storage.local.get([key, 'autoTimerOnPause'], result => {
+        if (result && result.autoTimerOnPause !== undefined) {
+          autoTimerOnPause = !!result.autoTimerOnPause;
+        }
         if (result && result[key]) {
           restoreState(result[key]);
         }
@@ -87,6 +94,20 @@
       }
       if (callback) callback();
     }
+  }
+
+  // Listen for storage setting changes from Extension Popup Dashboard
+  if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.onChanged) {
+    chrome.storage.onChanged.addListener((changes, namespace) => {
+      if (namespace === 'local' && changes.autoTimerOnPause) {
+        autoTimerOnPause = !!changes.autoTimerOnPause.newValue;
+        if (window.HUDManager) {
+          window.HUDManager.show(
+            `⚙️ Smart Auto-Timer on Video Pause: ${autoTimerOnPause ? 'ENABLED' : 'DISABLED'}`
+          );
+        }
+      }
+    });
   }
 
   function restoreState(saved) {
@@ -502,6 +523,35 @@
     });
   }
 
+  // --- Smart Auto-Timer Video Listeners ---
+  function attachVideoListeners() {
+    const video = document.querySelector('video');
+    if (!video || video.dataset.qtAttached) return;
+
+    video.dataset.qtAttached = 'true';
+
+    video.addEventListener('pause', () => {
+      if (autoTimerOnPause && !video.ended) {
+        startTimer();
+      }
+    });
+
+    video.addEventListener('play', () => {
+      if (autoTimerOnPause) {
+        if (isRunning && getActiveSeconds() > 2) {
+          // Auto-log lap for previous question when video resumes playing
+          lapNextQuestion();
+          pauseTimer();
+        } else if (isRunning) {
+          pauseTimer();
+        }
+      }
+    });
+  }
+
+  // Poll for video element
+  setInterval(attachVideoListeners, 1000);
+
   // Keyboard shortcut listener
   document.addEventListener('keydown', e => {
     const active = document.activeElement;
@@ -572,6 +622,6 @@
 
   // Initialize storage load
   loadFromStorage(() => {
-    console.log('✅ Question Timer loaded with Draggable & Liquid Glass Overlay');
+    console.log('✅ Question Timer loaded with Smart Auto-Timer & Liquid Glass Overlay');
   });
 })();
