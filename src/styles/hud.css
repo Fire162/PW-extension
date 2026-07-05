@@ -1,0 +1,231 @@
+/* ==========================================================================
+   Video Speed HUD & Controller - Stylesheet (Default Liquid Glass Water Theme)
+   ========================================================================== */
+
+/* --- HUD Notification Popup (Liquid Glass Water) --- */
+#speed-hud-overlay {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-10px);
+  background: rgba(15, 23, 42, 0.35);
+  backdrop-filter: blur(20px) saturate(200%);
+  -webkit-backdrop-filter: blur(20px) saturate(200%);
+  color: #F8FAFC;
+  padding: 10px 22px;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+  z-index: 999999;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#speed-hud-overlay.hud-visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* --- Question Stopwatch Overlay (Default Liquid Glass Water Theme) --- */
+#question-timer-hud {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  /* Crystal Clear Liquid Glass Water Backdrop */
+  background: rgba(15, 23, 42, 0.35);
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
+  color: #F8FAFC;
+  padding: 12px 18px;
+  font-size: 14px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace, sans-serif;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35), inset 0 1px 1.5px rgba(255, 255, 255, 0.35);
+  z-index: 999998;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 220px;
+  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  user-select: none;
+  touch-action: none;
+}
+
+#question-timer-hud:hover {
+  background: rgba(15, 23, 42, 0.50);
+  border-color: rgba(255, 255, 255, 0.40);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45), inset 0 1px 2px rgba(255, 255, 255, 0.45);
+}
+
+#question-timer-hud.timer-paused {
+  border-color: rgba(234, 179, 8, 0.65);
+}
+
+/* Click-Through Mode: pass all mouse events to video content underneath */
+#question-timer-hud.qt-clickthrough {
+  pointer-events: none !important;
+  opacity: 0.60;
+  border-style: dashed;
+}
+
+#question-timer-hud.qt-minimized {
+  padding: 6px 14px;
+  min-width: unset;
+  border-radius: 20px;
+}
+#question-timer-hud.qt-minimized .qt-controls-hint {
+  display: none;
+}
+#question-timer-hud.qt-minimized .qt-time-display {
+  font-size: 15px;
+}
+
+.qt-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  color: #A5B4FC;
+  text-transform: uppercase;
+  cursor: grab;
+  padding-bottom: 2px;
+}
+.qt-header:active {
+  cursor: grabbing;
+}
+
+.qt-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.qt-action-btn {
+  background: rgba(255, 255, 255, 0.12);
+  border: none;
+  color: #CBD5E1;
+  font-size: 12px;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  pointer-events: auto;
+}
+.qt-action-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  color: #FFF;
+}
+
+.qt-time-display {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #38BDF8;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.qt-controls-hint {
+  font-size: 11px;
+  color: #94A3B8;
+  margin-top: 2px;
+  line-height: 1.3;
+}
+
+/* --- Log Summary Modal (Liquid Glass Water) --- */
+#question-log-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  max-width: 90vw;
+  max-height: 80vh;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 20px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5), inset 0 1px 1.5px rgba(255, 255, 255, 0.3);
+  z-index: 999999;
+  color: #F8FAFC;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.qlm-header {
+  padding: 16px 20px;
+  background: rgba(30, 41, 59, 0.5);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.qlm-title {
+  font-weight: 700;
+  font-size: 16px;
+  color: #818CF8;
+}
+
+.qlm-close-btn {
+  background: transparent;
+  border: none;
+  color: #94A3B8;
+  font-size: 18px;
+  cursor: pointer;
+}
+.qlm-close-btn:hover { color: #FFF; }
+
+.qlm-body {
+  padding: 16px 20px;
+  overflow-y: auto;
+  max-height: 350px;
+}
+
+.qlm-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 14px;
+}
+
+.qlm-total {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(99, 102, 241, 0.4);
+  font-weight: 700;
+  color: #38BDF8;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* --- Inline Video Remaining Time Badge --- */
+#remaining-time-badge {
+  margin-left: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #A5F3FC;
+  opacity: 0.95;
+  font-family: inherit;
+  letter-spacing: 0.3px;
+}

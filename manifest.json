@@ -1,12 +1,32 @@
 {
   "manifest_version": 3,
-  "name": "Video Speed HUD Controller",
-  "version": "1.1",
-  "description": "Control video speed + show remaining time",
+  "name": "Video Speed HUD & Question Time Watcher",
+  "version": "2.0.0",
+  "description": "Control video playback speed, brightness, hold Space to fast-forward, automatic speed ramp, remaining time overlay, and track study time per question.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "permissions": ["storage"],
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["speed.js", "remaining.js","hide.js"]
+      "css": ["src/styles/hud.css"],
+      "js": [
+        "src/core/hud.js",
+        "src/core/speed-controller.js",
+        "src/core/remaining-time.js",
+        "src/core/question-timer.js"
+      ]
+    },
+    {
+      "matches": [
+        "*://*.pw.live/*",
+        "*://penpencil-v2.pw.live/*"
+      ],
+      "css": ["src/styles/pw-custom.css"],
+      "js": ["src/plugins/pw-enhancements.js"]
     }
   ]
 }
