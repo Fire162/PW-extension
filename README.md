@@ -71,7 +71,7 @@
 
 1. Clone or download this repository:
    ```bash
-   git clone https://github.com/your-username/video-speed-extension.git
+   git clone https://github.com/Fire162/PW-extension.git
    ```
 2. Open your browser extensions page:
    - Chrome: `chrome://extensions/`
@@ -79,14 +79,14 @@
    - Brave: `brave://extensions/`
 3. Enable **Developer Mode** (toggle in top right corner).
 4. Click **Load Unpacked**.
-5. Select the `video-speed-extension` folder.
+5. Select the `PW-extension` folder.
 
 ---
 
 ## 🏗️ Architecture & Folder Structure
 
 ```
-video-speed-extension/
+PW-extension/
 ├── manifest.json            # Manifest V3 configuration with domain-scoped scripts
 ├── icons/                   # Extension icons (16px, 48px, 128px)
 ├── src/
