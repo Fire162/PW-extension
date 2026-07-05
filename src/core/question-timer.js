@@ -7,11 +7,13 @@
  * - Click-Through Mode (passes click events directly to underlying video content)
  * - Persistent per-URL storage
  * - Smart Auto-Timer: Auto-start stopwatch when video pauses; log lap when video resumes.
+ * - Exam Target Time Benchmark ("Beat the Clock" 1m/2m/3m/5m mode with Green/Yellow/Red Glass Glow)
  *
  * Controls:
  * - T: Toggle Start / Pause / Resume timer
  * - Shift + T: Log current question & start timer for next question (Lap)
  * - Alt + T: Open / Close Question Log Summary Modal
+ * - Alt + B: Cycle Target Time Benchmark (Off -> 1m -> 2m -> 3m -> 5m)
  * - Alt + C: Toggle Click-Through Mode (clicks pass to video behind)
  * - Shift + H: Toggle Minimize/Expand Stopwatch Overlay
  * - Alt + Shift + T: Reset stopwatch & clear question history for current URL
@@ -24,7 +26,7 @@
   let elapsedTime = 0;
   let timerInterval = null;
   let currentQuestionNum = 1;
-  let logs = []; // [{ qNum: 1, durationSec: 165, timeFormatted: "02:45" }]
+  let logs = []; // [{ qNum: 1, durationSec: 165, timeFormatted: "02:45", targetSec: 120, isOnTime: false }]
 
   // UI state
   let isMinimized = false;
@@ -35,6 +37,7 @@
 
   // Settings
   let autoTimerOnPause = false;
+  let targetBenchmarkSec = 0; // 0 = Off, 60 = 1m, 120 = 2m, 180 = 3m, 300 = 5m
 
   let hudEl = null;
   let modalEl = null;
@@ -62,7 +65,7 @@
     };
 
     if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-      chrome.storage.local.set({ [key]: data });
+      chrome.storage.local.set({ [key]: data, targetBenchmarkSec });
     } else {
       try {
         localStorage.setItem(key, JSON.stringify(data));
@@ -76,9 +79,12 @@
     const key = getStorageKey();
 
     if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-      chrome.storage.local.get([key, 'autoTimerOnPause'], result => {
+      chrome.storage.local.get([key, 'autoTimerOnPause', 'targetBenchmarkSec'], result => {
         if (result && result.autoTimerOnPause !== undefined) {
           autoTimerOnPause = !!result.autoTimerOnPause;
+        }
+        if (result && result.targetBenchmarkSec !== undefined) {
+          targetBenchmarkSec = Number(result.targetBenchmarkSec) || 0;
         }
         if (result && result[key]) {
           restoreState(result[key]);
@@ -99,12 +105,13 @@
   // Listen for storage setting changes from Extension Popup Dashboard
   if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.onChanged) {
     chrome.storage.onChanged.addListener((changes, namespace) => {
-      if (namespace === 'local' && changes.autoTimerOnPause) {
-        autoTimerOnPause = !!changes.autoTimerOnPause.newValue;
-        if (window.HUDManager) {
-          window.HUDManager.show(
-            `⚙️ Smart Auto-Timer on Video Pause: ${autoTimerOnPause ? 'ENABLED' : 'DISABLED'}`
-          );
+      if (namespace === 'local') {
+        if (changes.autoTimerOnPause) {
+          autoTimerOnPause = !!changes.autoTimerOnPause.newValue;
+        }
+        if (changes.targetBenchmarkSec !== undefined) {
+          targetBenchmarkSec = Number(changes.targetBenchmarkSec.newValue) || 0;
+          updateHUDDisplay();
         }
       }
     });
@@ -222,10 +229,13 @@
       </div>
       <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
         <div class="qt-time-display" id="qt-time-text">00:00</div>
-        <span id="qt-status-badge" style="font-size:10px; font-weight:700;">RUNNING</span>
+        <div style="display:flex; flex-direction:column; align-items:flex-end;">
+          <span id="qt-status-badge" style="font-size:10px; font-weight:700;">RUNNING</span>
+          <span id="qt-benchmark-badge" style="font-size:10px; color:#A5F3FC; display:none;">🎯 2m Target</span>
+        </div>
       </div>
       <div class="qt-controls-hint">
-        [T] Pause/Resume &nbsp;|&nbsp; [Shift+T] Next Q &nbsp;|&nbsp; [Alt+T] Logs
+        [T] Pause/Resume &nbsp;|&nbsp; [Shift+T] Next Q &nbsp;|&nbsp; [Alt+B] Target
       </div>
     `;
 
@@ -295,15 +305,35 @@
     }
   }
 
+  function cycleBenchmarkTarget() {
+    const targets = [0, 60, 120, 180, 300]; // Off, 1m, 2m, 3m, 5m
+    const idx = targets.indexOf(targetBenchmarkSec);
+    const nextIdx = (idx + 1) % targets.length;
+    targetBenchmarkSec = targets[nextIdx];
+
+    if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+      chrome.storage.local.set({ targetBenchmarkSec });
+    }
+
+    const labelMap = { 0: 'OFF', 60: '1 min', 120: '2 mins', 180: '3 mins', 300: '5 mins' };
+    if (window.HUDManager) {
+      window.HUDManager.show(`🎯 Exam Target Benchmark: ${labelMap[targetBenchmarkSec] || 'OFF'}`);
+    }
+    updateHUDDisplay();
+  }
+
   function updateHUDDisplay() {
     if (!hudEl) return;
 
     const timeText = hudEl.querySelector('#qt-time-text');
     const statusBadge = hudEl.querySelector('#qt-status-badge');
+    const benchmarkBadge = hudEl.querySelector('#qt-benchmark-badge');
     const qName = hudEl.querySelector('#qt-qname');
 
+    const sec = getActiveSeconds();
+
     if (qName) qName.innerText = `⏱️ Q${currentQuestionNum}`;
-    if (timeText) timeText.innerText = formatTime(getActiveSeconds());
+    if (timeText) timeText.innerText = formatTime(sec);
 
     if (statusBadge) {
       statusBadge.innerText = isRunning ? 'RUNNING' : 'PAUSED';
@@ -314,6 +344,26 @@
       hudEl.classList.remove('timer-paused');
     } else {
       hudEl.classList.add('timer-paused');
+    }
+
+    // Benchmark Dynamic Glass Glow
+    hudEl.classList.remove('qt-benchmark-green', 'qt-benchmark-yellow', 'qt-benchmark-red');
+
+    if (targetBenchmarkSec > 0) {
+      if (benchmarkBadge) {
+        benchmarkBadge.style.display = 'block';
+        benchmarkBadge.innerText = `🎯 ${Math.round(targetBenchmarkSec / 60)}m Target`;
+      }
+
+      if (sec <= targetBenchmarkSec * 0.7) {
+        hudEl.classList.add('qt-benchmark-green');
+      } else if (sec <= targetBenchmarkSec) {
+        hudEl.classList.add('qt-benchmark-yellow');
+      } else {
+        hudEl.classList.add('qt-benchmark-red');
+      }
+    } else {
+      if (benchmarkBadge) benchmarkBadge.style.display = 'none';
     }
   }
 
@@ -370,14 +420,19 @@
       return;
     }
 
+    const isOnTime = targetBenchmarkSec > 0 ? sec <= targetBenchmarkSec : true;
+
     logs.push({
       qNum: currentQuestionNum,
       durationSec: sec,
-      timeFormatted: formatTime(sec)
+      timeFormatted: formatTime(sec),
+      targetSec: targetBenchmarkSec,
+      isOnTime
     });
 
     if (window.HUDManager) {
-      window.HUDManager.show(`✅ Q${currentQuestionNum} Saved: ${formatTime(sec)}! Starting Q${currentQuestionNum + 1}...`);
+      const tag = targetBenchmarkSec > 0 ? (isOnTime ? ' ✅ On Time!' : ' ⚠️ Overtime') : '';
+      window.HUDManager.show(`✅ Q${currentQuestionNum} Saved: ${formatTime(sec)}${tag}! Starting Q${currentQuestionNum + 1}...`);
     }
 
     currentQuestionNum += 1;
@@ -439,7 +494,8 @@
 
     let lines = [`📋 Question Time Summary (${document.title || window.location.href})`];
     logs.forEach(l => {
-      lines.push(`Question ${l.qNum}: ${l.timeFormatted}`);
+      const tag = l.targetSec ? (l.isOnTime ? ' [On Time ✅]' : ' [Overtime ⚠️]') : '';
+      lines.push(`Question ${l.qNum}: ${l.timeFormatted}${tag}`);
     });
     if (currentSec > 0 || isRunning) {
       lines.push(`Question ${currentQuestionNum} (Current): ${formatTime(currentSec)}`);
@@ -467,11 +523,15 @@
     const currentSec = getActiveSeconds();
     const totalSec = logs.reduce((acc, l) => acc + l.durationSec, 0) + currentSec;
 
+    const benchmarkLogs = logs.filter(l => l.targetSec > 0);
+    const onTimeCount = benchmarkLogs.filter(l => l.isOnTime).length;
+    const pacePercent = benchmarkLogs.length > 0 ? Math.round((onTimeCount / benchmarkLogs.length) * 100) : null;
+
     let itemsHTML = logs
       .map(
         l => `
       <div class="qlm-item">
-        <span>Question ${l.qNum}</span>
+        <span>Question ${l.qNum} ${l.targetSec ? (l.isOnTime ? '<span style="color:#34D399; font-size:11px;">(On Time ✅)</span>' : '<span style="color:#F87171; font-size:11px;">(Overtime ⚠️)</span>') : ''}</span>
         <strong>${l.timeFormatted}</strong>
       </div>`
       )
@@ -495,6 +555,7 @@
         <button class="qlm-close-btn" id="qlm-close">&times;</button>
       </div>
       <div class="qlm-body">
+        ${pacePercent !== null ? `<div style="background:rgba(99,102,241,0.2); padding:8px 12px; border-radius:8px; margin-bottom:12px; font-size:13px; font-weight:700; color:#A5F3FC; display:flex; justify-content:space-between;"><span>🎯 Exam Pace Accuracy</span><span>${pacePercent}% On-Time</span></div>` : ''}
         ${itemsHTML}
         <div class="qlm-total">
           <span>Total Time Elapsed</span>
@@ -539,7 +600,6 @@
     video.addEventListener('play', () => {
       if (autoTimerOnPause) {
         if (isRunning && getActiveSeconds() > 2) {
-          // Auto-log lap for previous question when video resumes playing
           lapNextQuestion();
           pauseTimer();
         } else if (isRunning) {
@@ -549,7 +609,6 @@
     });
   }
 
-  // Poll for video element
   setInterval(attachVideoListeners, 1000);
 
   // Keyboard shortcut listener
@@ -563,6 +622,13 @@
     }
 
     const key = e.key.toLowerCase();
+
+    // Alt + B -> Cycle Target Benchmark Time
+    if (e.altKey && key === 'b') {
+      e.preventDefault();
+      cycleBenchmarkTarget();
+      return;
+    }
 
     // Alt + C -> Toggle Click-Through Mode
     if (e.altKey && key === 'c') {
@@ -622,6 +688,6 @@
 
   // Initialize storage load
   loadFromStorage(() => {
-    console.log('✅ Question Timer loaded with Smart Auto-Timer & Liquid Glass Overlay');
+    console.log('✅ Question Timer loaded with Target Benchmark & Liquid Glass Overlay');
   });
 })();

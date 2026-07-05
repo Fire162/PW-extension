@@ -69,6 +69,7 @@
 | `T` | Start / Pause / Resume Question Stopwatch |
 | `Shift + T` | Log current question time (Lap) & start timing next question |
 | `Alt + T` | Open / Close Question Log Summary modal |
+| `Alt + B` | Cycle Exam Target Time Benchmark (1m / 2m / 3m / 5m) |
 | `Alt + C` | Toggle Click-Through Mode (pass clicks to underlying video) |
 | `Shift + H` | Toggle Hide / Show Stopwatch Overlay |
 | `Alt + Shift + T` | Reset stopwatch & clear question history |

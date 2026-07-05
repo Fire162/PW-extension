@@ -13,17 +13,42 @@
     return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
   }
 
+  function updateBenchmarkButtons(targetSec) {
+    document.querySelectorAll('.bm-btn').forEach(btn => {
+      if (Number(btn.dataset.sec) === targetSec) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+  }
+
   function init() {
     // Load preferences
     if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-      chrome.storage.local.get(['autoTimerOnPause', 'autoSkipSilence'], result => {
+      chrome.storage.local.get(['autoTimerOnPause', 'autoSkipSilence', 'targetBenchmarkSec'], result => {
         const toggleTimer = document.getElementById('auto-timer-toggle');
         if (toggleTimer) toggleTimer.checked = !!result.autoTimerOnPause;
 
         const toggleSilence = document.getElementById('auto-silence-toggle');
         if (toggleSilence) toggleSilence.checked = !!result.autoSkipSilence;
+
+        const targetSec = Number(result.targetBenchmarkSec) || 0;
+        updateBenchmarkButtons(targetSec);
       });
     }
+
+    // Benchmark Buttons Event Listeners
+    document.querySelectorAll('.bm-btn').forEach(btn => {
+      btn.addEventListener('click', e => {
+        const sec = Number(e.target.dataset.sec) || 0;
+        if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+          chrome.storage.local.set({ targetBenchmarkSec: sec }, () => {
+            updateBenchmarkButtons(sec);
+          });
+        }
+      });
+    });
 
     // Handle Toggle Switches
     document.getElementById('auto-timer-toggle')?.addEventListener('change', e => {
