@@ -36,6 +36,11 @@
   - Starts at **2.0x** when silence begins, gradually ramps up by **+0.1x every second** up to **4.0x max**, and instantly restores your normal speed when speech resumes.
   - Toggle anytime via **`Alt + S`** or the Popup Dashboard.
 
+- 🧘 **Focus Mode (Distraction-Free)**
+  - Mutes and suppresses all floating HUD toast notification popups while studying.
+  - Keeps the Question Stopwatch/Timer widget intact and fully functional as usual.
+  - Toggle anytime via **`Alt + F`** or the Popup Dashboard.
+
 - 📈 **Automatic Speed Ramping**
   - Toggle `Ctrl + /` to gradually increase playback speed over time in steps until reaching 2.5x max.
 
@@ -62,7 +67,8 @@
 | `Alt + ↑ / ↓` | Increase / decrease video brightness |
 | `Hold Space` | Fast forward at 2.0x speed while held |
 | `Tap Space` | Toggle Play / Pause |
-| `Alt + S` | Toggle Auto-Skip Silence in lectures (3.0x skip speed) |
+| `Alt + F` | Toggle Focus Mode (Mute toast popups, keep stopwatch) |
+| `Alt + S` | Toggle Auto-Skip Silence in lectures (2.0x ➔ 4.0x ramping) |
 | `Ctrl + /` | Toggle Automatic Speed Ramp progression |
 | `R` | Toggle remaining video time display |
 

@@ -96,12 +96,15 @@
   function init() {
     // Load preferences
     if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-      chrome.storage.local.get(['autoTimerOnPause', 'autoSkipSilence', 'targetBenchmarkSec'], result => {
+      chrome.storage.local.get(['autoTimerOnPause', 'autoSkipSilence', 'targetBenchmarkSec', 'focusMode'], result => {
         const toggleTimer = document.getElementById('auto-timer-toggle');
         if (toggleTimer) toggleTimer.checked = !!result.autoTimerOnPause;
 
         const toggleSilence = document.getElementById('auto-silence-toggle');
         if (toggleSilence) toggleSilence.checked = !!result.autoSkipSilence;
+
+        const toggleFocus = document.getElementById('focus-mode-toggle');
+        if (toggleFocus) toggleFocus.checked = !!result.focusMode;
 
         const targetSec = Number(result.targetBenchmarkSec) || 0;
         updateBenchmarkButtons(targetSec);
@@ -148,6 +151,13 @@
       const isChecked = e.target.checked;
       if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
         chrome.storage.local.set({ autoSkipSilence: isChecked });
+      }
+    });
+
+    document.getElementById('focus-mode-toggle')?.addEventListener('change', e => {
+      const isChecked = e.target.checked;
+      if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+        chrome.storage.local.set({ focusMode: isChecked });
       }
     });
 
