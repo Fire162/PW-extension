@@ -27,6 +27,10 @@
   - Click the toolbar extension icon to open a sleek liquid-glass dashboard.
   - Toggle Smart Auto-Timer mode, inspect live session stats across all videos, copy stats, and export all study logs to `.csv`.
 
+- 📚 **Auto Study Hour Calculator**
+  - Automatically calculates real-world study clock hours vs. speed-adjusted lecture content coverage achieved (e.g. 1 hour at 2.0x = 2 hours of content covered).
+  - Set custom daily study goals (4h, 6h, 8h, 10h), track daily study progress, and maintain active study streaks (🔥).
+
 - ⏩ **Auto-Skip Silence & Dead Air**
   - Uses Web Audio API real-time audio analysis to detect silent moments in lectures (when the teacher is writing on the board or taking a break).
   - Automatically speeds up to **3.0x** during silence, and instantly restores your normal speed when speech resumes.
@@ -113,7 +117,8 @@ PW-extension/
 │   │   ├── speed-controller.js # Speed, brightness, hold space & ramp logic
 │   │   ├── remaining-time.js   # Universal video remaining time tracker
 │   │   ├── question-timer.js   # Question Time Watcher & Smart Auto-Timer module
-│   │   └── silence-skipper.js  # Real-time Web Audio silence detection & auto-skip
+│   │   ├── silence-skipper.js  # Real-time Web Audio silence detection & auto-skip
+│   │   └── study-tracker.js    # Auto Study Hour Calculator & Streak Tracker
 │   └── plugins/
 │       └── pw-enhancements.js  # Scoped PhysicsWallah DOM tweaks & shortcuts
 ├── LICENSE                  # MIT License

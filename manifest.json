@@ -34,7 +34,8 @@
         "src/core/speed-controller.js",
         "src/core/remaining-time.js",
         "src/core/question-timer.js",
-        "src/core/silence-skipper.js"
+        "src/core/silence-skipper.js",
+        "src/core/study-tracker.js"
       ]
     },
     {

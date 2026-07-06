@@ -13,6 +13,21 @@
     return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
   }
 
+  function formatHoursMinutes(totalSeconds) {
+    if (isNaN(totalSeconds) || totalSeconds <= 0) return '0h 0m';
+    const hrs = Math.floor(totalSeconds / 3600);
+    const mins = Math.floor((totalSeconds % 3600) / 60);
+    return `${hrs}h ${mins}m`;
+  }
+
+  function getTodayString() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
   function updateBenchmarkButtons(targetSec) {
     document.querySelectorAll('.bm-btn').forEach(btn => {
       if (Number(btn.dataset.sec) === targetSec) {
@@ -20,6 +35,44 @@
       } else {
         btn.classList.remove('active');
       }
+    });
+  }
+
+  function updateGoalButtons(goalHours) {
+    document.querySelectorAll('.goal-btn').forEach(btn => {
+      if (Number(btn.dataset.goal) === goalHours) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+  }
+
+  function loadStudyTrackerData() {
+    if (typeof chrome === 'undefined' || !chrome.storage || !chrome.storage.local) return;
+
+    chrome.storage.local.get(['studyTrackerData'], result => {
+      const trackerData = result.studyTrackerData || { dailyGoalHours: 6.0, streakDays: 0, history: {} };
+      const today = getTodayString();
+      const dayData = (trackerData.history && trackerData.history[today]) || { realSec: 0, coverageSec: 0 };
+
+      const goalHours = trackerData.dailyGoalHours || 6.0;
+      updateGoalButtons(goalHours);
+
+      const realHours = dayData.realSec / 3600;
+      const coverageHours = dayData.coverageSec / 3600;
+      const percent = Math.min(100, Math.round((realHours / goalHours) * 100));
+
+      document.getElementById('stat-real-time').innerText = formatHoursMinutes(dayData.realSec);
+      document.getElementById('stat-coverage-time').innerText = formatHoursMinutes(dayData.coverageSec);
+
+      document.getElementById('study-progress-text').innerText = `${realHours.toFixed(1)} / ${goalHours.toFixed(1)} hrs Today (${percent}%)`;
+
+      const fillEl = document.getElementById('study-progress-fill');
+      if (fillEl) fillEl.style.width = `${percent}%`;
+
+      const streakEl = document.getElementById('streak-badge');
+      if (streakEl) streakEl.innerText = `🔥 ${trackerData.streakDays || 0}-Day Streak`;
     });
   }
 
@@ -50,6 +103,22 @@
       });
     });
 
+    // Goal Buttons Event Listeners
+    document.querySelectorAll('.goal-btn').forEach(btn => {
+      btn.addEventListener('click', e => {
+        const goalHours = Number(e.target.dataset.goal) || 6.0;
+        if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+          chrome.storage.local.get(['studyTrackerData'], result => {
+            const trackerData = result.studyTrackerData || {};
+            trackerData.dailyGoalHours = goalHours;
+            chrome.storage.local.set({ studyTrackerData: trackerData }, () => {
+              loadStudyTrackerData();
+            });
+          });
+        }
+      });
+    });
+
     // Handle Toggle Switches
     document.getElementById('auto-timer-toggle')?.addEventListener('change', e => {
       const isChecked = e.target.checked;
@@ -72,10 +141,12 @@
           currentTabUrl = tabs[0].url.split('#')[0];
         }
         loadAllSessions();
+        loadStudyTrackerData();
       });
     } else {
       currentTabUrl = window.location.href.split('#')[0];
       loadAllSessions();
+      loadStudyTrackerData();
     }
 
     // Button Events

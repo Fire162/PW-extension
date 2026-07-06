@@ -16,6 +16,48 @@
       <span class="popup-version">v2.0</span>
     </div>
 
+    <!-- Auto Study Hour Calculator Card -->
+    <div class="glass-card">
+      <div class="card-title">
+        <span>📚 Auto Study Hour Calculator</span>
+        <span id="streak-badge" style="color:#FBBF24; font-size:11px;">🔥 0-Day Streak</span>
+      </div>
+
+      <!-- Daily Progress Goal Bar -->
+      <div style="display:flex; justify-content:space-between; font-size:11px; color:#CBD5E1;">
+        <span>Today's Study Progress</span>
+        <strong id="study-progress-text">0.0 / 6.0 hrs (0%)</strong>
+      </div>
+      <div class="progress-bar-container">
+        <div class="progress-bar-fill" id="study-progress-fill"></div>
+      </div>
+
+      <!-- Real Time vs Content Coverage Grid -->
+      <div class="stats-grid">
+        <div class="stat-box">
+          <span class="stat-value" id="stat-real-time">0h 0m</span>
+          <span class="stat-label">Real Study Clock</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-value" id="stat-coverage-time" style="color:#34D399;">0h 0m</span>
+          <span class="stat-label">Content Covered</span>
+        </div>
+      </div>
+
+      <!-- Goal Hours Selector -->
+      <div style="margin-top: 4px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.08);">
+        <div class="setting-info" style="margin-bottom:4px;">
+          <span class="setting-label">Daily Study Target Goal</span>
+        </div>
+        <div class="benchmark-selector">
+          <button class="goal-btn" data-goal="4">4 hrs</button>
+          <button class="goal-btn" data-goal="6">6 hrs</button>
+          <button class="goal-btn" data-goal="8">8 hrs</button>
+          <button class="goal-btn" data-goal="10">10 hrs</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Smart Settings Card -->
     <div class="glass-card">
       <div class="card-title">
