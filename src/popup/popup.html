@@ -8,25 +8,31 @@
 <body>
   <div class="popup-container">
     
-    <!-- Popup Header -->
+    <!-- Popup Header Banner -->
     <div class="popup-header">
-      <div class="popup-title">
-        <span>⚡</span> Video Speed & Time Dashboard
+      <div class="popup-title-group">
+        <div class="popup-icon-badge">⚡</div>
+        <div>
+          <div class="popup-title">Speed HUD & Study Watcher</div>
+          <div class="popup-subtitle"><span class="status-dot"></span> Extension Active</div>
+        </div>
       </div>
-      <span class="popup-version">v2.1</span>
+      <div class="header-meta">
+        <span class="popup-version">v2.1</span>
+      </div>
     </div>
 
     <!-- Auto Study Hour Calculator Card -->
     <div class="glass-card">
       <div class="card-title">
-        <span>📚 Auto Study Hour Calculator</span>
-        <span id="streak-badge" style="color:#FBBF24; font-size:11px;">🔥 0-Day Streak</span>
+        <span class="card-title-text">📚 Auto Study Hour Calculator</span>
+        <span id="streak-badge">🔥 0-Day Streak</span>
       </div>
 
       <!-- Daily Progress Goal Bar -->
-      <div style="display:flex; justify-content:space-between; font-size:11px; color:#CBD5E1;">
+      <div style="display:flex; justify-content:space-between; font-size:11px; color:#CBD5E1; font-weight:600;">
         <span>Today's Study Progress</span>
-        <strong id="study-progress-text">0.0 / 6.0 hrs (0%)</strong>
+        <strong id="study-progress-text" style="color:#38BDF8;">0.0 / 6.0 hrs (0%)</strong>
       </div>
       <div class="progress-bar-container">
         <div class="progress-bar-fill" id="study-progress-fill"></div>
@@ -45,9 +51,9 @@
       </div>
 
       <!-- Goal Hours Selector -->
-      <div style="margin-top: 4px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.08);">
-        <div class="setting-info" style="margin-bottom:4px;">
-          <span class="setting-label">Daily Study Target Goal</span>
+      <div style="margin-top: 4px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.08);">
+        <div class="setting-info" style="margin-bottom:6px;">
+          <span class="setting-label">🎯 Daily Study Target Goal</span>
         </div>
         <div class="benchmark-selector">
           <button class="goal-btn" data-goal="4">4 hrs</button>
@@ -61,14 +67,14 @@
     <!-- Smart Settings Card -->
     <div class="glass-card">
       <div class="card-title">
-        <span>⚙️ Smart Auto-Timer & Exam Settings</span>
+        <span class="card-title-text">⚙️ Smart Auto-Timer & Exam Settings</span>
       </div>
       
       <!-- Auto Timer Toggle -->
       <div class="setting-row">
         <div class="setting-info">
           <span class="setting-label">Auto-Start on Pause</span>
-          <span class="setting-desc">Auto-start timer when video pauses; log question when video plays.</span>
+          <span class="setting-desc">Auto-start stopwatch when video pauses; log question when video plays.</span>
         </div>
         <label class="switch">
           <input type="checkbox" id="auto-timer-toggle" />
@@ -77,7 +83,7 @@
       </div>
 
       <!-- Silence Skipper Toggle -->
-      <div class="setting-row" style="margin-top: 4px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.08);">
+      <div class="setting-row" style="margin-top: 4px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.08);">
         <div class="setting-info">
           <span class="setting-label">Auto-Skip Silence (3.0x)</span>
           <span class="setting-desc">Auto fast-forward silent pauses in lectures [Alt+S].</span>
@@ -89,8 +95,8 @@
       </div>
 
       <!-- Exam Target Time Benchmark Selector -->
-      <div style="margin-top: 6px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.08);">
-        <div class="setting-info">
+      <div style="margin-top: 6px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.08);">
+        <div class="setting-info" style="margin-bottom:6px;">
           <span class="setting-label">🎯 Exam Target Time Benchmark [Alt+B]</span>
           <span class="setting-desc">Sets Green/Yellow/Red glass glow target time per question.</span>
         </div>
@@ -107,7 +113,7 @@
     <!-- Active Video Stats Card -->
     <div class="glass-card">
       <div class="card-title">
-        <span>📊 Current Video Session</span>
+        <span class="card-title-text">📊 Current Video Session</span>
       </div>
       <div class="stats-grid">
         <div class="stat-box">
@@ -116,7 +122,7 @@
         </div>
         <div class="stat-box">
           <span class="stat-value" id="stat-totaltime">00:00</span>
-          <span class="stat-label">Total Time</span>
+          <span class="stat-label">Total Session Time</span>
         </div>
       </div>
       <div class="action-grid" style="margin-top: 4px;">
@@ -128,7 +134,7 @@
     <!-- All Keyboard Shortcuts Reference Card -->
     <div class="glass-card">
       <div class="card-title">
-        <span>🎮 All Keyboard Shortcuts</span>
+        <span class="card-title-text">🎮 All Keyboard Shortcuts</span>
       </div>
       <div class="shortcut-list">
         <div class="shortcut-row">
@@ -193,11 +199,11 @@
     <!-- All-Time Study Sessions Card -->
     <div class="glass-card">
       <div class="card-title">
-        <span>📚 All Saved Sessions</span>
-        <button class="btn btn-secondary" id="btn-export-csv" style="padding: 2px 8px; font-size: 10px;">💾 Export CSV</button>
+        <span class="card-title-text">📚 All Saved Sessions</span>
+        <button class="btn btn-secondary" id="btn-export-csv" style="padding: 3px 10px; font-size: 10px; border-radius: 8px;">💾 Export CSV</button>
       </div>
       <div class="history-list" id="history-list">
-        <div style="text-align: center; color: #94A3B8; font-size: 11px; padding: 12px;">
+        <div style="text-align: center; color: #94A3B8; font-size: 11px; padding: 14px;">
           No recorded video sessions yet.
         </div>
       </div>
