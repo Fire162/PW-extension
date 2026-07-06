@@ -5,6 +5,8 @@
  * and gradually ramps up playback speed (starting at 2.0x, +0.1x every second up to max 4.0x),
  * then instantly restores normal playback speed when speech resumes.
  *
+ * Tracks and persistently saves total time saved using the Silence Killer.
+ *
  * Controls:
  * - Alt + S: Toggle Auto-Skip Silence ON / OFF
  */
@@ -29,6 +31,7 @@
   let silenceStartTime = 0;
   let checkInterval = null;
   let rampInterval = null;
+  let sessionTimeSavedSec = 0;
 
   function isContextValid() {
     try {
@@ -36,6 +39,25 @@
     } catch (e) {
       return false;
     }
+  }
+
+  function recordSilenceTimeSaved(savedSec) {
+    if (savedSec <= 0 || !isContextValid()) return;
+    try {
+      chrome.storage.local.get(['totalSilenceTimeSavedSec', 'studyTrackerData'], result => {
+        if (!isContextValid()) return;
+        const totalSaved = (result.totalSilenceTimeSavedSec || 0) + savedSec;
+        const trackerData = result.studyTrackerData || {};
+
+        if (!trackerData.totalSilenceTimeSavedSec) trackerData.totalSilenceTimeSavedSec = 0;
+        trackerData.totalSilenceTimeSavedSec += savedSec;
+
+        chrome.storage.local.set({
+          totalSilenceTimeSavedSec: totalSaved,
+          studyTrackerData: trackerData
+        });
+      });
+    } catch (e) {}
   }
 
   function loadSettings() {
@@ -143,6 +165,7 @@
     normalSpeed = video.playbackRate;
     if (normalSpeed >= MAX_SPEED) return;
 
+    sessionTimeSavedSec = 0;
     currentSilenceSpeed = Math.max(START_SPEED, normalSpeed);
     video.playbackRate = currentSilenceSpeed;
 
@@ -157,14 +180,17 @@
         return;
       }
 
+      // Calculate time saved in this 1-second step: (currentSilenceSpeed - normalSpeed) seconds
+      const savedThisSecond = Math.max(0, currentSilenceSpeed - normalSpeed);
+      sessionTimeSavedSec += savedThisSecond;
+      recordSilenceTimeSaved(savedThisSecond);
+
       if (currentSilenceSpeed < MAX_SPEED) {
         currentSilenceSpeed = Math.min(MAX_SPEED, Math.round((currentSilenceSpeed + RAMP_INCREMENT) * 10) / 10);
         video.playbackRate = currentSilenceSpeed;
         if (window.HUDManager) {
           window.HUDManager.show(`⏩ Auto-Skipping Silence (${currentSilenceSpeed.toFixed(1)}x)`, 600);
         }
-      } else {
-        clearInterval(rampInterval);
       }
     }, 1000);
   }
@@ -179,9 +205,11 @@
     if (v && normalSpeed) {
       v.playbackRate = normalSpeed;
       if (window.HUDManager) {
-        window.HUDManager.show(`🗣️ Speech Resumed (${normalSpeed.toFixed(2)}x)`, 800);
+        const savedTag = sessionTimeSavedSec > 1 ? ` | Saved +${Math.round(sessionTimeSavedSec)}s` : '';
+        window.HUDManager.show(`🗣️ Speech Resumed (${normalSpeed.toFixed(2)}x)${savedTag}`, 1000);
       }
     }
+    sessionTimeSavedSec = 0;
   }
 
   function toggleAutoSkip() {

@@ -48,10 +48,22 @@
     });
   }
 
+  function formatMinutesSeconds(totalSeconds) {
+    if (isNaN(totalSeconds) || totalSeconds <= 0) return '0m 0s';
+    if (totalSeconds >= 3600) {
+      const hrs = Math.floor(totalSeconds / 3600);
+      const mins = Math.floor((totalSeconds % 3600) / 60);
+      return `${hrs}h ${mins}m`;
+    }
+    const mins = Math.floor(totalSeconds / 60);
+    const secs = Math.floor(totalSeconds % 60);
+    return `${mins}m ${secs}s`;
+  }
+
   function loadStudyTrackerData() {
     if (typeof chrome === 'undefined' || !chrome.storage || !chrome.storage.local) return;
 
-    chrome.storage.local.get(['studyTrackerData'], result => {
+    chrome.storage.local.get(['studyTrackerData', 'totalSilenceTimeSavedSec'], result => {
       const trackerData = result.studyTrackerData || { dailyGoalHours: 6.0, streakDays: 0, history: {} };
       const today = getTodayString();
       const dayData = (trackerData.history && trackerData.history[today]) || { realSec: 0, coverageSec: 0 };
@@ -63,8 +75,13 @@
       const coverageHours = dayData.coverageSec / 3600;
       const percent = Math.min(100, Math.round((realHours / goalHours) * 100));
 
+      const silenceSavedSec = result.totalSilenceTimeSavedSec || trackerData.totalSilenceTimeSavedSec || 0;
+
       document.getElementById('stat-real-time').innerText = formatHoursMinutes(dayData.realSec);
       document.getElementById('stat-coverage-time').innerText = formatHoursMinutes(dayData.coverageSec);
+
+      const silenceEl = document.getElementById('stat-silence-saved');
+      if (silenceEl) silenceEl.innerText = formatMinutesSeconds(silenceSavedSec);
 
       document.getElementById('study-progress-text').innerText = `${realHours.toFixed(1)} / ${goalHours.toFixed(1)} hrs Today (${percent}%)`;
 
