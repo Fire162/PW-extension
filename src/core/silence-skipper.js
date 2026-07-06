@@ -2,7 +2,8 @@
  * SilenceSkipper - Auto-Skip Silence & Dead Air in Video Lectures
  *
  * Uses Web Audio API AnalyserNode to detect silent pauses (when teacher is writing/erasing board)
- * and automatically speeds up playback (e.g. 3.0x), then instantly restores normal speed when speech resumes.
+ * and gradually ramps up playback speed (starting at 2.0x, +0.1x every second up to max 4.0x),
+ * then instantly restores normal playback speed when speech resumes.
  *
  * Controls:
  * - Alt + S: Toggle Auto-Skip Silence ON / OFF
@@ -20,10 +21,14 @@
 
   const SILENCE_THRESHOLD = 0.02; // RMS volume threshold
   const SILENCE_DURATION_MS = 600; // Require 600ms of silence before speeding up
-  const SKIP_SPEED = 3.0;
+  const START_SPEED = 2.0;
+  const MAX_SPEED = 4.0;
+  const RAMP_INCREMENT = 0.1;
 
+  let currentSilenceSpeed = START_SPEED;
   let silenceStartTime = 0;
   let checkInterval = null;
+  let rampInterval = null;
 
   function isContextValid() {
     try {
@@ -136,17 +141,39 @@
   function startSkipping(video) {
     isSkippingSilence = true;
     normalSpeed = video.playbackRate;
-    if (normalSpeed >= SKIP_SPEED) return;
+    if (normalSpeed >= MAX_SPEED) return;
 
-    video.playbackRate = SKIP_SPEED;
+    currentSilenceSpeed = Math.max(START_SPEED, normalSpeed);
+    video.playbackRate = currentSilenceSpeed;
+
     if (window.HUDManager) {
-      window.HUDManager.show(`⏩ Auto-Skipping Silence (${SKIP_SPEED}x)`, 800);
+      window.HUDManager.show(`⏩ Auto-Skipping Silence (${currentSilenceSpeed.toFixed(1)}x Ramping...)`, 800);
     }
+
+    clearInterval(rampInterval);
+    rampInterval = setInterval(() => {
+      if (!isSkippingSilence || !isEnabled || video.paused || video.ended) {
+        clearInterval(rampInterval);
+        return;
+      }
+
+      if (currentSilenceSpeed < MAX_SPEED) {
+        currentSilenceSpeed = Math.min(MAX_SPEED, Math.round((currentSilenceSpeed + RAMP_INCREMENT) * 10) / 10);
+        video.playbackRate = currentSilenceSpeed;
+        if (window.HUDManager) {
+          window.HUDManager.show(`⏩ Auto-Skipping Silence (${currentSilenceSpeed.toFixed(1)}x)`, 600);
+        }
+      } else {
+        clearInterval(rampInterval);
+      }
+    }, 1000);
   }
 
   function stopSkipping(video) {
     isSkippingSilence = false;
     silenceStartTime = 0;
+    currentSilenceSpeed = START_SPEED;
+    clearInterval(rampInterval);
 
     const v = video || document.querySelector('video');
     if (v && normalSpeed) {

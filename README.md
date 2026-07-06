@@ -31,9 +31,9 @@
   - Automatically calculates real-world study clock hours vs. speed-adjusted lecture content coverage achieved (e.g. 1 hour at 2.0x = 2 hours of content covered).
   - Set custom daily study goals (4h, 6h, 8h, 10h), track daily study progress, and maintain active study streaks (🔥).
 
-- ⏩ **Auto-Skip Silence & Dead Air**
+- ⏩ **Auto-Skip Silence & Dead Air (Gradual Ramping)**
   - Uses Web Audio API real-time audio analysis to detect silent moments in lectures (when the teacher is writing on the board or taking a break).
-  - Automatically speeds up to **3.0x** during silence, and instantly restores your normal speed when speech resumes.
+  - Starts at **2.0x** when silence begins, gradually ramps up by **+0.1x every second** up to **4.0x max**, and instantly restores your normal speed when speech resumes.
   - Toggle anytime via **`Alt + S`** or the Popup Dashboard.
 
 - 📈 **Automatic Speed Ramping**
