@@ -54,6 +54,10 @@
 - 🎯 **Domain-Scoped Plugins**
   - Isolated site plugins for PhysicsWallah (PW) batch view layout cleanup & custom shortcuts (`\`, `'`, `/`).
 
+- 📋 **Notes Instant Launcher**
+  - Displays a small glass liquid button at the top-left corner that instantly opens the PDF lecture notes (`localStorage.PDF.src`) in a new tab when available.
+  - Toggle anytime via the Popup Dashboard settings card.
+
 ---
 
 ## 🎮 Keyboard Controls

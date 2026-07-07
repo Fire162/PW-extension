@@ -96,7 +96,7 @@
   function init() {
     // Load preferences
     if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-      chrome.storage.local.get(['autoTimerOnPause', 'autoSkipSilence', 'targetBenchmarkSec', 'focusMode'], result => {
+      chrome.storage.local.get(['autoTimerOnPause', 'autoSkipSilence', 'targetBenchmarkSec', 'focusMode', 'quickNotesEnabled'], result => {
         const toggleTimer = document.getElementById('auto-timer-toggle');
         if (toggleTimer) toggleTimer.checked = !!result.autoTimerOnPause;
 
@@ -105,6 +105,9 @@
 
         const toggleFocus = document.getElementById('focus-mode-toggle');
         if (toggleFocus) toggleFocus.checked = !!result.focusMode;
+
+        const toggleNotes = document.getElementById('quick-notes-toggle');
+        if (toggleNotes) toggleNotes.checked = !!result.quickNotesEnabled;
 
         const targetSec = Number(result.targetBenchmarkSec) || 0;
         updateBenchmarkButtons(targetSec);
@@ -158,6 +161,13 @@
       const isChecked = e.target.checked;
       if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
         chrome.storage.local.set({ focusMode: isChecked });
+      }
+    });
+
+    document.getElementById('quick-notes-toggle')?.addEventListener('change', e => {
+      const isChecked = e.target.checked;
+      if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+        chrome.storage.local.set({ quickNotesEnabled: isChecked });
       }
     });
 

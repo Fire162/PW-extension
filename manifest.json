@@ -35,7 +35,8 @@
         "src/core/remaining-time.js",
         "src/core/question-timer.js",
         "src/core/silence-skipper.js",
-        "src/core/study-tracker.js"
+        "src/core/study-tracker.js",
+        "src/core/quick-notes.js"
       ]
     },
     {
