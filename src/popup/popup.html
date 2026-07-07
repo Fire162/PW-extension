@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Video Speed & Question Time Dashboard</title>
+  <link rel="stylesheet" href="../styles/popup.css" />
+</head>
+<body>
+  <div class="popup-container">
+    
+    <!-- Popup Header Banner -->
+    <div class="popup-header">
+      <div class="popup-title-group">
+        <div class="popup-icon-badge">⚡</div>
+        <div>
+          <div class="popup-title">Speed HUD & Study Watcher</div>
+          <div class="popup-subtitle"><span class="status-dot"></span> Extension Active</div>
+        </div>
+      </div>
+      <div class="header-meta">
+        <span class="popup-version">v2.1</span>
+      </div>
+    </div>
+
+    <!-- Auto Study Hour Calculator Card -->
+    <div class="glass-card">
+      <div class="card-title">
+        <span class="card-title-text">📚 Auto Study Hour Calculator</span>
+        <span id="streak-badge">🔥 0-Day Streak</span>
+      </div>
+
+      <!-- Daily Progress Goal Bar -->
+      <div style="display:flex; justify-content:space-between; font-size:11px; color:#CBD5E1; font-weight:600;">
+        <span>Today's Study Progress</span>
+        <strong id="study-progress-text" style="color:#38BDF8;">0.0 / 6.0 hrs (0%)</strong>
+      </div>
+      <div class="progress-bar-container">
+        <div class="progress-bar-fill" id="study-progress-fill"></div>
+      </div>
+
+      <!-- Real Time vs Content Coverage vs Silence Time Saved Grid -->
+      <div class="stats-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+        <div class="stat-box">
+          <span class="stat-value" id="stat-real-time">0h 0m</span>
+          <span class="stat-label">Real Clock</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-value" id="stat-coverage-time" style="color:#34D399;">0h 0m</span>
+          <span class="stat-label">Coverage</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-value" id="stat-silence-saved" style="color:#FBBF24;">0m 0s</span>
+          <span class="stat-label">⚡ Air Saved</span>
+        </div>
+      </div>
+
+      <!-- Goal Hours Selector -->
+      <div style="margin-top: 4px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.08);">
+        <div class="setting-info" style="margin-bottom:6px;">
+          <span class="setting-label">🎯 Daily Study Target Goal</span>
+        </div>
+        <div class="benchmark-selector">
+          <button class="goal-btn" data-goal="4">4 hrs</button>
+          <button class="goal-btn" data-goal="6">6 hrs</button>
+          <button class="goal-btn" data-goal="8">8 hrs</button>
+          <button class="goal-btn" data-goal="10">10 hrs</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Smart Settings Card -->
+    <div class="glass-card">
+      <div class="card-title">
+        <span class="card-title-text">⚙️ Smart Auto-Timer & Exam Settings</span>
+      </div>
+      
+      <!-- Auto Timer Toggle -->
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-label">Auto-Start on Pause</span>
+          <span class="setting-desc">Auto-start stopwatch when video pauses; log question when video plays.</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="auto-timer-toggle" />
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <!-- Silence Skipper Toggle -->
+      <div class="setting-row" style="margin-top: 4px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.08);">
+        <div class="setting-info">
+          <span class="setting-label">Auto-Skip Silence (2.0x ➔ 4.0x)</span>
+          <span class="setting-desc">Ramps speed during silence (+0.1x/sec); restores on voice [Alt+S].</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="auto-silence-toggle" />
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <!-- Focus Mode Toggle -->
+      <div class="setting-row" style="margin-top: 4px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.08);">
+        <div class="setting-info">
+          <span class="setting-label">🧘 Focus Mode (Distraction-Free)</span>
+          <span class="setting-desc">Mutes floating HUD toasts; keeps Stopwatch overlay intact [Alt+F].</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="focus-mode-toggle" />
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <!-- Quick Notes Toggle -->
+      <div class="setting-row" style="margin-top: 4px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.08);">
+        <div class="setting-info">
+          <span class="setting-label">📋 Notes Instant Launcher</span>
+          <span class="setting-desc">Top-left glass button to instantly open PDF notes (when available).</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="quick-notes-toggle" />
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <!-- Exam Target Time Benchmark Selector -->
+      <div style="margin-top: 6px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.08);">
+        <div class="setting-info" style="margin-bottom:6px;">
+          <span class="setting-label">🎯 Exam Target Time Benchmark [Alt+B]</span>
+          <span class="setting-desc">Sets Green/Yellow/Red glass glow target time per question.</span>
+        </div>
+        <div class="benchmark-selector">
+          <button class="bm-btn" data-sec="0">Off</button>
+          <button class="bm-btn" data-sec="60">1m</button>
+          <button class="bm-btn" data-sec="120">2m</button>
+          <button class="bm-btn" data-sec="180">3m</button>
+          <button class="bm-btn" data-sec="300">5m</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Video Stats Card -->
+    <div class="glass-card">
+      <div class="card-title">
+        <span class="card-title-text">📊 Current Video Session</span>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-box">
+          <span class="stat-value" id="stat-qcount">0</span>
+          <span class="stat-label">Questions Logged</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-value" id="stat-totaltime">00:00</span>
+          <span class="stat-label">Total Session Time</span>
+        </div>
+      </div>
+      <div class="action-grid" style="margin-top: 4px;">
+        <button class="btn btn-secondary" id="btn-copy-stats">📋 Copy Stats</button>
+        <button class="btn btn-danger" id="btn-clear-current">🗑️ Clear Current</button>
+      </div>
+    </div>
+
+    <!-- All Keyboard Shortcuts Reference Card -->
+    <div class="glass-card">
+      <div class="card-title">
+        <span class="card-title-text">🎮 All Keyboard Shortcuts</span>
+      </div>
+      <div class="shortcut-list">
+        <div class="shortcut-row">
+          <span>Open Dashboard</span>
+          <span class="key-badge">Alt + Shift + D</span>
+        </div>
+        <div class="shortcut-row">
+          <span>Toggle Focus Mode (Mute Toasts)</span>
+          <span class="key-badge">Alt + F</span>
+        </div>
+        <div class="shortcut-row">
+          <span>Start / Pause Stopwatch</span>
+          <span class="key-badge">T</span>
+        </div>
+        <div class="shortcut-row">
+          <span>Next Q (Lap Lap Time)</span>
+          <span class="key-badge">Shift + T</span>
+        </div>
+        <div class="shortcut-row">
+          <span>In-Page Summary Logs</span>
+          <span class="key-badge">Alt + T</span>
+        </div>
+        <div class="shortcut-row">
+          <span>Cycle Target Benchmark</span>
+          <span class="key-badge">Alt + B</span>
+        </div>
+        <div class="shortcut-row">
+          <span>Toggle Click-Through Mode</span>
+          <span class="key-badge">Alt + C</span>
+        </div>
+        <div class="shortcut-row">
+          <span>Toggle Hide / Show HUD</span>
+          <span class="key-badge">Shift + H</span>
+        </div>
+        <div class="shortcut-row">
+          <span>Reset Stopwatch & Logs</span>
+          <span class="key-badge">Alt + Shift + T</span>
+        </div>
+        <div class="shortcut-row">
+          <span>Adjust Speed</span>
+          <span class="key-badge">Alt + Scroll / ← →</span>
+        </div>
+        <div class="shortcut-row">
+          <span>Adjust Brightness</span>
+          <span class="key-badge">Alt + ↑ / ↓</span>
+        </div>
+        <div class="shortcut-row">
+          <span>Hold to Fast Forward (2x)</span>
+          <span class="key-badge">Hold Space</span>
+        </div>
+        <div class="shortcut-row">
+          <span>Toggle Speed Ramp (2.5x)</span>
+          <span class="key-badge">Ctrl + /</span>
+        </div>
+        <div class="shortcut-row">
+          <span>Toggle Auto-Skip Silence</span>
+          <span class="key-badge">Alt + S</span>
+        </div>
+        <div class="shortcut-row">
+          <span>Toggle Remaining Video Time</span>
+          <span class="key-badge">R</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- All-Time Study Sessions Card -->
+    <div class="glass-card">
+      <div class="card-title">
+        <span class="card-title-text">📚 All Saved Sessions</span>
+        <button class="btn btn-secondary" id="btn-export-csv" style="padding: 3px 10px; font-size: 10px; border-radius: 8px;">💾 Export CSV</button>
+      </div>
+      <div class="history-list" id="history-list">
+        <div style="text-align: center; color: #94A3B8; font-size: 11px; padding: 14px;">
+          No recorded video sessions yet.
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
