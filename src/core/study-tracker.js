@@ -6,6 +6,10 @@
 (function () {
   'use strict';
 
+  if (!window.location.hostname.includes('pw.live')) {
+    return;
+  }
+
   function isContextValid() {
     try {
       return typeof chrome !== 'undefined' && chrome.runtime && !!chrome.runtime.id;
