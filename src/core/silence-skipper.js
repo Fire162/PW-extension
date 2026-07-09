@@ -16,7 +16,7 @@
   let isEnabled = false;
   let isSkippingSilence = false;
   let normalSpeed = 1.0;
-  let isAltHeld = false;
+  let isShiftHeld = false;
 
   let audioCtx = null;
   let analyser = null;
@@ -130,7 +130,7 @@
         return;
       }
 
-      if (!isEnabled || video.paused || video.ended || isAltHeld) {
+      if (!isEnabled || video.paused || video.ended || isShiftHeld) {
         if (isSkippingSilence) stopSkipping(video);
         return;
       }
@@ -176,7 +176,7 @@
 
     clearInterval(rampInterval);
     rampInterval = setInterval(() => {
-      if (!isSkippingSilence || !isEnabled || video.paused || video.ended || isAltHeld) {
+      if (!isSkippingSilence || !isEnabled || video.paused || video.ended || isShiftHeld) {
         clearInterval(rampInterval);
         return;
       }
@@ -224,10 +224,17 @@
     if (!isEnabled) stopSkipping();
   }
 
-  // Keyboard Shortcut: Alt + S & Alt hold tracking
+  // Keyboard Shortcut: Alt + S & Shift hold tracking
   document.addEventListener('keydown', e => {
-    if (e.key === 'Alt') {
-      isAltHeld = true;
+    if (e.key === 'Shift') {
+      const active = document.activeElement;
+      if (
+        ['INPUT', 'TEXTAREA'].includes(active?.tagName) ||
+        active?.isContentEditable
+      ) {
+        return;
+      }
+      isShiftHeld = true;
     }
 
     const active = document.activeElement;
@@ -245,13 +252,13 @@
   });
 
   document.addEventListener('keyup', e => {
-    if (e.key === 'Alt') {
-      isAltHeld = false;
+    if (e.key === 'Shift') {
+      isShiftHeld = false;
     }
   });
 
   window.addEventListener('blur', () => {
-    isAltHeld = false;
+    isShiftHeld = false;
   });
 
   // Attach to video
