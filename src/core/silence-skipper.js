@@ -16,6 +16,7 @@
   let isEnabled = false;
   let isSkippingSilence = false;
   let normalSpeed = 1.0;
+  let isAltHeld = false;
 
   let audioCtx = null;
   let analyser = null;
@@ -129,7 +130,7 @@
         return;
       }
 
-      if (!isEnabled || video.paused || video.ended) {
+      if (!isEnabled || video.paused || video.ended || isAltHeld) {
         if (isSkippingSilence) stopSkipping(video);
         return;
       }
@@ -175,7 +176,7 @@
 
     clearInterval(rampInterval);
     rampInterval = setInterval(() => {
-      if (!isSkippingSilence || !isEnabled || video.paused || video.ended) {
+      if (!isSkippingSilence || !isEnabled || video.paused || video.ended || isAltHeld) {
         clearInterval(rampInterval);
         return;
       }
@@ -223,8 +224,12 @@
     if (!isEnabled) stopSkipping();
   }
 
-  // Keyboard Shortcut: Alt + S
+  // Keyboard Shortcut: Alt + S & Alt hold tracking
   document.addEventListener('keydown', e => {
+    if (e.key === 'Alt') {
+      isAltHeld = true;
+    }
+
     const active = document.activeElement;
     if (
       ['INPUT', 'TEXTAREA'].includes(active?.tagName) ||
@@ -237,6 +242,16 @@
       e.preventDefault();
       toggleAutoSkip();
     }
+  });
+
+  document.addEventListener('keyup', e => {
+    if (e.key === 'Alt') {
+      isAltHeld = false;
+    }
+  });
+
+  window.addEventListener('blur', () => {
+    isAltHeld = false;
   });
 
   // Attach to video
