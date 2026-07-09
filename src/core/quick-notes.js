@@ -18,35 +18,7 @@
     }
   }
 
-  // Inject a script into the main world to read localStorage.PDF
-  function injectMainWorldBridge() {
-    try {
-      const script = document.createElement('script');
-      script.textContent = `
-        (function() {
-          function checkPDF() {
-            try {
-              const pdfData = localStorage.getItem('PDF');
-              if (pdfData) {
-                document.documentElement.setAttribute('data-pdf-info', pdfData);
-              } else {
-                document.documentElement.removeAttribute('data-pdf-info');
-              }
-            } catch (e) {}
-          }
-          checkPDF();
-          window.addEventListener('storage', (e) => {
-            if (e.key === 'PDF') checkPDF();
-          });
-          setInterval(checkPDF, 1500);
-        })();
-      `;
-      document.documentElement.appendChild(script);
-      script.remove();
-    } catch (e) {
-      console.warn('QuickNotes: Failed to inject bridge', e);
-    }
-  }
+
 
   function loadSettings() {
     if (!isContextValid()) return;
@@ -111,7 +83,6 @@
   }
 
   // Run the initialization
-  injectMainWorldBridge();
   loadSettings();
 
   // Monitor the data-pdf-info attribute for changes

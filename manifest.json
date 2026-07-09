@@ -40,6 +40,11 @@
       ]
     },
     {
+      "matches": ["<all_urls>"],
+      "js": ["src/core/quick-notes-bridge.js"],
+      "world": "MAIN"
+    },
+    {
       "matches": [
         "*://*.pw.live/*",
         "*://penpencil-v2.pw.live/*"
