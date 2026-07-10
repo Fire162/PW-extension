@@ -1,4 +1,4 @@
-# 🎥 Video Speed HUD & Question Time Watcher (v2.1.0)
+# 🎥 Video Speed HUD & Question Time Watcher (v2.1.1)
 
 > An open-source, ultra-lightweight, and feature-rich Chrome/Edge extension designed to optimize online learning, video lectures, and exam preparation. Master lecture playback with precision speed ramping, automatic silence skipping, real-time HUD overlays, and an interactive **Question Time Watcher** stopwatch.
 
