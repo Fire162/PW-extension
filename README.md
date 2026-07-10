@@ -1,149 +1,146 @@
-# 🎥 Video Speed HUD & Question Time Watcher
+# 🎥 Video Speed HUD & Question Time Watcher (v2.1.0)
 
-> An open-source, lightweight Chrome/Edge Extension to master online video lectures with precision speed controls, HUD overlays, video time calculators, and an interactive **Question Time Watcher** stopwatch.
-
----
-
-## ✨ Features
-
-- ⚡ **Precision Speed Control**
-  - Adjust speed smoothly using `Alt + Scroll` or `Alt + ← / →`.
-  - Smart HUD notification displays the active playback speed in real time.
-
-- 🚀 **Hold Space to Fast-Forward (2.0x)**
-  - Hold `Spacebar` to temporarily speed up to 2.0x while watching. Releasing returns to your previous speed!
-  - Quick tap toggles Play / Pause without lag.
-
-- ⏱️ **Question Time Watcher (Stopwatch)**
-  - Track exactly how much time you spend solving each practice question during lectures.
-  - Works universally across all video sites (**YouTube**, **PhysicsWallah**, **Coursera**, **Udemy**, etc.).
-  - **💧 Liquid Frosted Glass Water UI**: Translucent glass design so underlying video content remains visible.
-  - **🖐️ Fully Draggable & Minimizable**: Drag the stopwatch widget anywhere on the screen; minimize or hide it whenever needed.
-  - **🎯 Click-Through Mode**: Pass mouse clicks directly through the overlay to interact with video controls behind it!
-  - **🧠 Smart Auto-Timer Mode**: Option to auto-start stopwatch when you pause the video and log question laps when you hit play!
-  - **Per-URL Persistent Storage**: Auto-saves your stopwatch progress and question logs for each video URL so you can resume timing even after page refreshes or browser restarts.
-
-- ⚙️ **Popup Dashboard & Master CSV Export**
-  - Click the toolbar extension icon to open a sleek liquid-glass dashboard.
-  - Toggle Smart Auto-Timer mode, inspect live session stats across all videos, copy stats, and export all study logs to `.csv`.
-
-- 📚 **Auto Study Hour Calculator**
-  - Automatically calculates real-world study clock hours vs. speed-adjusted lecture content coverage achieved (e.g. 1 hour at 2.0x = 2 hours of content covered).
-  - Set custom daily study goals (4h, 6h, 8h, 10h), track daily study progress, and maintain active study streaks (🔥).
-
-- ⏩ **Auto-Skip Silence & Dead Air (Gradual Ramping)**
-  - Uses Web Audio API real-time audio analysis to detect silent moments in lectures (when the teacher is writing on the board or taking a break).
-  - Starts at **2.0x** when silence begins, gradually ramps up by **+0.1x every second** up to **4.0x max**, and instantly restores your normal speed when speech resumes.
-  - Toggle anytime via **`Alt + S`** or the Popup Dashboard.
-
-- 🧘 **Focus Mode (Distraction-Free)**
-  - Mutes and suppresses all floating HUD toast notification popups while studying.
-  - Keeps the Question Stopwatch/Timer widget intact and fully functional as usual.
-  - Toggle anytime via **`Alt + F`** or the Popup Dashboard.
-
-- 📈 **Automatic Speed Ramping**
-  - Toggle `Ctrl + /` to gradually increase playback speed over time in steps until reaching 2.5x max.
-
-- ⏳ **Remaining & Playback-Adjusted Time Display**
-  - Shows how much actual time remains in the video, plus speed-adjusted time (e.g. `-10:00 | 05:00 at 2.0x`).
-  - Toggle visibility instantly with `R`.
-
-- ☀️ **Video Brightness Control**
-  - Easily adjust video screen brightness using `Alt + ↑ / ↓`.
-
-- 🎯 **Domain-Scoped Plugins**
-  - Isolated site plugins for PhysicsWallah (PW) batch view layout cleanup & custom shortcuts (`\`, `'`, `/`).
-
-- 📋 **Notes Instant Launcher**
-  - Displays a small glass liquid button at the top-left corner that instantly opens the PDF lecture notes (`localStorage.PDF.src`) in a new tab when available.
-  - Toggle anytime via the Popup Dashboard settings card.
+> An open-source, ultra-lightweight, and feature-rich Chrome/Edge extension designed to optimize online learning, video lectures, and exam preparation. Master lecture playback with precision speed ramping, automatic silence skipping, real-time HUD overlays, and an interactive **Question Time Watcher** stopwatch.
 
 ---
 
-## 🎮 Keyboard Controls
+## ✨ Features & Capabilities
 
-### 🎥 Video Playback & HUD Controls
+### ⚡ Playback & Environmental Controls
+* **Precision Speed Control**: Adjust video speed smoothly between **0.25x and 4.0x** using `Alt + Scroll` or `Alt + ← / →` (with smooth key-repeat support).
+* **Speed Ramping (Progression Mode)**: Toggle with `Ctrl + /` to gradually increase video speed by `+0.1x` in scaling intervals (`waitTime = currentStep * 20` seconds) up to `2.5x` max.
+* **Instant Hold Fast-Forward**: Hold `Spacebar` (for `> 250ms`) to temporarily accelerate playback to **2.0x**. Releasing the spacebar restores your previous speed, and a quick tap toggles standard Play/Pause.
+* **Remaining Time Badge**: Toggle with `R` to display real remaining video time and speed-adjusted remaining time (e.g., `-10:00 | 05:00 at 2.0x`). Supports standard HTML5 players and VideoJS layouts.
+* **Screen Brightness Adjuster**: Fine-tune video brightness overlay from **0.3x to 2.5x** using `Alt + ↑ / ↓`.
 
-| Shortcut | Action |
-| :--- | :--- |
-| `Alt + Scroll` | Adjust video playback rate (0.25x - 4.0x) |
-| `Alt + → / ←` | Increase / decrease video speed |
-| `Alt + ↑ / ↓` | Increase / decrease video brightness |
-| `Hold Space` | Fast forward at 2.0x speed while held |
-| `Tap Space` | Toggle Play / Pause |
-| `Alt + F` | Toggle Focus Mode (Mute toast popups, keep stopwatch) |
-| `Alt + S` | Toggle Auto-Skip Silence in lectures (2.0x ➔ 4.0x ramping) |
-| `Ctrl + /` | Toggle Automatic Speed Ramp progression |
-| `R` | Toggle remaining video time display |
+### ⏱️ Question Time Watcher (Stopwatch Widget)
+* **Glassmorphism Frosted Overlay**: A translucent, liquid-glass widget floating on top of the video container so behind-content remains readable.
+* **Exam Pace Benchmark ("Beat the Clock")**: Cycle target benchmarks (**1m / 2m / 3m / 5m**) with `Alt + B`. Visual glows reflect pacing:
+  * 🟢 **Green Glass Glow**: Time spent is $\le$ 70% of benchmark.
+  * 🟡 **Yellow Glass Glow**: Time spent is between 70% and 100%.
+  * 🔴 **Red Glass Glow (Overtime)**: Time spent exceeds the benchmark limit.
+* **Smart Auto-Timer**: When activated, the stopwatch automatically starts when you pause the video and logs laps (and pauses) when you resume video playback.
+* **Click-Through Mode**: Toggle with `Alt + C` or click the 🎯 button on the widget to allow mouse events to pass directly through the widget onto video player controls behind it.
+* **Per-URL Persistence**: All stopwatch states, logs, widget positions, and minimized states are stored in `chrome.storage.local` mapped to the specific URL.
 
-### ⏱️ Question Time Watcher Controls
+### ⏩ Web Audio Silence Skipper
+* **Real-time Dead-Air Suppression**: Uses the Web Audio API (`AnalyserNode`) to monitor real-time RMS volume.
+* **Temporal Ramping**: If volume falls below the `0.02` threshold for more than `600ms`, playback accelerates to **2.0x** and ramps by **+0.1x per second** up to **4.0x max**.
+* **Instant Restore**: Restores your exact previous speed the instant voice or speech is detected.
+* **Silence Skip Suspension**: Hold `Shift` to temporarily suspend silence skipping while writing notes or studying.
 
-| Shortcut | Action |
-| :--- | :--- |
-| `T` | Start / Pause / Resume Question Stopwatch |
-| `Shift + T` | Log current question time (Lap) & start timing next question |
-| `Alt + T` | Open / Close Question Log Summary modal |
-| `Alt + B` | Cycle Exam Target Time Benchmark (1m / 2m / 3m / 5m) |
-| `Alt + C` | Toggle Click-Through Mode (pass clicks to underlying video) |
-| `Shift + H` | Toggle Hide / Show Stopwatch Overlay |
-| `Alt + Shift + T` | Reset stopwatch & clear question history |
+### 📚 Productivity, Analytics & Integrations
+* **Notes Instant Launcher**: Displays a sleek glass button at the top-left corner that opens the lecture PDF stored in `localStorage.PDF` in a new tab. Utilizes a main-world bridge to safely bypass Content Security Policies (CSP).
+* **Focus Mode (Distraction-Free)**: Toggle with `Alt + F` to suppress all floating HUD notifications while keeping stopwatch widgets fully functional.
+* **Study Hour Tracker & Streaks**: Automatically logs active video consumption. Tracks real clock hours spent vs. speed-adjusted content coverage, daily goals (4h, 6h, 8h, 10h), and streaks (🔥).
+* **Sleek Popup Dashboard**: Tap `Alt + Shift + D` to open the control panel where you can manage toggles, view daily statistics, copy question logs, and export all sessions as `.csv`.
 
 ---
 
-## 📦 Installation Guide
+## 🎮 Complete Keyboard Shortcut Cheat Sheet
 
-### Chrome & Chromium Browsers (Edge, Brave, Opera)
+### 🎥 Playback & HUD Controls
+| Shortcut | Action | Scope / Details |
+| :--- | :--- | :--- |
+| `Alt + Scroll` | Smooth Playback Speed Adjust | Increments by `0.1x` (Range: `0.25x - 4.0x`) |
+| `Alt + →` | Increase Playback Speed | Increments by `0.1x` (with smooth keyhold repeat) |
+| `Alt + ←` | Decrease Playback Speed | Decrements by `0.1x` (with smooth keyhold repeat) |
+| `Alt + ↑` | Increase Screen Brightness | Increments by `0.1x` (Range: `0.3x - 2.5x`) |
+| `Alt + ↓` | Decrease Screen Brightness | Decrements by `0.1x` (Range: `0.3x - 2.5x`) |
+| `Hold Spacebar` | Fast-Forward at 2.0x | Accelerates after `250ms`; restores speed on release |
+| `Tap Spacebar` | Toggle Play / Pause | Standard player control |
+| `Ctrl + /` | Toggle Speed Ramp | Ramps playback speed by `+0.1x` in scaling time blocks |
+| `R` | Toggle Remaining Time Badge | Toggles display of `(-Remaining | Adjusted)` badge |
+| `Alt + S` | Toggle Auto-Skip Silence | Enables/disables Web Audio monitoring |
+| `Hold Shift` | Suspend Silence Skip | Pauses silence skipper while key is pressed down |
+| `Alt + F` | Toggle Focus Mode | Mutes HUD toast notifications (Stopwatch stays active) |
+| `Alt + Shift + D` | Open Popup Dashboard | Global Chrome command shortcut |
 
-1. Clone or download this repository:
+### ⏱️ Question Stopwatch Widget Controls
+| Shortcut | Action | Scope / Details |
+| :--- | :--- | :--- |
+| `T` | Play / Pause Stopwatch | Toggles active stopwatch timing |
+| `Shift + T` | Log Lap & Next Question | Saves current lap duration and resets stopwatch to `00:00` |
+| `Alt + T` | Toggle Log Summary Modal | Displays session log overlay with stats and clipboard copy |
+| `Alt + B` | Cycle Target Benchmark | Cycles between: `OFF` ➔ `1m` ➔ `2m` ➔ `3m` ➔ `5m` |
+| `Alt + C` | Toggle Click-Through Mode | Passes click events through the widget to the webpage |
+| `Shift + H` | Toggle Widget Visibility | Shows / Hides the stopwatch widget on screen |
+| `Alt + Shift + T` | Hard Reset Widget | Resets current question index and purges logs for the URL |
+
+### 🎯 PhysicsWallah Platform Enhancements (Scoped: `*.pw.live`)
+| Shortcut | Action | Scope / Details |
+| :--- | :--- | :--- |
+| `\` | Trigger Poll Element | Clicks the active poll SVG path button on page |
+| `'` | Trigger Chat Element | Clicks the live chat SVG path button on page |
+| `/` | Trigger Poll Icon | Clicks the poll button element (`#poll-icon`) |
+
+---
+
+## 📂 Architecture & Directory Structure
+
+```
+video-speed-extension/
+├── manifest.json            # Extension configuration (Manifest V3, permissions, content script scopes)
+├── LICENSE                  # MIT License
+├── CONTRIBUTING.md          # Open-source developer guidelines
+├── README.md                # General documentation
+├── icons/                   # Extension icons (16px, 48px, 128px assets)
+└── src/
+    ├── popup/
+    │   ├── popup.html       # Translucent dashboard layout
+    │   └── popup.js         # Settings synchronization, history aggregation, and CSV exporter
+    ├── styles/
+    │   ├── hud.css          # Glassmorphic styling for HUD, stopwatch, and modal overlays
+    │   ├── popup.css        # Dashboard styling sheet
+    │   └── pw-custom.css    # Clean styles for scoped PhysicsWallah layout adjustments
+    ├── core/
+    │   ├── hud.js           # Toast notification system and Focus Mode toggle listener
+    │   ├── speed-controller.js # Precision speed, brightness, hold space, and ramp logic
+    │   ├── remaining-time.js   # Calculations for actual and speed-adjusted remaining time
+    │   ├── question-timer.js   # Stopwatch widget drag/drop, clicks, and storage persistence
+    │   ├── silence-skipper.js  # Audio node analyzer and temporal silence skipper
+    │   ├── study-tracker.js    # Activity-based study log aggregator and streak tracker
+    │   ├── quick-notes.js      # Float notes button widget
+    │   └── quick-notes-bridge.js # MAIN world bridge reading page localStorage to bypass CSP
+    └── plugins/
+        └── pw-enhancements.js  # Custom layout overrides and hotkeys for PhysicsWallah
+```
+
+---
+
+## 📦 Developer Installation Guide
+
+1. Clone or download this repository locally:
    ```bash
    git clone https://github.com/Fire162/PW-extension.git
    ```
-2. Open your browser extensions page:
-   - Chrome: `chrome://extensions/`
-   - Edge: `edge://extensions/`
-   - Brave: `brave://extensions/`
-3. Enable **Developer Mode** (toggle in top right corner).
-4. Click **Load Unpacked**.
-5. Select the `PW-extension` folder.
+2. Navigate to your browser's extension configuration settings:
+   * Chrome: `chrome://extensions/`
+   * Microsoft Edge: `edge://extensions/`
+   * Brave: `brave://extensions/`
+3. Toggle the **Developer Mode** switch in the top-right corner.
+4. Click **Load Unpacked** in the top-left corner.
+5. Choose the root `video-speed-extension` directory.
+6. Pin the extension to your toolbar to quickly access the Popup Dashboard.
 
 ---
 
-## 🏗️ Architecture & Folder Structure
+## 💾 Local Storage Schema
 
-```
-PW-extension/
-├── manifest.json            # Manifest V3 configuration with popup action & domain-scoped scripts
-├── icons/                   # Extension icons (16px, 48px, 128px)
-├── src/
-│   ├── popup/
-│   │   ├── popup.html       # Extension Popup Dashboard HTML
-│   │   └── popup.js         # Dashboard logic & CSV exporter
-│   ├── styles/
-│   │   ├── hud.css          # Glassmorphism HUD, stopwatch overlay & modal styling
-│   │   ├── popup.css        # Liquid glass popup dashboard stylesheet
-│   │   └── pw-custom.css    # Scoped site plugin styles
-│   ├── core/
-│   │   ├── hud.js           # Encapsulated HUD notification manager
-│   │   ├── speed-controller.js # Speed, brightness, hold space & ramp logic
-│   │   ├── remaining-time.js   # Universal video remaining time tracker
-│   │   ├── question-timer.js   # Question Time Watcher & Smart Auto-Timer module
-│   │   ├── silence-skipper.js  # Real-time Web Audio silence detection & auto-skip
-│   │   └── study-tracker.js    # Auto Study Hour Calculator & Streak Tracker
-│   └── plugins/
-│       └── pw-enhancements.js  # Scoped PhysicsWallah DOM tweaks & shortcuts
-├── LICENSE                  # MIT License
-├── CONTRIBUTING.md          # Open source contribution guidelines
-└── README.md
-```
+The extension utilizes `chrome.storage.local` to store settings and stats globally or on a per-URL basis:
 
----
-
-## 💡 Contributing
-
-Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) before opening pull requests or issues.
+1. **`qt_log_[encodedUrl]`** (Object): Mapped stopwatch logs, active question index, widget positions, and lap history.
+2. **`studyTrackerData`** (Object): Aggregates daily goals, study history, streak progress, and platform breakdowns.
+3. **Preferences**:
+   * `autoTimerOnPause` (Boolean): Timer automatic triggers.
+   * `autoSkipSilence` (Boolean): Silence skipper toggle.
+   * `focusMode` (Boolean): Suppresses HUD overlays.
+   * `quickNotesEnabled` (Boolean): Notes button overlay visibility.
+   * `targetBenchmarkSec` (Number): Benchmark pacing limits.
+   * `totalSilenceTimeSavedSec` (Number): Total accumulated silence time saved.
 
 ---
 
 ## 📜 License
 
-Distributed under the MIT License. See [LICENSE](LICENSE) for details.
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for more details.
