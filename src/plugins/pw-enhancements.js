@@ -115,11 +115,31 @@
 
   runEnhancements();
 
+  function checkPdfRedirect() {
+    if (location.href.includes('/study-v2/notes?pdf=')) {
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const pdfUrl = urlParams.get('pdf');
+        if (pdfUrl) {
+          window.location.replace(pdfUrl);
+          return true;
+        }
+      } catch (e) {
+        console.error('Error parsing PDF URL', e);
+      }
+    }
+    return false;
+  }
+
+  checkPdfRedirect();
+
   let lastUrl = location.href;
   setInterval(() => {
     if (location.href !== lastUrl) {
       lastUrl = location.href;
-      setTimeout(runEnhancements, 1000);
+      if (!checkPdfRedirect()) {
+        setTimeout(runEnhancements, 1000);
+      }
     }
   }, 1000);
 
