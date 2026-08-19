@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "priority": 1,
+    "action": {
+      "type": "redirect",
+      "redirect": {
+        "regexSubstitution": "\\1"
+      }
+    },
+    "condition": {
+      "regexFilter": "^https?://(?:www\\.)?pw\\.live/study-v2/notes\\?pdf=([^&]+).*",
+      "resourceTypes": ["main_frame"]
+    }
+  }
+]

@@ -8,7 +8,22 @@
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
-  "permissions": ["storage"],
+  "permissions": [
+    "storage",
+    "declarativeNetRequest"
+  ],
+  "host_permissions": [
+    "*://*.pw.live/*"
+  ],
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "pw_redirects",
+        "enabled": true,
+        "path": "rules.json"
+      }
+    ]
+  },
   "action": {
     "default_popup": "src/popup/popup.html",
     "default_icon": {
