@@ -97,15 +97,47 @@ When an extension is updated or reloaded in Developer Mode, existing tabs run in
   ```
 
 ### ⌨️ Respect Interactive Form Controls
-Content scripts must not intercept keyboard hotkeys when a user is actively typing in a text field, input, or editing panel.
-* **Rule**: Insert this guard block at the beginning of all document keydown/keyup event handlers:
+Content scripts must not intercept keyboard hotkeys when a user is actively typing in a text field, input, search bar, or rich-text editor (including inside Shadow DOM trees).
+* **Rule**: Use a comprehensive `isTyping(e)` guard at the beginning of all document keydown/keyup event handlers:
   ```javascript
-  const active = document.activeElement;
-  if (
-    ['INPUT', 'TEXTAREA'].includes(active?.tagName) ||
-    active?.isContentEditable
-  ) {
-    return;
+  function isTyping(e) {
+    const active = document.activeElement;
+    const target = e?.target;
+
+    if (e && typeof e.composedPath === 'function') {
+      const path = e.composedPath();
+      for (let i = 0; i < path.length; i++) {
+        const el = path[i];
+        if (el && el.nodeType === 1) {
+          const tag = el.tagName;
+          if (['INPUT', 'TEXTAREA', 'SELECT'].includes(tag)) return true;
+          if (el.isContentEditable || el.getAttribute('contenteditable') === 'true') return true;
+          const role = el.getAttribute('role');
+          if (['textbox', 'searchbox', 'combobox'].includes(role)) return true;
+        }
+      }
+    }
+
+    let cur = active;
+    while (cur && cur.shadowRoot && cur.shadowRoot.activeElement) {
+      cur = cur.shadowRoot.activeElement;
+    }
+    if (cur) {
+      const tag = cur.tagName;
+      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(tag)) return true;
+      if (cur.isContentEditable || cur.getAttribute('contenteditable') === 'true') return true;
+      const role = cur.getAttribute('role');
+      if (['textbox', 'searchbox', 'combobox'].includes(role)) return true;
+    }
+
+    if (target && target.nodeType === 1) {
+      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName)) return true;
+      if (target.isContentEditable || (target.closest && target.closest('[contenteditable="true"], input, textarea, select, [role="textbox"], [role="searchbox"]'))) {
+        return true;
+      }
+    }
+
+    return false;
   }
   ```
 

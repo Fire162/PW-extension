@@ -1,0 +1,16 @@
+# OS & IDE metadata
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Chrome Extension build / unpacked metadata
+_metadata/
+*.crx
+*.zip
+
+# Logs
+*.log
+npm-debug.log*
