@@ -1,4 +1,4 @@
-# 🎥 Video Speed HUD & Question Time Watcher (v2.1.1)
+# 🎥 Video Speed HUD & Question Time Watcher (v2.1.4)
 
 > An open-source, ultra-lightweight, and feature-rich Chrome/Edge extension designed to optimize online learning, video lectures, and exam preparation. Master lecture playback with precision speed ramping, automatic silence skipping, real-time HUD overlays, and an interactive **Question Time Watcher** stopwatch.
 
@@ -108,20 +108,95 @@ video-speed-extension/
 
 ---
 
-## 📦 Developer Installation Guide
+## 🚀 Setup & Installation Guide
 
-1. Clone or download this repository locally:
-   ```bash
+Follow the steps below to set up and load the extension in any Chromium-based browser (Google Chrome, Microsoft Edge, Brave, Opera, Arc, Vivaldi).
+
+---
+
+### 🪟 Subsection 1: Using PowerShell (Windows)
+
+1. **Open PowerShell** (Press <kbd>Win + X</kbd> and select **PowerShell** or **Terminal**).
+2. **Clone the repository** to your preferred folder:
+   ```powershell
+   # Navigate to your projects directory
+   cd $HOME\Documents
+
+   # Clone the repository
    git clone https://github.com/Fire162/PW-extension.git
+
+   # Enter the directory
+   cd PW-extension
    ```
-2. Navigate to your browser's extension configuration settings:
-   * Chrome: `chrome://extensions/`
-   * Microsoft Edge: `edge://extensions/`
-   * Brave: `brave://extensions/`
-3. Toggle the **Developer Mode** switch in the top-right corner.
-4. Click **Load Unpacked** in the top-left corner.
-5. Choose the root `video-speed-extension` directory.
-6. Pin the extension to your toolbar to quickly access the Popup Dashboard.
+3. **Open the Extensions page in your browser**:
+   ```powershell
+   # Open Chrome Extensions directly
+   Start-Process "chrome://extensions"
+
+   # Or for Microsoft Edge:
+   # Start-Process "edge://extensions"
+
+   # Or for Brave:
+   # Start-Process "brave://extensions"
+   ```
+4. **Enable Developer Mode**:
+   * Look at the top-right corner of the `chrome://extensions` page and toggle **Developer mode** to **ON**.
+5. **Load the Extension**:
+   * Click the **"Load unpacked"** button in the top-left corner.
+   * Select the cloned `PW-extension` folder.
+6. **Pin Extension to Toolbar**:
+   * Click the puzzle icon (🧩) on your browser toolbar and click the **Pin** (📌) icon next to *Video Speed HUD & Question Time Watcher*.
+
+---
+
+### 🐧 Subsection 2: Using Linux Terminal
+
+1. **Open your Terminal** (<kbd>Ctrl + Alt + T</kbd>).
+2. **Clone the repository**:
+   ```bash
+   # Navigate to your desired workspace
+   cd ~/projects || cd ~
+
+   # Clone the repository
+   git clone https://github.com/Fire162/PW-extension.git
+
+   # Enter the project directory
+   cd PW-extension
+   ```
+3. **Open the Extensions page in your browser**:
+   ```bash
+   # Open Google Chrome extensions page
+   google-chrome "chrome://extensions" &
+
+   # Or for Chromium / Brave:
+   # chromium "chrome://extensions" &
+   # brave-browser "brave://extensions" &
+   ```
+4. **Enable Developer Mode**:
+   * In the top-right corner of the Extensions dashboard, toggle **Developer mode** to **ON**.
+5. **Load the Unpacked Extension**:
+   * Click the **"Load unpacked"** button at the top-left.
+   * In the file picker, select the `PW-extension` directory.
+6. **Pin Extension**:
+   * Click the extensions puzzle icon (🧩) in the browser toolbar and pin the extension for instant access.
+
+---
+
+### 🔄 How to Pull Updates & Reload
+
+Whenever new updates are pushed to the repository, run:
+
+* **Windows (PowerShell):**
+  ```powershell
+  cd $HOME\Documents\PW-extension
+  git pull
+  ```
+* **Linux (Terminal):**
+  ```bash
+  cd ~/PW-extension
+  git pull
+  ```
+* After pulling, go to `chrome://extensions` and click the **🔄 Reload** icon on the extension card.
 
 ---
 
