@@ -66,15 +66,20 @@ body {
 .popup-title {
   font-size: 16px;
   font-weight: 800;
-  letter-spacing: -0.3px;
-  background: linear-gradient(135deg, #FFFFFF, #CBD5E1);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.2px;
+  color: #FFFFFF;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  line-height: 1.2;
 }
 
 .popup-subtitle {
-  font-size: 10px;
-  color: #94A3B8;
+  font-size: 11px;
+  color: #CBD5E1;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 2px;
 }
 
 .header-meta {
@@ -127,7 +132,7 @@ body {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.8px;
-  color: #94A3B8;
+  color: #CBD5E1;
   display: flex;
   align-items: center;
   justify-content: space-between;
