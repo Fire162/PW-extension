@@ -7,7 +7,7 @@
 ## ✨ Features & Capabilities
 
 ### ⚡ Playback & Environmental Controls
-* **Precision Speed Control**: Adjust video speed smoothly between **0.25x and 4.0x** using `Alt + Scroll` or `Alt + ← / →` (with smooth key-repeat support).
+* **Precision Speed Control**: Adjust video speed smoothly between **0.25x and 4.0x** using `Alt + Scroll` or `Alt + ← / →` in fine **0.05x** increments (with smooth key-repeat support).
 * **Speed Ramping (Progression Mode)**: Toggle with `Ctrl + /` to gradually increase video speed by `+0.1x` in scaling intervals (`waitTime = currentStep * 20` seconds) up to `2.5x` max.
 * **Instant Hold Fast-Forward**: Hold `Spacebar` (for `> 250ms`) to temporarily accelerate playback to **2.0x**. Releasing the spacebar restores your previous speed, and a quick tap toggles standard Play/Pause.
 * **Remaining Time Badge**: Toggle with `R` to display real remaining video time and speed-adjusted remaining time (e.g., `-10:00 | 05:00 at 2.0x`). Supports standard HTML5 players and VideoJS layouts.
@@ -42,9 +42,9 @@
 ### 🎥 Playback & HUD Controls
 | Shortcut | Action | Scope / Details |
 | :--- | :--- | :--- |
-| `Alt + Scroll` | Smooth Playback Speed Adjust | Increments by `0.1x` (Range: `0.25x - 4.0x`) |
-| `Alt + →` | Increase Playback Speed | Increments by `0.1x` (with smooth keyhold repeat) |
-| `Alt + ←` | Decrease Playback Speed | Decrements by `0.1x` (with smooth keyhold repeat) |
+| `Alt + Scroll` | Smooth Playback Speed Adjust | Increments by `0.05x` (Range: `0.25x - 4.0x`) |
+| `Alt + →` | Increase Playback Speed | Increments by `0.05x` (with smooth keyhold repeat) |
+| `Alt + ←` | Decrease Playback Speed | Decrements by `0.05x` (with smooth keyhold repeat) |
 | `Alt + ↑` | Increase Screen Brightness | Increments by `0.1x` (Range: `0.3x - 2.5x`) |
 | `Alt + ↓` | Decrease Screen Brightness | Decrements by `0.1x` (Range: `0.3x - 2.5x`) |
 | `Hold Spacebar` | Fast-Forward at 2.0x | Accelerates after `250ms`; restores speed on release |

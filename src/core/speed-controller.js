@@ -2,7 +2,7 @@
  * SpeedController - Generic HTML5 Video Speed & Brightness Controller
  *
  * Controls:
- * - Alt + Scroll: Adjust playback speed (1.0x - 3.5x)
+ * - Alt + Scroll: Adjust playback speed (0.25x - 4.0x)
  * - Alt + Right/Left Arrow: Speed up / Slow down (with smooth hold repeat)
  * - Alt + Up/Down Arrow: Adjust video brightness (0.5x - 2.0x)
  * - Hold Space: Fast forward 2.0x (returns to original speed on release)
@@ -15,6 +15,7 @@
   let holdInterval = null;
   let brightness = 1.0;
   const brightnessStep = 0.1;
+  const speedStep = 0.05;
 
   // Spacebar Hold State
   let spaceTimer = null;
@@ -93,7 +94,7 @@
         showHUD(`🛑 Ramp Interrupted`);
       }
 
-      let change = e.deltaY < 0 ? 0.1 : -0.1;
+      let change = e.deltaY < 0 ? speedStep : -speedStep;
       video.playbackRate = formatNum(clamp(video.playbackRate + change, 0.25, 4.0));
       showHUD(`⚡ Speed: ${formatNum(video.playbackRate)}x`);
     },
@@ -200,12 +201,12 @@
 
       function apply() {
         if (action === 'speedUp') {
-          video.playbackRate = formatNum(clamp(video.playbackRate + 0.1, 0.25, 4.0));
+          video.playbackRate = formatNum(clamp(video.playbackRate + speedStep, 0.25, 4.0));
           showHUD(`⚡ Speed: ${formatNum(video.playbackRate)}x`);
         }
 
         if (action === 'speedDown') {
-          video.playbackRate = formatNum(clamp(video.playbackRate - 0.1, 0.25, 4.0));
+          video.playbackRate = formatNum(clamp(video.playbackRate - speedStep, 0.25, 4.0));
           showHUD(`⚡ Speed: ${formatNum(video.playbackRate)}x`);
         }
 
