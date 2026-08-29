@@ -182,10 +182,16 @@ Follow the steps below to set up and load the extension in any Chromium-based br
 
 ---
 
-### 🔄 How to Pull Updates & Reload
+### 🔄 How to Update the Extension
 
-Whenever new updates are pushed to the repository, run:
+The popup dashboard automatically notifies you whenever a new version is released on GitHub. To update:
 
+#### ⚡ Method 1: 1-Click Update Scripts (Easiest)
+* **Windows**: Double-click `update.bat` inside the extension folder.
+* **Linux / Mac**: Run `./update.sh` inside the extension directory.
+* Then go to `chrome://extensions` and click the **🔄 Reload** button on the extension card.
+
+#### 💻 Method 2: Manual Git Pull
 * **Windows (PowerShell):**
   ```powershell
   cd $HOME\Documents\PW-extension
@@ -196,7 +202,14 @@ Whenever new updates are pushed to the repository, run:
   cd ~/PW-extension
   git pull
   ```
-* After pulling, go to `chrome://extensions` and click the **🔄 Reload** icon on the extension card.
+* After pulling, click **🔄 Reload** on the `chrome://extensions` dashboard.
+
+#### ⏰ Method 3: Automated Daily Background Updates
+* **Windows**: Open **Task Scheduler** ➔ Create Basic Task ➔ Trigger: *Daily* or *At Startup* ➔ Action: Run `update.bat`.
+* **Linux / Mac**: Add a daily cron job (`crontab -e`):
+  ```bash
+  0 9 * * * cd ~/PW-extension && ./update.sh >/dev/null 2>&1
+  ```
 
 ---
 

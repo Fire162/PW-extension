@@ -347,5 +347,74 @@
     });
   }
 
-  document.addEventListener('DOMContentLoaded', init);
+  function isNewerVersion(remote, local) {
+    const r = (remote || '').split('.').map(n => parseInt(n, 10) || 0);
+    const l = (local || '').split('.').map(n => parseInt(n, 10) || 0);
+    const len = Math.max(r.length, l.length);
+    for (let i = 0; i < len; i++) {
+      const numR = r[i] || 0;
+      const numL = l[i] || 0;
+      if (numR > numL) return true;
+      if (numR < numL) return false;
+    }
+    return false;
+  }
+
+  function checkExtensionUpdates(manual = false) {
+    const currentVer = (typeof chrome !== 'undefined' && chrome.runtime?.getManifest?.()?.version) || '2.1.4';
+    const verEl = document.getElementById('current-version');
+    if (verEl) verEl.innerText = `v${currentVer}`;
+
+    const updateBanner = document.getElementById('update-banner');
+    const updateVerTag = document.getElementById('update-version');
+
+    if (manual && verEl) {
+      verEl.innerText = 'Checking...';
+    }
+
+    fetch('https://raw.githubusercontent.com/Fire162/PW-extension/main/manifest.json', { cache: 'no-cache' })
+      .then(res => {
+        if (!res.ok) throw new Error('Network error fetching manifest');
+        return res.json();
+      })
+      .then(remoteManifest => {
+        const remoteVer = remoteManifest?.version;
+        if (remoteVer && isNewerVersion(remoteVer, currentVer)) {
+          if (updateBanner) updateBanner.style.display = 'flex';
+          if (updateVerTag) updateVerTag.innerText = `v${remoteVer}`;
+          if (verEl) {
+            verEl.innerText = `v${currentVer} (Update: v${remoteVer})`;
+            verEl.style.borderColor = '#38BDF8';
+            verEl.style.color = '#38BDF8';
+          }
+        } else {
+          if (updateBanner) updateBanner.style.display = 'none';
+          if (verEl) verEl.innerText = `v${currentVer}`;
+          if (manual) {
+            alert(`You are up to date! (v${currentVer})`);
+          }
+        }
+      })
+      .catch(err => {
+        console.warn('Update check failed:', err);
+        if (verEl) verEl.innerText = `v${currentVer}`;
+        if (manual) {
+          alert('Could not connect to GitHub to check updates. Please check your internet connection.');
+        }
+      });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    init();
+    checkExtensionUpdates(false);
+
+    document.getElementById('current-version')?.addEventListener('click', () => {
+      checkExtensionUpdates(true);
+    });
+
+    document.getElementById('btn-dismiss-update')?.addEventListener('click', () => {
+      const banner = document.getElementById('update-banner');
+      if (banner) banner.style.display = 'none';
+    });
+  });
 })();

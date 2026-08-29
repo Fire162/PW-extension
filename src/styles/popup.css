@@ -105,6 +105,14 @@ body {
   border: 1px solid rgba(99, 102, 241, 0.3);
   padding: 3px 8px;
   border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.popup-version:hover {
+  background: rgba(99, 102, 241, 0.3);
+  color: #C7D2FE;
+  border-color: #818CF8;
 }
 
 /* Glass Card Container */
@@ -460,4 +468,86 @@ input:checked + .slider:before {
 }
 .btn-danger:hover {
   box-shadow: 0 6px 16px rgba(239, 68, 68, 0.45);
+}
+
+/* Update Card Notification */
+.update-card {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(56, 189, 248, 0.2));
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 6px 20px rgba(56, 189, 248, 0.15);
+  animation: pulseGlow 3s infinite alternate;
+}
+
+@keyframes pulseGlow {
+  0% {
+    border-color: rgba(56, 189, 248, 0.4);
+    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.2);
+  }
+  100% {
+    border-color: rgba(56, 189, 248, 0.7);
+    box-shadow: 0 6px 24px rgba(56, 189, 248, 0.35);
+  }
+}
+
+.update-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.update-badge {
+  font-size: 12px;
+  font-weight: 800;
+  color: #38BDF8;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.update-ver-tag {
+  font-size: 10px;
+  font-weight: 700;
+  color: #A5F3FC;
+  background: rgba(14, 165, 233, 0.25);
+  border: 1px solid rgba(14, 165, 233, 0.45);
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+.update-desc {
+  font-size: 11px;
+  color: #E2E8F0;
+  line-height: 1.4;
+}
+
+.update-desc code {
+  background: rgba(15, 23, 42, 0.6);
+  padding: 2px 5px;
+  border-radius: 4px;
+  font-family: SFMono-Regular, Consolas, monospace;
+  color: #38BDF8;
+  font-size: 10px;
+}
+
+.update-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.update-link-btn {
+  padding: 5px 10px;
+  font-size: 11px;
+  text-decoration: none;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
 }
