@@ -29,6 +29,7 @@
 * **Precision Speed Micro-Adjustments**: Fine-tune video playback speed from **0.25x up to 4.0x** using <kbd>Alt</kbd> + **Scroll** or <kbd>Alt</kbd> + <kbd>←</kbd> / <kbd>→</kbd> in fine **0.05x** increments.
 * **Speed Ramping (Progression Mode)**: Toggle with <kbd>Ctrl</kbd> + <kbd>/</kbd> to gradually accelerate video speed by `+0.1x` in scaling intervals (`waitTime = currentStep * 20` seconds) up to `2.5x` maximum.
 * **Instant Hold Fast-Forward**: Hold <kbd>Spacebar</kbd> (for `> 250ms`) to temporarily accelerate playback to **2.0x**. Releasing restores your exact speed; quick tap toggles standard Play/Pause.
+* **2x Speed Toggle**: Press <kbd>S</kbd> to instantly jump to **2.0x** playback speed. Press <kbd>S</kbd> again to restore your exact previous speed — a quick one-key toggle for rapid fast-forwarding.
 * **Remaining Time Badge**: Toggle with <kbd>R</kbd> to display real remaining video time alongside speed-adjusted time (e.g. `-10:00 | 05:00 at 2.0x`).
 * **Screen Brightness Overlay**: Adjust video brightness from **0.3x to 2.5x** using <kbd>Alt</kbd> + <kbd>↑</kbd> / <kbd>↓</kbd>.
 
@@ -113,6 +114,7 @@ flowchart TD
 | <kbd>Alt</kbd> + <kbd>↓</kbd> | Decrease Brightness | Decreases brightness overlay by `-0.1x` |
 | **Hold** <kbd>Spacebar</kbd> | 2.0x Fast-Forward | Accelerates after 250ms; restores on release |
 | **Tap** <kbd>Spacebar</kbd> | Play / Pause | Standard player control |
+| <kbd>S</kbd> | Toggle 2x Speed | Instantly jumps to `2.0x`; press again to restore previous speed |
 | <kbd>Ctrl</kbd> + <kbd>/</kbd> | Toggle Speed Ramp | Incrementally steps up speed over time |
 | <kbd>R</kbd> | Toggle Time Badge | Displays remaining real & speed-adjusted time |
 | <kbd>Alt</kbd> + <kbd>S</kbd> | Toggle Silence Skipper | Enables / disables Web Audio volume monitoring |

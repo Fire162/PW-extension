@@ -7,6 +7,7 @@
  * - Alt + Up/Down Arrow: Adjust video brightness (0.5x - 2.0x)
  * - Hold Space: Fast forward 2.0x (returns to original speed on release)
  * - Tap Space: Play / Pause toggle
+ * - S: Toggle 2x speed (press again to restore previous speed)
  * - Ctrl + /: Toggle Speed Ramp progression
  */
 (function () {
@@ -25,6 +26,10 @@
   // Speed Ramp State
   let rampTimeout = null;
   let isRampRunning = false;
+
+  // S-key 2x Toggle State
+  let isSToggled = false;
+  let preToggleSpeed = null;
 
   function clamp(val, min, max) {
     return Math.max(min, Math.min(max, val));
@@ -177,6 +182,27 @@
             showHUD(`⚡ 2.0x (Hold Space)`);
             if (video.paused) video.play();
           }, 250);
+        }
+        return;
+      }
+
+      // S key -> Toggle 2x speed
+      if (e.key === 's' || e.key === 'S') {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+
+        if (isSToggled) {
+          // Restore previous speed
+          video.playbackRate = formatNum(preToggleSpeed ?? 1.0);
+          isSToggled = false;
+          preToggleSpeed = null;
+          showHUD(`⚡ Speed: ${formatNum(video.playbackRate)}x (S toggle OFF)`);
+        } else {
+          // Save current speed and jump to 2x
+          preToggleSpeed = video.playbackRate;
+          isSToggled = true;
+          video.playbackRate = 2.0;
+          showHUD(`🚀 2x Speed ON (press S to restore)`);
         }
         return;
       }
