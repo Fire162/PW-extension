@@ -705,42 +705,42 @@
     const key = e.key.toLowerCase();
 
     // Alt + B -> Cycle Target Benchmark Time
-    if (e.altKey && key === 'b') {
+    if (e.altKey && !e.ctrlKey && !e.metaKey && !e.shiftKey && key === 'b') {
       e.preventDefault();
       cycleBenchmarkTarget();
       return;
     }
 
     // Alt + C -> Toggle Click-Through Mode
-    if (e.altKey && key === 'c') {
+    if (e.altKey && !e.ctrlKey && !e.metaKey && !e.shiftKey && key === 'c') {
       e.preventDefault();
       toggleClickThrough();
       return;
     }
 
     // Shift + H -> Toggle Hide/Show Overlay
-    if (e.shiftKey && key === 'h') {
+    if (e.shiftKey && !e.ctrlKey && !e.metaKey && !e.altKey && key === 'h') {
       e.preventDefault();
       toggleHide();
       return;
     }
 
     // Alt + Shift + T -> Reset
-    if (e.altKey && e.shiftKey && key === 't') {
+    if (e.altKey && e.shiftKey && !e.ctrlKey && !e.metaKey && key === 't') {
       e.preventDefault();
       resetTimer();
       return;
     }
 
     // Alt + T -> Summary modal toggle
-    if (e.altKey && key === 't') {
+    if (e.altKey && !e.shiftKey && !e.ctrlKey && !e.metaKey && key === 't') {
       e.preventDefault();
       showSummaryModal();
       return;
     }
 
     // Shift + T -> Next Question (Lap)
-    if (e.shiftKey && key === 't') {
+    if (e.shiftKey && !e.ctrlKey && !e.metaKey && !e.altKey && key === 't') {
       e.preventDefault();
       lapNextQuestion();
       return;

@@ -121,7 +121,7 @@
       return;
     }
 
-    if (e.altKey && e.key.toLowerCase() === 'f') {
+    if (e.altKey && !e.ctrlKey && !e.metaKey && !e.shiftKey && e.key.toLowerCase() === 'f') {
       e.preventDefault();
       focusMode = !focusMode;
       if (isContextValid() && chrome.storage && chrome.storage.local) {

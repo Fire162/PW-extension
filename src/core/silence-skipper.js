@@ -275,7 +275,7 @@
       isShiftHeld = true;
     }
 
-    if (e.altKey && e.key.toLowerCase() === 's') {
+    if (e.altKey && !e.ctrlKey && !e.metaKey && !e.shiftKey && e.key.toLowerCase() === 's') {
       e.preventDefault();
       toggleAutoSkip();
     }
