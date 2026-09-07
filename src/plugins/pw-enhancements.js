@@ -109,6 +109,10 @@
       return;
     }
 
+    if (e.ctrlKey || e.altKey || e.metaKey) {
+      return;
+    }
+
     // '\' -> Trigger Poll SVG
     if (e.key === '\\') {
       e.preventDefault();
@@ -132,7 +136,7 @@
     }
 
     // '/' -> Trigger Poll Icon element
-    if (e.key === '/' && !e.ctrlKey) {
+    if (e.key === '/') {
       e.preventDefault();
       e.stopImmediatePropagation();
       document.getElementById('poll-icon')?.click();

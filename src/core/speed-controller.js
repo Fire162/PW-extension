@@ -159,7 +159,7 @@
       if (!video) return;
 
       // Ctrl + / -> Toggle Ramp
-      if (e.ctrlKey && (e.key === '/' || e.code === 'Slash')) {
+      if (e.ctrlKey && !e.altKey && !e.metaKey && !e.shiftKey && (e.key === '/' || e.code === 'Slash')) {
         e.preventDefault();
         e.stopImmediatePropagation();
         toggleRampProgression(video);
@@ -167,7 +167,7 @@
       }
 
       // Spacebar hold fast forward
-      if (e.key === ' ' || e.code === 'Space') {
+      if ((e.key === ' ' || e.code === 'Space') && !e.ctrlKey && !e.altKey && !e.metaKey && !e.shiftKey) {
         e.preventDefault();
         e.stopImmediatePropagation();
 
@@ -187,7 +187,7 @@
       }
 
       // S key -> Toggle 2x speed
-      if (e.key === 's' || e.key === 'S') {
+      if ((e.key === 's' || e.key === 'S') && !e.ctrlKey && !e.altKey && !e.metaKey && !e.shiftKey) {
         e.preventDefault();
         e.stopImmediatePropagation();
 
@@ -208,7 +208,7 @@
       }
 
       // Alt + Arrows
-      if (!e.altKey) return;
+      if (!e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
 
       let action = null;
       if (e.key === 'ArrowRight') action = 'speedUp';
@@ -261,11 +261,7 @@
   document.addEventListener(
     'keyup',
     e => {
-      const active = document.activeElement;
-      if (
-        ['INPUT', 'TEXTAREA'].includes(active?.tagName) ||
-        active?.isContentEditable
-      ) {
+      if (isTyping(e)) {
         return;
       }
 
@@ -277,19 +273,20 @@
       }
 
       if (e.key === ' ' || e.code === 'Space') {
-        e.preventDefault();
-        e.stopImmediatePropagation();
-
         clearTimeout(spaceTimer);
         spaceTimer = null;
 
         if (isHoldingSpace) {
+          e.preventDefault();
+          e.stopImmediatePropagation();
           if (video && originalSpeed !== null) {
             video.playbackRate = formatNum(originalSpeed);
             showHUD(`⚡ Speed: ${formatNum(video.playbackRate)}x`);
           }
           isHoldingSpace = false;
-        } else {
+        } else if (!e.ctrlKey && !e.altKey && !e.metaKey && !e.shiftKey) {
+          e.preventDefault();
+          e.stopImmediatePropagation();
           if (video) {
             if (video.paused) video.play();
             else video.pause();
