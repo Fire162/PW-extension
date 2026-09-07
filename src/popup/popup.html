@@ -123,14 +123,15 @@
         </label>
       </div>
 
-      <!-- Quick Notes Toggle -->
+
+      <!-- PW Lecture Slides Toggle -->
       <div class="setting-row" style="margin-top: 4px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.08);">
         <div class="setting-info">
-          <span class="setting-label">📋 Notes Instant Launcher</span>
-          <span class="setting-desc">Top-left glass button to instantly open PDF notes (when available).</span>
+          <span class="setting-label">🖼️ Lecture Slides & Timeline</span>
+          <span class="setting-desc">Browse slides and jump timestamps on PW watch pages [D].</span>
         </div>
         <label class="switch">
-          <input type="checkbox" id="quick-notes-toggle" />
+          <input type="checkbox" id="pw-slides-toggle" />
           <span class="slider"></span>
         </label>
       </div>
@@ -147,6 +148,22 @@
           <button class="bm-btn" data-sec="120">2m</button>
           <button class="bm-btn" data-sec="180">3m</button>
           <button class="bm-btn" data-sec="300">5m</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Automation Macros Card -->
+    <div class="glass-card">
+      <div class="card-title">
+        <span class="card-title-text">⚡ Automation Macros</span>
+        <button class="btn btn-secondary" id="btn-record-macro" style="padding: 3px 10px; font-size: 11px; border-radius: 8px;">🔴 Record Macro</button>
+      </div>
+      <div id="macro-popup-desc" style="font-size: 11px; color: #94A3B8; margin-bottom: 8px; line-height: 1.4;">
+        Record clicks and navigation on the current site. Saved macros will automatically pop up for 10 seconds whenever this site is opened!
+      </div>
+      <div id="popup-macro-list" style="display: flex; flex-direction: column; gap: 6px;">
+        <div style="text-align: center; color: #64748B; font-size: 11px; padding: 8px;">
+          No macros saved for this site.
         </div>
       </div>
     </div>

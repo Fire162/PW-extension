@@ -12,19 +12,14 @@ The extension is built on **Manifest V3** and runs in two distinct contexts (wor
 graph TD
     A[Browser Toolbar Popup / popup.js] <--> |chrome.storage.local| B[Isolated Content Scripts]
     B --> |DOM / events| C[Host Webpage Video Player]
-    D[MAIN World Bridge / quick-notes-bridge.js] --> |data-pdf-info attribute| B
-    C <--> |localStorage.PDF| D
+    E[PW Enhancements Plugin / pw-enhancements.js] --> |REST API / Proxy| F[PW Slides API]
+    E --> |DOM / controls| C
 ```
 
 ### 1. Isolated Execution World (Default Content Scripts)
-Most files in `src/core/` (e.g., `speed-controller.js`, `question-timer.js`, `silence-skipper.js`, `study-tracker.js`, `quick-notes.js`) execute in the browser's isolated content script sandbox.
+Files in `src/core/` (e.g., `speed-controller.js`, `question-timer.js`, `silence-skipper.js`, `study-tracker.js`) execute in the browser's isolated content script sandbox.
 * **Capabilities**: Direct access to the DOM, standard page events, and the `chrome.storage` API.
-* **Limitations**: Cannot access the host webpage's Javascript window variables or its site-specific `localStorage` due to Content Security Policies (CSP).
-
-### 2. MAIN Execution World (Page Context Bridge)
-The `src/core/quick-notes-bridge.js` file is loaded explicitly with `"world": "MAIN"` in the manifest.
-* **Capabilities**: Can read the host page's environment variables and raw `localStorage` (such as the `PDF` notes source).
-* **Communication**: To pass this data to the isolated world, the bridge serializes it into a custom HTML attribute `data-pdf-info` on `document.documentElement`, which the isolated script `quick-notes.js` monitors using a `MutationObserver`.
+* **Security**: Isolated from page scripts to ensure security and prevent prototype pollution.
 
 ---
 

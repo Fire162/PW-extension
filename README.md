@@ -50,7 +50,8 @@
 * **Temporary Suspension**: Hold <kbd>Shift</kbd> to pause silence skipping while writing notes.
 
 ### 📚 Productivity, Analytics & Integrations
-* **Notes Instant Launcher**: Opens lecture PDF from `localStorage.PDF` in a new tab via a main-world bridge bypassing Content Security Policies (CSP).
+* **Automation Macros & 10s Fast-Trigger**: Record repetitive click sequences and navigation directly from the popup dashboard. Whenever you open that website, a sleek 10-second liquid glass prompt appears with 1-click buttons to instantly replay the recorded macro!
+* **Lecture Slides & Timeline Drawer**: When watching lectures on `pw.live/watch/?...`, automatically extracts lecture IDs (`parentId`, `batchSubjectId`, `scheduleId`) to load slides from the proxy API. Displays an interactive liquid glass drawer with high-res thumbnails and timestamps. Opening the drawer automatically center-scrolls to the slide nearest to the current playback time. Click any slide to immediately seek playback to that topic, or press <kbd>D</kbd> to toggle!
 * **Focus Mode**: Press <kbd>Alt</kbd> + <kbd>F</kbd> to mute floating HUD toasts while keeping the stopwatch active.
 * **Study Hour Tracker & Streaks**: Automatically logs active video consumption, real clock time vs. speed-adjusted content coverage, daily goals (4h, 6h, 8h, 10h), and streaks (🔥).
 * **Popup Dashboard**: Tap <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>D</kbd> to manage toggles, view daily statistics, copy question logs, and export sessions to `.csv`.
@@ -72,7 +73,7 @@ flowchart TD
         SilenceSkip[Silence Skipper Analyser]
         QTimer[Question Time Watcher]
         Tracker[Study Tracker & Streaks]
-        Bridge[Main-World Notes Bridge]
+        PWEnhance[PW Slides & Enhancements Plugin]
     end
 
     subgraph UI ["User Interfaces"]
@@ -138,6 +139,8 @@ flowchart TD
 
 | Shortcut | Action | Description |
 | :--- | :--- | :--- |
+| <kbd>D</kbd> | Toggle Slides Drawer | Opens/closes lecture slides timeline & jumping drawer |
+| <kbd>Esc</kbd> | Close Slides / Lightbox | Closes the slide drawer or full-screen image zoom |
 | <kbd>\</kbd> | Trigger Poll | Automatically triggers active poll button on page |
 | <kbd>'</kbd> | Trigger Chat | Clicks live chat toggle button on page |
 | <kbd>/</kbd> | Trigger Poll Icon | Focuses `#poll-icon` element |
@@ -266,10 +269,9 @@ PW-extension/
 │   │   ├── question-timer.js   # Drag-and-drop stopwatch widget & lap logger
 │   │   ├── silence-skipper.js  # Audio AnalyserNode volume detection & dead-air acceleration
 │   │   ├── study-tracker.js    # Activity-based study hour & streak logging
-│   │   ├── quick-notes.js      # Float notes button widget
-│   │   └── quick-notes-bridge.js # Main-world localStorage bridge for CSP bypass
+│   │   └── macro-runner.js     # Macro recorder & 10s auto fast-trigger prompt
 │   └── plugins/
-│       └── pw-enhancements.js  # Dedicated hotkeys & poll automation for *.pw.live
+│       └── pw-enhancements.js  # Dedicated lecture slides drawer & platform tools for *.pw.live
 ├── AGENT.md                 # AI coding agent configuration & guidelines
 ├── CONTRIBUTING.md          # Open-source contribution guidelines
 └── LICENSE                  # MIT License

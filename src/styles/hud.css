@@ -292,42 +292,203 @@
   letter-spacing: 0.3px;
 }
 
-/* --- Quick Notes Button (Liquid Glass Water - Transparent) --- */
-#quick-notes-btn {
+/* --- Macro Recording Indicator (Fixed Liquid Glass Overlay) --- */
+#macro-record-indicator {
   position: fixed;
-  top: 14px;
-  left: 14px;
-  z-index: 2147483647; /* highest z-index */
-  background: rgba(15, 23, 42, 0.25);
-  backdrop-filter: blur(12px) saturate(180%);
-  -webkit-backdrop-filter: blur(12px) saturate(180%);
-  color: #E2E8F0;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  padding: 5px 10px;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  border-radius: 10px;
-  cursor: pointer;
-  display: inline-flex;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(20px) saturate(200%);
+  -webkit-backdrop-filter: blur(20px) saturate(200%);
+  color: #FFFFFF;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 30px;
+  border: 1px solid rgba(239, 68, 68, 0.6);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(239, 68, 68, 0.4);
+  z-index: 2147483647;
+  display: flex;
   align-items: center;
-  gap: 5px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0.5px rgba(255, 255, 255, 0.15);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  gap: 10px;
+  user-select: none;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  text-transform: uppercase;
+  animation: mri-pulse 1.5s infinite alternate;
+}
+
+@keyframes mri-pulse {
+  0% { box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 10px rgba(239, 68, 68, 0.3); }
+  100% { box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(239, 68, 68, 0.7); }
+}
+
+.mri-dot {
+  width: 10px;
+  height: 10px;
+  background: #EF4444;
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 0 8px #EF4444;
+}
+
+.mri-title {
+  color: #F8FAFC;
+  font-weight: 700;
+}
+
+.mri-count {
+  background: rgba(255, 255, 255, 0.12);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  color: #38BDF8;
+}
+
+.mri-btn {
+  border: none;
+  cursor: pointer;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 14px;
+  transition: all 0.2s ease;
   user-select: none;
 }
 
-#quick-notes-btn:hover {
-  background: rgba(15, 23, 42, 0.45);
-  border-color: rgba(255, 255, 255, 0.3);
-  color: #FFF;
-  transform: scale(1.03);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25), inset 0 1px 0.5px rgba(255, 255, 255, 0.25);
+.mri-stop-btn {
+  background: #10B981;
+  color: #FFFFFF;
+}
+.mri-stop-btn:hover {
+  background: #059669;
+  transform: scale(1.04);
 }
 
-#quick-notes-btn:active {
-  transform: scale(0.97);
+.mri-cancel-btn {
+  background: rgba(255, 255, 255, 0.15);
+  color: #CBD5E1;
 }
+.mri-cancel-btn:hover {
+  background: rgba(239, 68, 68, 0.4);
+  color: #FFF;
+}
+
+/* --- 10-Second Quick Launch Floating Prompt (Liquid Glass) --- */
+#macro-quick-launcher {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  background: rgba(15, 23, 42, 0.88);
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45), 0 0 16px rgba(99, 102, 241, 0.25);
+  border-radius: 16px;
+  padding: 10px 14px;
+  z-index: 2147483646;
+  max-width: 320px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  user-select: none;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.macro-launcher-enter {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  animation: mql-slidein 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.macro-launcher-leave {
+  opacity: 0;
+  transform: translateY(15px) scale(0.95);
+  pointer-events: none;
+}
+
+@keyframes mql-slidein {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.mql-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.mql-icon {
+  font-size: 14px;
+}
+
+.mql-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #94A3B8;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+#mql-timer {
+  color: #38BDF8;
+  font-weight: 800;
+}
+
+.mql-close-btn {
+  margin-left: auto;
+  background: transparent;
+  border: none;
+  color: #64748B;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 2px 5px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.mql-close-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #F8FAFC;
+}
+
+.mql-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 160px;
+  overflow-y: auto;
+}
+
+.mql-macro-btn {
+  background: rgba(30, 41, 59, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #F1F5F9;
+  padding: 6px 10px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mql-macro-btn:hover {
+  background: rgba(99, 102, 241, 0.4);
+  border-color: rgba(129, 140, 248, 0.6);
+  color: #FFFFFF;
+  transform: translateX(2px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
 

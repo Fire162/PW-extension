@@ -10,10 +10,13 @@
   },
   "permissions": [
     "storage",
+    "tabs",
     "declarativeNetRequest"
   ],
   "host_permissions": [
-    "*://*.pw.live/*"
+    "*://*.pw.live/*",
+    "*://pw.abhinav.eu.cc/*",
+    "*://static.pw.live/*"
   ],
   "declarative_net_request": {
     "rule_resources": [
@@ -51,13 +54,8 @@
         "src/core/question-timer.js",
         "src/core/silence-skipper.js",
         "src/core/study-tracker.js",
-        "src/core/quick-notes.js"
+        "src/core/macro-runner.js"
       ]
-    },
-    {
-      "matches": ["<all_urls>"],
-      "js": ["src/core/quick-notes-bridge.js"],
-      "world": "MAIN"
     },
     {
       "matches": [

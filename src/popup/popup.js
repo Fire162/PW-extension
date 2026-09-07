@@ -96,7 +96,7 @@
   function init() {
     // Load preferences
     if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-      chrome.storage.local.get(['autoTimerOnPause', 'autoSkipSilence', 'targetBenchmarkSec', 'focusMode', 'quickNotesEnabled'], result => {
+      chrome.storage.local.get(['autoTimerOnPause', 'autoSkipSilence', 'targetBenchmarkSec', 'focusMode', 'pwSlidesEnabled'], result => {
         const toggleTimer = document.getElementById('auto-timer-toggle');
         if (toggleTimer) toggleTimer.checked = !!result.autoTimerOnPause;
 
@@ -106,8 +106,8 @@
         const toggleFocus = document.getElementById('focus-mode-toggle');
         if (toggleFocus) toggleFocus.checked = !!result.focusMode;
 
-        const toggleNotes = document.getElementById('quick-notes-toggle');
-        if (toggleNotes) toggleNotes.checked = !!result.quickNotesEnabled;
+        const toggleSlides = document.getElementById('pw-slides-toggle');
+        if (toggleSlides) toggleSlides.checked = result.pwSlidesEnabled !== false; // Default true
 
         const targetSec = Number(result.targetBenchmarkSec) || 0;
         updateBenchmarkButtons(targetSec);
@@ -164,10 +164,11 @@
       }
     });
 
-    document.getElementById('quick-notes-toggle')?.addEventListener('change', e => {
+
+    document.getElementById('pw-slides-toggle')?.addEventListener('change', e => {
       const isChecked = e.target.checked;
       if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-        chrome.storage.local.set({ quickNotesEnabled: isChecked });
+        chrome.storage.local.set({ pwSlidesEnabled: isChecked });
       }
     });
 
@@ -179,17 +180,20 @@
         }
         loadAllSessions();
         loadStudyTrackerData();
+        loadSiteMacros();
       });
     } else {
       currentTabUrl = window.location.href.split('#')[0];
       loadAllSessions();
       loadStudyTrackerData();
+      loadSiteMacros();
     }
 
     // Button Events
     document.getElementById('btn-copy-stats')?.addEventListener('click', copyCurrentStats);
     document.getElementById('btn-clear-current')?.addEventListener('click', clearCurrentSession);
     document.getElementById('btn-export-csv')?.addEventListener('click', exportCSV);
+    document.getElementById('btn-record-macro')?.addEventListener('click', handleRecordMacroClick);
   }
 
   function loadAllSessions() {
@@ -402,6 +406,146 @@
           alert('Could not connect to GitHub to check updates. Please check your internet connection.');
         }
       });
+  }
+
+  function loadSiteMacros() {
+    if (typeof chrome === 'undefined' || !chrome.storage || !chrome.storage.local) return;
+
+    chrome.storage.local.get(['siteMacros'], result => {
+      const allMacros = result.siteMacros || [];
+      const listEl = document.getElementById('popup-macro-list');
+      if (!listEl) return;
+
+      let domain = '';
+      try {
+        if (currentTabUrl && currentTabUrl.startsWith('http')) {
+          domain = new URL(currentTabUrl).hostname;
+        }
+      } catch (e) {}
+
+      // Filter for current domain
+      const matchingMacros = domain
+        ? allMacros.filter(m => m.domain === domain)
+        : allMacros;
+
+      if (matchingMacros.length === 0) {
+        listEl.innerHTML = `
+          <div style="text-align: center; color: #64748B; font-size: 11px; padding: 8px;">
+            ${domain ? `No macros saved for ${domain}.` : 'No macros saved yet.'}
+          </div>
+        `;
+        return;
+      }
+
+      listEl.innerHTML = '';
+      matchingMacros.forEach(macro => {
+        const item = document.createElement('div');
+        item.style.display = 'flex';
+        item.style.alignItems = 'center';
+        item.style.justifyContent = 'space-between';
+        item.style.background = 'rgba(255, 255, 255, 0.05)';
+        item.style.padding = '6px 10px';
+        item.style.borderRadius = '8px';
+        item.style.fontSize = '12px';
+
+        const info = document.createElement('div');
+        info.style.display = 'flex';
+        info.style.flexDirection = 'column';
+        info.style.gap = '2px';
+        info.style.overflow = 'hidden';
+
+        const nameSpan = document.createElement('strong');
+        nameSpan.style.color = '#F8FAFC';
+        nameSpan.textContent = macro.name;
+
+        const subSpan = document.createElement('span');
+        subSpan.style.fontSize = '10px';
+        subSpan.style.color = '#94A3B8';
+        let pathDisplay = '';
+        try {
+          const u = new URL(macro.originUrl || macro.urlPattern || '');
+          pathDisplay = u.pathname;
+        } catch (e) {}
+        subSpan.textContent = `${macro.steps.length} step${macro.steps.length === 1 ? '' : 's'}${pathDisplay ? ` • Start: ${pathDisplay}` : ''}`;
+
+        info.appendChild(nameSpan);
+        info.appendChild(subSpan);
+
+        const actions = document.createElement('div');
+        actions.style.display = 'flex';
+        actions.style.gap = '6px';
+
+        const runBtn = document.createElement('button');
+        runBtn.className = 'btn btn-secondary';
+        runBtn.style.padding = '3px 8px';
+        runBtn.style.fontSize = '10px';
+        runBtn.textContent = '▶ Run';
+        runBtn.addEventListener('click', () => {
+          runMacroOnActiveTab(macro);
+        });
+
+        const delBtn = document.createElement('button');
+        delBtn.className = 'btn btn-danger';
+        delBtn.style.padding = '3px 8px';
+        delBtn.style.fontSize = '10px';
+        delBtn.textContent = '✕';
+        delBtn.title = 'Delete macro';
+        delBtn.addEventListener('click', () => {
+          deleteMacro(macro.id);
+        });
+
+        actions.appendChild(runBtn);
+        actions.appendChild(delBtn);
+
+        item.appendChild(info);
+        item.appendChild(actions);
+        listEl.appendChild(item);
+      });
+    });
+  }
+
+  function handleRecordMacroClick() {
+    if (typeof chrome === 'undefined' || !chrome.tabs || !chrome.tabs.query) return;
+
+    chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+      if (!tabs || !tabs[0] || !tabs[0].id) return;
+      const tabId = tabs[0].id;
+
+      chrome.tabs.sendMessage(tabId, { action: 'START_MACRO_RECORDING' }, response => {
+        if (chrome.runtime.lastError) {
+          alert('Could not start recording. Please refresh the page first!');
+        } else {
+          // Close popup so user can record clicks on page
+          window.close();
+        }
+      });
+    });
+  }
+
+  function runMacroOnActiveTab(macro) {
+    if (typeof chrome === 'undefined' || !chrome.tabs || !chrome.tabs.query) return;
+
+    chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+      if (!tabs || !tabs[0] || !tabs[0].id) return;
+      chrome.tabs.sendMessage(tabs[0].id, { action: 'RUN_MACRO', macro: macro }, response => {
+        if (chrome.runtime.lastError) {
+          alert('Could not run macro on this page. Please refresh the page first!');
+        } else {
+          window.close();
+        }
+      });
+    });
+  }
+
+  function deleteMacro(macroId) {
+    if (!confirm('Are you sure you want to delete this macro?')) return;
+    chrome.storage.local.get(['siteMacros'], result => {
+      const allMacros = result.siteMacros || [];
+      const updated = allMacros.filter(m => m.id !== macroId);
+      chrome.storage.local.set({ siteMacros: updated }, () => {
+        loadSiteMacros();
+      });
+    });
   }
 
   document.addEventListener('DOMContentLoaded', () => {
