@@ -6,6 +6,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 All release timestamps are recorded in the `Asia/Kolkata` (India/Kolkata) timezone (IST).
 
+## [2.2.0] - 2026-09-07 19:10 IST
+
+### Added
+* Automation Macros system (`macro-runner.js`):
+  * Real-time click recorder with floating liquid-glass pill indicator (`#macro-record-indicator`), live step counter, and save/cancel actions.
+  * 10-second quick-launch prompt (`#macro-quick-launcher`) on page load with 1-click execution and auto-dismiss countdown.
+  * Strict parent URL matching (`originUrl`) using `normalizeUrl()` helper to prevent prompts on child or intermediate URLs.
+  * Replay engine with cyan highlight glow, smooth center scrolling, and navigation fallbacks.
+  * "⚡ Automation Macros" glass card in popup dashboard with record, run, and delete controls.
+* Lecture Slides drawer for PhysicsWallah watch pages (`pw-enhancements.js`):
+  * Slide timeline drawer fetching lecture slides with high-resolution thumbnails and seek timestamps.
+  * Quick drawer toggle with <kbd>D</kbd> or <kbd>Shift</kbd> + <kbd>S</kbd> hotkey, or floating button.
+  * Automatic active slide detection and smooth center-scrolling based on current video playback time.
+  * Automatic browser tab `document.title` synchronization with current lecture topic name.
+
+### Removed
+* Deprecated Quick Notes launcher:
+  * Removed `quick-notes.js` and MAIN world bridge `quick-notes-bridge.js`.
+  * Removed notes toggle and obsolete styles across popup and overlays.
+
 ## [2.1.5] - 2026-09-07 18:02 IST
 
 ### Fixed
