@@ -104,6 +104,12 @@
 
       e.preventDefault();
 
+      // Cancel Alt-hold timer and active state so Alt+Scroll does NOT rollback to 1x or original speed
+      clearTimeout(altTimer);
+      altTimer = null;
+      isHoldingAlt = false;
+      originalAltSpeed = null;
+
       if (isRampRunning) {
         clearRampProgression();
         showHUD(`🛑 Ramp Interrupted`);
@@ -230,17 +236,12 @@
         return;
       }
 
-      // If any other key is pressed with Alt, cancel Alt hold timer so combos work normally
+      // If any other key is pressed with Alt, cancel Alt hold timer completely so combos never rollback
       if (e.altKey && e.key !== 'Alt') {
         clearTimeout(altTimer);
         altTimer = null;
-        if (isHoldingAlt) {
-          if (originalAltSpeed !== null) {
-            video.playbackRate = formatNum(originalAltSpeed);
-          }
-          isHoldingAlt = false;
-          originalAltSpeed = null;
-        }
+        isHoldingAlt = false;
+        originalAltSpeed = null;
       }
 
       // S key -> Toggle 2x speed
