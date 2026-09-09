@@ -365,7 +365,7 @@
   }
 
   function checkExtensionUpdates(manual = false) {
-    const currentVer = (typeof chrome !== 'undefined' && chrome.runtime?.getManifest?.()?.version) || '2.2.1';
+    const currentVer = (typeof chrome !== 'undefined' && chrome.runtime?.getManifest?.()?.version) || '2.2.2';
     const verEl = document.getElementById('current-version');
     if (verEl) verEl.innerText = `v${currentVer}`;
 

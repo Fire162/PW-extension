@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 All release timestamps are recorded in the `Asia/Kolkata` (India/Kolkata) timezone (IST).
 
+## [2.2.2] - 2026-09-09 19:53 IST
+
+### Removed
+* Reverted experimental <kbd>Alt</kbd> hold for 1.0x to eliminate collisions with <kbd>Alt</kbd> + Scroll and other system/browser hotkeys.
+
+### Improved
+* Enhanced cache-busting in extension update checker with dynamic timestamp query parameters and `no-store` headers to bypass CDN edge cache.
+
 ## [2.2.1] - 2026-09-09 19:22 IST
 
 ### Added
