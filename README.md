@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Fire162/PW-extension/releases"><img src="https://img.shields.io/badge/version-2.2.0-blue.svg?style=flat-square" alt="Version 2.2.0" /></a>
+  <a href="https://github.com/Fire162/PW-extension/releases"><img src="https://img.shields.io/badge/version-2.2.1-blue.svg?style=flat-square" alt="Version 2.2.1" /></a>
   <a href="https://developer.chrome.com/docs/extensions/"><img src="https://img.shields.io/badge/Chrome%20Extension-Manifest%20V3-yellow.svg?style=flat-square" alt="Manifest V3" /></a>
   <a href="https://www.chromium.org/"><img src="https://img.shields.io/badge/Platform-Chromium%20%7C%20Edge%20%7C%20Brave-success.svg?style=flat-square" alt="Chromium Compatible" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green.svg?style=flat-square" alt="MIT License" /></a>
