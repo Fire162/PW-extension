@@ -244,6 +244,14 @@
         originalAltSpeed = null;
       }
 
+      // If any other key is pressed with Shift, cancel Shift hold timer completely so combos never rollback
+      if (e.shiftKey && e.key !== 'Shift') {
+        clearTimeout(shiftTimer);
+        shiftTimer = null;
+        isHoldingShift = false;
+        originalShiftSpeed = null;
+      }
+
       // S key -> Toggle 2x speed
       if ((e.key === 's' || e.key === 'S') && !e.ctrlKey && !e.altKey && !e.metaKey && !e.shiftKey) {
         e.preventDefault();
