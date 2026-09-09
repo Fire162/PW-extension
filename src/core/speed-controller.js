@@ -23,6 +23,11 @@
   let originalSpeed = null;
   let isHoldingSpace = false;
 
+  // Shift Key Hold State (1.5x Fast Forward)
+  let shiftTimer = null;
+  let originalShiftSpeed = null;
+  let isHoldingShift = false;
+
   // Speed Ramp State
   let rampTimeout = null;
   let isRampRunning = false;
@@ -186,6 +191,23 @@
         return;
       }
 
+      // Shift key hold fast forward (1.5x)
+      if ((e.key === 'Shift' || e.code === 'ShiftLeft' || e.code === 'ShiftRight') && !e.ctrlKey && !e.altKey && !e.metaKey) {
+        if (isHoldingShift) return;
+
+        if (!shiftTimer) {
+          originalShiftSpeed = video.playbackRate;
+
+          shiftTimer = setTimeout(() => {
+            isHoldingShift = true;
+            video.playbackRate = 1.5;
+            showHUD(`⚡ 1.5x (Hold Shift)`);
+            if (video.paused) video.play();
+          }, 250);
+        }
+        return;
+      }
+
       // S key -> Toggle 2x speed
       if ((e.key === 's' || e.key === 'S') && !e.ctrlKey && !e.altKey && !e.metaKey && !e.shiftKey) {
         e.preventDefault();
@@ -293,9 +315,42 @@
           }
         }
       }
+
+      if (e.key === 'Shift' || e.code === 'ShiftLeft' || e.code === 'ShiftRight') {
+        clearTimeout(shiftTimer);
+        shiftTimer = null;
+
+        if (isHoldingShift) {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          if (video && originalShiftSpeed !== null) {
+            video.playbackRate = formatNum(originalShiftSpeed);
+            showHUD(`⚡ Speed: ${formatNum(video.playbackRate)}x`);
+          }
+          isHoldingShift = false;
+          originalShiftSpeed = null;
+        }
+      }
     },
     true
   );
+
+  window.addEventListener('blur', () => {
+    const video = document.querySelector('video');
+    if (isHoldingSpace && video && originalSpeed !== null) {
+      video.playbackRate = formatNum(originalSpeed);
+      isHoldingSpace = false;
+    }
+    if (isHoldingShift && video && originalShiftSpeed !== null) {
+      video.playbackRate = formatNum(originalShiftSpeed);
+      isHoldingShift = false;
+      originalShiftSpeed = null;
+    }
+    clearTimeout(spaceTimer);
+    spaceTimer = null;
+    clearTimeout(shiftTimer);
+    shiftTimer = null;
+  });
 
   console.log('✅ Video Speed Controller initialized');
 })();
