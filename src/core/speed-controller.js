@@ -28,11 +28,6 @@
   let originalShiftSpeed = null;
   let isHoldingShift = false;
 
-  // Alt Key Hold State (1.0x Normal Speed)
-  let altTimer = null;
-  let originalAltSpeed = null;
-  let isHoldingAlt = false;
-
   // Speed Ramp State
   let rampTimeout = null;
   let isRampRunning = false;
@@ -103,12 +98,6 @@
       if (!video || !e.altKey) return;
 
       e.preventDefault();
-
-      // Cancel Alt-hold timer and active state so Alt+Scroll does NOT rollback to 1x or original speed
-      clearTimeout(altTimer);
-      altTimer = null;
-      isHoldingAlt = false;
-      originalAltSpeed = null;
 
       if (isRampRunning) {
         clearRampProgression();
@@ -219,30 +208,7 @@
         return;
       }
 
-      // Alt key hold normal speed (1.0x)
-      if ((e.key === 'Alt' || e.code === 'AltLeft' || e.code === 'AltRight') && !e.ctrlKey && !e.metaKey && !e.shiftKey) {
-        if (isHoldingAlt) return;
 
-        if (!altTimer) {
-          originalAltSpeed = video.playbackRate;
-
-          altTimer = setTimeout(() => {
-            isHoldingAlt = true;
-            video.playbackRate = 1.0;
-            showHUD(`⚡ 1.0x Normal (Hold Alt)`);
-            if (video.paused) video.play();
-          }, 250);
-        }
-        return;
-      }
-
-      // If any other key is pressed with Alt, cancel Alt hold timer completely so combos never rollback
-      if (e.altKey && e.key !== 'Alt') {
-        clearTimeout(altTimer);
-        altTimer = null;
-        isHoldingAlt = false;
-        originalAltSpeed = null;
-      }
 
       // If any other key is pressed with Shift, cancel Shift hold timer completely so combos never rollback
       if (e.shiftKey && e.key !== 'Shift') {
@@ -375,22 +341,6 @@
           originalShiftSpeed = null;
         }
       }
-
-      if (e.key === 'Alt' || e.code === 'AltLeft' || e.code === 'AltRight') {
-        clearTimeout(altTimer);
-        altTimer = null;
-
-        if (isHoldingAlt) {
-          e.preventDefault();
-          e.stopImmediatePropagation();
-          if (video && originalAltSpeed !== null) {
-            video.playbackRate = formatNum(originalAltSpeed);
-            showHUD(`⚡ Speed: ${formatNum(video.playbackRate)}x`);
-          }
-          isHoldingAlt = false;
-          originalAltSpeed = null;
-        }
-      }
     },
     true
   );
@@ -406,17 +356,10 @@
       isHoldingShift = false;
       originalShiftSpeed = null;
     }
-    if (isHoldingAlt && video && originalAltSpeed !== null) {
-      video.playbackRate = formatNum(originalAltSpeed);
-      isHoldingAlt = false;
-      originalAltSpeed = null;
-    }
     clearTimeout(spaceTimer);
     spaceTimer = null;
     clearTimeout(shiftTimer);
     shiftTimer = null;
-    clearTimeout(altTimer);
-    altTimer = null;
   });
 
   console.log('✅ Video Speed Controller initialized');

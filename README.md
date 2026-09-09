@@ -115,7 +115,6 @@ flowchart TD
 | <kbd>Alt</kbd> + <kbd>↓</kbd> | Decrease Brightness | Decreases brightness overlay by `-0.1x` |
 | **Hold** <kbd>Spacebar</kbd> | 2.0x Fast-Forward | Accelerates after 250ms; restores on release |
 | **Hold** <kbd>Shift</kbd> | 1.5x Fast-Forward | Accelerates after 250ms; restores on release (also suspends silence skipper) |
-| **Hold** <kbd>Alt</kbd> | 1.0x Normal Speed | Temporarily slows down to `1.0x` after 250ms; restores on release |
 | **Tap** <kbd>Spacebar</kbd> | Play / Pause | Standard player control |
 | <kbd>S</kbd> | Toggle 2x Speed | Instantly jumps to `2.0x`; press again to restore previous speed |
 | <kbd>Ctrl</kbd> + <kbd>/</kbd> | Toggle Speed Ramp | Incrementally steps up speed over time |
