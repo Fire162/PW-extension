@@ -376,7 +376,16 @@
       verEl.innerText = 'Checking...';
     }
 
-    fetch('https://raw.githubusercontent.com/Fire162/PW-extension/main/manifest.json', { cache: 'no-cache' })
+    // Cache-busting URL parameter + headers to bypass GitHub Fastly/Varnish CDN 5-minute cache
+    const manifestUrl = `https://raw.githubusercontent.com/Fire162/PW-extension/main/manifest.json?_nocache=${Date.now()}`;
+
+    fetch(manifestUrl, {
+      cache: 'no-store',
+      headers: {
+        'Pragma': 'no-cache',
+        'Cache-Control': 'no-cache, no-store, must-revalidate'
+      }
+    })
       .then(res => {
         if (!res.ok) throw new Error('Network error fetching manifest');
         return res.json();
