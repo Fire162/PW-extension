@@ -13,6 +13,7 @@ All release timestamps are recorded in the `Asia/Kolkata` (India/Kolkata) timezo
   * Scoped content script matching `youtube.com` domains to remove Shorts and distraction feeds.
   * Hides expanded and collapsed sidebar Shorts links (`ytd-guide-entry-renderer`, `ytd-mini-guide-entry-renderer`), Shorts shelves (`ytd-rich-shelf-renderer`), search filter tabs, watch-page remixing shelves (`ytd-reel-shelf-renderer`), search result shelves (`grid-shelf-view-model`), and YouTube Playables (`ytd-rich-section-renderer`).
   * Instant, reversible DOM cleaning using debounced `MutationObserver`, `visibilitychange`, and YouTube SPA navigation listeners (`yt-navigate-finish`).
+  * Automatic redirect from `/shorts/` to `/`: When block is enabled, accessing or watching Shorts immediately pauses media and redirects directly to the YouTube homepage.
   * Console handle `window.__ysr` with `cleanup()` and `rescan()` methods for devtools inspection.
 * **Dashboard Toggle Switch**:
   * "🚫 Remove YouTube Shorts" switch under Smart Settings card in extension popup.

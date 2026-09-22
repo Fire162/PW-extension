@@ -2,6 +2,7 @@
  * YouTube Shorts & Playables Remover Plugin
  * Scoped content script for YouTube.
  * Dynamically hides/unhides Shorts and Playables based on extension settings.
+ * Automatically redirects from /shorts/ to / when blocking is enabled.
  */
 (function () {
   'use strict';
@@ -12,6 +13,66 @@
   let scheduled = false;
 
   const tag = el => el?.classList.add(HIDDEN_CLASS);
+
+  function isShortsUrl(pathname = (window?.location?.pathname || '')) {
+    if (!pathname) return false;
+    return pathname.startsWith('/shorts') || pathname.startsWith('/feed/shorts') || pathname.includes('/shorts/');
+  }
+
+  function checkAndRedirectIfShorts(urlToCheck) {
+    if (!isEnabled) return;
+    let pathname = window?.location?.pathname || '';
+    if (urlToCheck) {
+      try {
+        const origin = window?.location?.origin || 'https://www.youtube.com';
+        const parsed = new URL(urlToCheck, origin);
+        pathname = parsed.pathname;
+      } catch (e) {
+        pathname = urlToCheck;
+      }
+    }
+
+    if (isShortsUrl(pathname)) {
+      // Pause any playing media immediately so audio doesn't leak
+      try {
+        const videos = document.querySelectorAll('video');
+        videos.forEach(v => {
+          v.pause();
+          v.muted = true;
+          v.currentTime = 0;
+        });
+      } catch (e) {}
+
+      // Immediately redirect to YouTube home page
+      if (window?.location?.replace) {
+        window.location.replace('/');
+      } else if (window?.location) {
+        window.location.href = '/';
+      }
+    }
+  }
+
+  // Intercept click on any link navigating to Shorts
+  function onDocumentClick(e) {
+    if (!isEnabled) return;
+    const link = e.target.closest('a');
+    if (!link || !link.href) return;
+
+    try {
+      const origin = window?.location?.origin || 'https://www.youtube.com';
+      const url = new URL(link.href, origin);
+      if (isShortsUrl(url.pathname)) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        if (window?.location?.replace) {
+          window.location.replace('/');
+        } else if (window?.location) {
+          window.location.href = '/';
+        }
+      }
+    } catch (err) {}
+  }
 
   // Inject hide style
   function injectStyle() {
@@ -97,6 +158,7 @@
     setTimeout(() => {
       scheduled = false;
       if (isEnabled) {
+        checkAndRedirectIfShorts();
         markShortsAndPlayables();
       }
     }, 50);
@@ -104,6 +166,29 @@
 
   function onVisibilityChange() {
     if (!document.hidden && isEnabled) schedule();
+  }
+
+  function onNavigateStart(e) {
+    if (!isEnabled) return;
+    const targetUrl = e.detail?.url;
+    checkAndRedirectIfShorts(targetUrl);
+  }
+
+  function onNavigateFinish() {
+    if (!isEnabled) return;
+    checkAndRedirectIfShorts();
+    schedule();
+  }
+
+  function onPageDataUpdated() {
+    if (!isEnabled) return;
+    checkAndRedirectIfShorts();
+    schedule();
+  }
+
+  function onPopState() {
+    if (!isEnabled) return;
+    checkAndRedirectIfShorts();
   }
 
   function startObserver() {
@@ -133,18 +218,26 @@
     if (isEnabled) return;
     isEnabled = true;
 
+    // Immediately redirect away if currently on a Shorts page
+    checkAndRedirectIfShorts();
+
     injectStyle();
     markShortsAndPlayables();
     startObserver();
 
     document.addEventListener('visibilitychange', onVisibilityChange);
-    window.addEventListener('yt-navigate-finish', schedule);
+    document.addEventListener('click', onDocumentClick, true);
+    window.addEventListener('yt-navigate-start', onNavigateStart);
+    window.addEventListener('yt-navigate-finish', onNavigateFinish);
+    window.addEventListener('yt-page-data-updated', onPageDataUpdated);
+    window.addEventListener('popstate', onPopState);
 
-    // Store references so user/developer can disable or rescan from devtools
+    // Store references so user/developer can inspect, disable or rescan from devtools
     window.__ysr = {
       observer,
       cleanup: disableRemover,
-      rescan: markShortsAndPlayables
+      rescan: markShortsAndPlayables,
+      checkRedirect: checkAndRedirectIfShorts
     };
 
     console.log('YouTube Shorts & Playables remover enabled.');
@@ -160,7 +253,11 @@
     }
 
     document.removeEventListener('visibilitychange', onVisibilityChange);
-    window.removeEventListener('yt-navigate-finish', schedule);
+    document.removeEventListener('click', onDocumentClick, true);
+    window.removeEventListener('yt-navigate-start', onNavigateStart);
+    window.removeEventListener('yt-navigate-finish', onNavigateFinish);
+    window.removeEventListener('yt-page-data-updated', onPageDataUpdated);
+    window.removeEventListener('popstate', onPopState);
 
     document
       .querySelectorAll('.' + HIDDEN_CLASS)
