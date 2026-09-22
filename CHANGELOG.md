@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 All release timestamps are recorded in the `Asia/Kolkata` (India/Kolkata) timezone (IST).
 
+## [2.3.0] - 2026-09-23 00:25 IST
+
+### Added
+* **YouTube Shorts & Playables Blocker Plugin** (`youtube-shorts.js`):
+  * Scoped content script matching `youtube.com` domains to remove Shorts and distraction feeds.
+  * Hides expanded and collapsed sidebar Shorts links (`ytd-guide-entry-renderer`, `ytd-mini-guide-entry-renderer`), Shorts shelves (`ytd-rich-shelf-renderer`), search filter tabs, watch-page remixing shelves (`ytd-reel-shelf-renderer`), search result shelves (`grid-shelf-view-model`), and YouTube Playables (`ytd-rich-section-renderer`).
+  * Instant, reversible DOM cleaning using debounced `MutationObserver`, `visibilitychange`, and YouTube SPA navigation listeners (`yt-navigate-finish`).
+  * Console handle `window.__ysr` with `cleanup()` and `rescan()` methods for devtools inspection.
+* **Dashboard Toggle Switch**:
+  * "🚫 Remove YouTube Shorts" switch under Smart Settings card in extension popup.
+  * Connected via `chrome.storage.onChanged` for live toggling across all open YouTube tabs without requiring a page reload.
+
 ## [2.2.2] - 2026-09-09 19:53 IST
 
 ### Removed

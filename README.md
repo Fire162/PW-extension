@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Fire162/PW-extension/releases"><img src="https://img.shields.io/badge/version-2.2.2-blue.svg?style=flat-square" alt="Version 2.2.2" /></a>
+  <a href="https://github.com/Fire162/PW-extension/releases"><img src="https://img.shields.io/badge/version-2.3.0-blue.svg?style=flat-square" alt="Version 2.3.0" /></a>
   <a href="https://developer.chrome.com/docs/extensions/"><img src="https://img.shields.io/badge/Chrome%20Extension-Manifest%20V3-yellow.svg?style=flat-square" alt="Manifest V3" /></a>
   <a href="https://www.chromium.org/"><img src="https://img.shields.io/badge/Platform-Chromium%20%7C%20Edge%20%7C%20Brave-success.svg?style=flat-square" alt="Chromium Compatible" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green.svg?style=flat-square" alt="MIT License" /></a>
@@ -54,6 +54,7 @@
 * **Lecture Slides & Timeline Drawer**: When watching lectures on `pw.live/watch/?...`, automatically extracts lecture IDs (`parentId`, `batchSubjectId`, `scheduleId`) to load slides from the proxy API. Displays an interactive liquid glass drawer with high-res thumbnails and timestamps. Opening the drawer automatically center-scrolls to the slide nearest to the current playback time. Click any slide to immediately seek playback to that topic, or press <kbd>D</kbd> to toggle!
 * **Focus Mode**: Press <kbd>Alt</kbd> + <kbd>F</kbd> to mute floating HUD toasts while keeping the stopwatch active.
 * **Study Hour Tracker & Streaks**: Automatically logs active video consumption, real clock time vs. speed-adjusted content coverage, daily goals (4h, 6h, 8h, 10h), and streaks (🔥).
+* **YouTube Shorts & Playables Remover**: Toggle on/off from the popup dashboard to hide distracting Shorts shelves, sidebar buttons, search filters, and YouTube Playables in real-time without refreshing.
 * **Popup Dashboard**: Tap <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>D</kbd> to manage toggles, view daily statistics, copy question logs, and export sessions to `.csv`.
 
 ---

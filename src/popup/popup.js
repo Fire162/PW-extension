@@ -96,7 +96,7 @@
   function init() {
     // Load preferences
     if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-      chrome.storage.local.get(['autoTimerOnPause', 'autoSkipSilence', 'targetBenchmarkSec', 'focusMode', 'pwSlidesEnabled'], result => {
+      chrome.storage.local.get(['autoTimerOnPause', 'autoSkipSilence', 'targetBenchmarkSec', 'focusMode', 'pwSlidesEnabled', 'hideYouTubeShorts'], result => {
         const toggleTimer = document.getElementById('auto-timer-toggle');
         if (toggleTimer) toggleTimer.checked = !!result.autoTimerOnPause;
 
@@ -108,6 +108,9 @@
 
         const toggleSlides = document.getElementById('pw-slides-toggle');
         if (toggleSlides) toggleSlides.checked = result.pwSlidesEnabled !== false; // Default true
+
+        const toggleShorts = document.getElementById('yt-shorts-toggle');
+        if (toggleShorts) toggleShorts.checked = !!result.hideYouTubeShorts;
 
         const targetSec = Number(result.targetBenchmarkSec) || 0;
         updateBenchmarkButtons(targetSec);
@@ -164,11 +167,17 @@
       }
     });
 
-
     document.getElementById('pw-slides-toggle')?.addEventListener('change', e => {
       const isChecked = e.target.checked;
       if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
         chrome.storage.local.set({ pwSlidesEnabled: isChecked });
+      }
+    });
+
+    document.getElementById('yt-shorts-toggle')?.addEventListener('change', e => {
+      const isChecked = e.target.checked;
+      if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+        chrome.storage.local.set({ hideYouTubeShorts: isChecked });
       }
     });
 
@@ -365,7 +374,7 @@
   }
 
   function checkExtensionUpdates(manual = false) {
-    const currentVer = (typeof chrome !== 'undefined' && chrome.runtime?.getManifest?.()?.version) || '2.2.2';
+    const currentVer = (typeof chrome !== 'undefined' && chrome.runtime?.getManifest?.()?.version) || '2.3.0';
     const verEl = document.getElementById('current-version');
     if (verEl) verEl.innerText = `v${currentVer}`;
 
