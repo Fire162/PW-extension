@@ -32,8 +32,7 @@
   let rampTimeout = null;
   let isRampRunning = false;
 
-  // S-key 2x Toggle State
-  let isSToggled = false;
+  // S-key 2x Toggle State (stores previous speed to restore)
   let preToggleSpeed = null;
 
   function clamp(val, min, max) {
@@ -48,6 +47,30 @@
     if (window.HUDManager) {
       window.HUDManager.show(msg);
     }
+  }
+
+  // Helper to reliably find the active video player on the page
+  function getActiveVideo() {
+    const videos = Array.from(document.querySelectorAll('video'));
+    if (!videos.length) return null;
+    if (videos.length === 1) return videos[0];
+
+    // Prefer currently playing video
+    const playing = videos.find(v => !v.paused && !v.ended && v.readyState > 2);
+    if (playing) return playing;
+
+    // Prefer video with largest area (main player vs hover thumbnail previews)
+    let best = videos[0];
+    let maxArea = 0;
+    for (const v of videos) {
+      const rect = v.getBoundingClientRect();
+      const area = rect.width * rect.height;
+      if (area > maxArea) {
+        maxArea = area;
+        best = v;
+      }
+    }
+    return best;
   }
 
   function clearRampProgression() {
@@ -94,7 +117,7 @@
   document.addEventListener(
     'wheel',
     e => {
-      const video = document.querySelector('video');
+      const video = getActiveVideo();
       if (!video || !e.altKey) return;
 
       e.preventDefault();
@@ -160,7 +183,7 @@
         return;
       }
 
-      const video = document.querySelector('video');
+      const video = getActiveVideo();
       if (!video) return;
 
       // Ctrl + / -> Toggle Ramp
@@ -218,23 +241,32 @@
         originalShiftSpeed = null;
       }
 
-      // S key -> Toggle 2x speed
-      if ((e.key === 's' || e.key === 'S') && !e.ctrlKey && !e.altKey && !e.metaKey && !e.shiftKey) {
+      // S key -> Toggle 2.0x speed
+      if ((e.key === 's' || e.key === 'S' || e.code === 'KeyS') && !e.ctrlKey && !e.altKey && !e.metaKey && !e.shiftKey) {
+        if (e.repeat) return; // Prevent key repeat flicker when holding S
+
         e.preventDefault();
         e.stopImmediatePropagation();
 
-        if (isSToggled) {
-          // Restore previous speed
-          video.playbackRate = formatNum(preToggleSpeed ?? 1.0);
-          isSToggled = false;
-          preToggleSpeed = null;
-          showHUD(`⚡ Speed: ${formatNum(video.playbackRate)}x (S toggle OFF)`);
+        if (isRampRunning) {
+          clearRampProgression();
+        }
+
+        const currentSpeed = formatNum(video.playbackRate);
+
+        // If currently at 2.0x, restore previous speed (or 1.0x if none recorded or previous was also 2.0)
+        if (Math.abs(currentSpeed - 2.0) < 0.01) {
+          const restoreSpeed = (preToggleSpeed !== null && Math.abs(preToggleSpeed - 2.0) >= 0.01)
+            ? formatNum(preToggleSpeed)
+            : 1.0;
+          preToggleSpeed = 2.0;
+          video.playbackRate = restoreSpeed;
+          showHUD(`⚡ Speed: ${restoreSpeed}x (Restored)`);
         } else {
-          // Save current speed and jump to 2x
-          preToggleSpeed = video.playbackRate;
-          isSToggled = true;
+          // If at any other speed (1.5x, 2.5x, 1.0x, etc.), save current speed and jump to 2.0x
+          preToggleSpeed = currentSpeed;
           video.playbackRate = 2.0;
-          showHUD(`🚀 2x Speed ON (press S to restore)`);
+          showHUD(`🚀 2.0x Speed ON (press S to restore ${currentSpeed}x)`);
         }
         return;
       }
@@ -297,7 +329,7 @@
         return;
       }
 
-      const video = document.querySelector('video');
+      const video = getActiveVideo();
 
       if (holdInterval) {
         clearInterval(holdInterval);
@@ -346,7 +378,7 @@
   );
 
   window.addEventListener('blur', () => {
-    const video = document.querySelector('video');
+    const video = getActiveVideo();
     if (isHoldingSpace && video && originalSpeed !== null) {
       video.playbackRate = formatNum(originalSpeed);
       isHoldingSpace = false;

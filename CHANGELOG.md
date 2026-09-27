@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 All release timestamps are recorded in the `Asia/Kolkata` (India/Kolkata) timezone (IST).
 
+## [2.3.1] - 2026-09-27 23:25 IST
+
+### Fixed
+* **S-Key 2.0x Speed Toggle Desynchronization**:
+  * Replaced fragile boolean toggle flag with dynamic ground-truth detection: if current speed is 2.0x, reverses to previous speed (or 1.0x); if at any other speed (e.g. 1.5x, 2.5x), jumps to 2.0x and saves current speed.
+  * Added `e.repeat` guard to prevent rapid key-repeat back-and-forth flipping when holding down <kbd>S</kbd>.
+  * Added `getActiveVideo()` helper to accurately target the active playing video rather than preview thumbnails or mini-players on YouTube.
+
 ## [2.3.0] - 2026-09-23 00:25 IST
 
 ### Added
