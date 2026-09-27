@@ -138,4 +138,34 @@
       }
     }
   });
+
+  // --- Inactive Mouse Cursor Autohide (Default: 10s idle) ---
+  const CURSOR_IDLE_DELAY_MS = 10000;
+  let cursorIdleTimer = null;
+  let isCursorHidden = false;
+
+  function showCursor() {
+    if (isCursorHidden) {
+      document.documentElement.classList.remove('autohide-cursor');
+      isCursorHidden = false;
+    }
+    clearTimeout(cursorIdleTimer);
+    cursorIdleTimer = setTimeout(hideCursor, CURSOR_IDLE_DELAY_MS);
+  }
+
+  function hideCursor() {
+    if (!isCursorHidden) {
+      document.documentElement.classList.add('autohide-cursor');
+      isCursorHidden = true;
+    }
+  }
+
+  // Instantly reveal cursor on any mouse interaction
+  ['mousemove', 'mousedown', 'mouseup', 'wheel'].forEach(evt => {
+    window.addEventListener(evt, showCursor, { passive: true, capture: true });
+  });
+
+  // Start initial idle timer
+  cursorIdleTimer = setTimeout(hideCursor, CURSOR_IDLE_DELAY_MS);
 })();
+

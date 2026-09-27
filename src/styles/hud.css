@@ -491,4 +491,10 @@
   box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
 
+/* --- Inactive Mouse Cursor Autohide (10s idle) --- */
+html.autohide-cursor,
+html.autohide-cursor * {
+  cursor: none !important;
+}
+
 

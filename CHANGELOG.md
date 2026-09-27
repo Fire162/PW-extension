@@ -14,6 +14,11 @@ All release timestamps are recorded in the `Asia/Kolkata` (India/Kolkata) timezo
   * Added `e.repeat` guard to prevent rapid key-repeat back-and-forth flipping when holding down <kbd>S</kbd>.
   * Added `getActiveVideo()` helper to accurately target the active playing video rather than preview thumbnails or mini-players on YouTube.
 
+### Added
+* **Auto-Hide Idle Mouse Cursor**:
+  * Automatically hides mouse cursor across all pages if left stationary for 10 seconds to eliminate video screen clutter.
+  * Instantly restores cursor on any mouse interaction (`mousemove`, `mousedown`, `mouseup`, `wheel`).
+
 ## [2.3.0] - 2026-09-23 00:25 IST
 
 ### Added
