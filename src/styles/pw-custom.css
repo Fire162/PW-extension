@@ -389,3 +389,98 @@
 .pws-lightbox-close:hover {
   background: rgba(255, 255, 255, 0.3);
 }
+
+/* --- Video.js Seekbar Hover Preview & Tooltip --- */
+.vjs-progress-control {
+  position: relative !important;
+}
+
+/* Hide default duplicate time tooltip to prevent clash */
+.vjs-progress-control .vjs-mouse-display .vjs-time-tooltip {
+  display: none !important;
+}
+
+#pw-seek-preview {
+  position: absolute;
+  bottom: 26px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 10px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.65), 0 0 1px rgba(255, 255, 255, 0.2);
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+  z-index: 1000;
+  width: 170px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.15s;
+  color: #F8FAFC;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  user-select: none;
+}
+
+#pw-seek-preview.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+#pw-seek-preview.no-media {
+  width: auto;
+  min-width: 60px;
+  padding: 4px 8px;
+}
+
+.pw-seek-preview-media {
+  width: 100%;
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+  background: #0f172a;
+  aspect-ratio: 16 / 9;
+}
+
+.pw-seek-preview-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.pw-seek-preview-title {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(15, 23, 42, 0.9) 0%, rgba(15, 23, 42, 0.4) 70%, transparent 100%);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 6px 6px 3px;
+  color: #E2E8F0;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.pw-seek-preview-time {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  margin-top: 4px;
+  padding: 2px 8px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  color: #FFFFFF;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+#pw-seek-preview.no-media .pw-seek-preview-time {
+  margin-top: 0;
+}
+
