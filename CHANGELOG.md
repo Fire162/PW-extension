@@ -15,10 +15,10 @@ All release timestamps are recorded in the `Asia/Kolkata` (India/Kolkata) timezo
   * Matches and displays high-resolution lecture slide whiteboard thumbnails and slide titles for corresponding timestamp ranges without extra video decoding or DRM requests.
   * Gracefully collapses to a sleek hover timestamp badge when slides are unavailable.
   * Clamps horizontally within player bounds to prevent overflow off-screen.
-* **Forward Video Buffer Booster**:
-  * Automatically injects in-page buffer optimization on Video.js / VHS (`@videojs/http-streaming`) players on PW.
+* **Forward Video Buffer Booster** (`pw-buffer-booster.js`):
+  * Runs natively in Chrome Manifest V3's `world: "MAIN"` at `document_start` to directly control Video.js / VHS (`@videojs/http-streaming`) loaders without DOM script injection or CSP/Trusted Types restrictions.
   * Overrides `goalBufferLength_` from default 60 seconds to 600 seconds (10 minutes) for both video and audio loaders.
-  * Bypasses VHS's `!hasPlayed_` pause gating so forward video caching begins immediately even before/while playback is paused.
+  * Bypasses VHS's `!hasPlayed_` and `paused()` gating so forward video caching begins immediately even before/while playback is paused.
   * Continuously enforces the buffer goal across dynamic ABR quality switches and seek re-initializations.
   * Enables seamless, stutter-free playback by continuously caching upcoming DASH chunks in the background through the native CDN pipeline.
 
