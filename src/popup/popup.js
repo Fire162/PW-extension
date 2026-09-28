@@ -48,6 +48,16 @@
     });
   }
 
+  function updateBufferButtons(targetMin) {
+    document.querySelectorAll('.buffer-btn').forEach(btn => {
+      if (Math.abs(Number(btn.dataset.min) - targetMin) < 0.01) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+  }
+
   function formatMinutesSeconds(totalSeconds) {
     if (isNaN(totalSeconds) || totalSeconds <= 0) return '0m 0s';
     if (totalSeconds >= 3600) {
@@ -114,6 +124,9 @@
 
         const targetSec = Number(result.targetBenchmarkSec) || 0;
         updateBenchmarkButtons(targetSec);
+
+        const bufferMin = result.pwBufferMinutes !== undefined ? Number(result.pwBufferMinutes) : 2;
+        updateBufferButtons(bufferMin);
       });
     }
 
@@ -124,6 +137,18 @@
         if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
           chrome.storage.local.set({ targetBenchmarkSec: sec }, () => {
             updateBenchmarkButtons(sec);
+          });
+        }
+      });
+    });
+
+    // Forward Video Buffer Buttons Event Listeners
+    document.querySelectorAll('.buffer-btn').forEach(btn => {
+      btn.addEventListener('click', e => {
+        const min = Number(e.currentTarget.dataset.min) || 2;
+        if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+          chrome.storage.local.set({ pwBufferMinutes: min }, () => {
+            updateBufferButtons(min);
           });
         }
       });

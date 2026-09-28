@@ -139,6 +139,30 @@
   }
   loadSlidesSettings();
 
+  function syncBufferTarget(bufferMin) {
+    const min = Number(bufferMin) || 2;
+    const bufferSec = Math.round(min * 60);
+    document.documentElement.dataset.pwBufferSec = String(bufferSec);
+    window.dispatchEvent(new CustomEvent('pw-set-buffer-target', { detail: { bufferSec, min } }));
+  }
+
+  function loadBufferSettings() {
+    try {
+      if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+        chrome.storage.local.get(['pwBufferMinutes'], result => {
+          const min = result.pwBufferMinutes !== undefined ? Number(result.pwBufferMinutes) : 2;
+          syncBufferTarget(min);
+        });
+        chrome.storage.onChanged.addListener((changes, namespace) => {
+          if (namespace === 'local' && changes.pwBufferMinutes !== undefined) {
+            syncBufferTarget(changes.pwBufferMinutes.newValue);
+          }
+        });
+      }
+    } catch (e) {}
+  }
+  loadBufferSettings();
+
   // Slides Button
   function ensureSlidesButton() {
     if (!isWatchPage() || !pwSlidesEnabled) {

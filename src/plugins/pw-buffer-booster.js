@@ -5,7 +5,26 @@
 (function () {
   'use strict';
 
-  const TARGET_BUFFER_SEC = 600; // 10 minutes
+  // Default forward buffer goal: 2 minutes (120 seconds)
+  let targetBufferSec = 120;
+
+  // Initialize from dataset if set by isolated content script
+  if (document.documentElement && document.documentElement.dataset.pwBufferSec) {
+    const parsed = Number(document.documentElement.dataset.pwBufferSec);
+    if (!isNaN(parsed) && parsed > 0) targetBufferSec = parsed;
+  }
+
+  // Listen for buffer target updates from isolated content script
+  window.addEventListener('pw-set-buffer-target', (e) => {
+    if (e.detail && e.detail.bufferSec) {
+      const parsed = Number(e.detail.bufferSec);
+      if (!isNaN(parsed) && parsed > 0) {
+        targetBufferSec = parsed;
+        console.log(`[PW Extension] Updated forward buffer target: ${targetBufferSec}s`);
+        applyBooster();
+      }
+    }
+  });
 
   function applyBooster() {
     const player = window.player;
@@ -22,14 +41,14 @@
       loader.hasPlayed_ = () => true;
       loader.pause = function () {};
 
-      if (typeof loader.goalBufferLength_ !== 'function' || loader.goalBufferLength_() !== TARGET_BUFFER_SEC) {
-        loader.goalBufferLength_ = () => TARGET_BUFFER_SEC;
+      if (typeof loader.goalBufferLength_ !== 'function' || loader.goalBufferLength_() !== targetBufferSec) {
+        loader.goalBufferLength_ = () => targetBufferSec;
         if (typeof loader.monitorBuffer_ === 'function') loader.monitorBuffer_();
       }
 
       const proto = Object.getPrototypeOf(loader);
       if (proto && proto.goalBufferLength_ !== loader.goalBufferLength_) {
-        proto.goalBufferLength_ = () => TARGET_BUFFER_SEC;
+        proto.goalBufferLength_ = () => targetBufferSec;
         proto.paused = () => false;
         proto.hasPlayed_ = () => true;
         proto.pause = function () {};
@@ -62,5 +81,5 @@
   } catch (e) {}
 
   applyBooster();
-  console.log('[PW Extension] Buffer booster initialized in MAIN world (10m forward buffer)');
+  console.log(`[PW Extension] Buffer booster initialized in MAIN world (default: ${targetBufferSec}s)`);
 })();

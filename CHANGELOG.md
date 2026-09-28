@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 All release timestamps are recorded in the `Asia/Kolkata` (India/Kolkata) timezone (IST).
 
+## [2.4.1] - 2026-09-28 16:35 IST
+
+### Added
+* **Custom Forward Video Buffer Selector (PW)**:
+  * Dedicated buffer goal selector added to Extension Popup Dashboard under Smart Settings (`30s (Off)`, `1m`, `2m`, `5m`, `10m`).
+  * Configured default forward buffer goal to **2 minutes (120s)** to balance pre-buffering responsiveness and network memory consumption.
+  * Real-time synchronization bridge between isolated extension storage (`chrome.storage.local`) and native MAIN-world Video.js/VHS loaders via custom `pw-set-buffer-target` event and root dataset attributes without requiring a page refresh.
+
 ## [2.4.0] - 2026-09-28 15:53 IST
 
 ### Added
