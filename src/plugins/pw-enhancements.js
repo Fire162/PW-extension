@@ -573,26 +573,43 @@
     const script = document.createElement('script');
     script.id = 'pw-buffer-booster-script';
     script.textContent = `(${function (targetSec) {
-      let attempts = 0;
-      const timer = setInterval(() => {
-        attempts++;
+      if (window.__pwBoosterInterval) clearInterval(window.__pwBoosterInterval);
+
+      function applyBooster() {
         const player = window.player;
         const vhs = player?.tech_?.vhs;
         const mpc = vhs?.masterPlaylistController_;
         const mainLoader = mpc?.mainSegmentLoader_;
         const audioLoader = mpc?.audioSegmentLoader_;
 
-        if (mainLoader && audioLoader) {
-          clearInterval(timer);
-          mainLoader.goalBufferLength_ = () => targetSec;
-          audioLoader.goalBufferLength_ = () => targetSec;
-          if (typeof mainLoader.monitorBuffer_ === 'function') mainLoader.monitorBuffer_();
-          if (typeof audioLoader.monitorBuffer_ === 'function') audioLoader.monitorBuffer_();
-          console.log('[PW Extension] Forward video buffer set to ' + targetSec + 's');
-        } else if (attempts > 30) {
-          clearInterval(timer);
+        if (mainLoader) {
+          // Bypass VHS pause check (!hasPlayed_ && r >= 1) so it caches forward even before/while paused
+          if (typeof mainLoader.hasPlayed_ === 'function' && !mainLoader.hasPlayed_()) {
+            mainLoader.hasPlayed_ = () => true;
+          }
+          if (typeof mainLoader.goalBufferLength_ !== 'function' || mainLoader.goalBufferLength_() !== targetSec) {
+            mainLoader.goalBufferLength_ = () => targetSec;
+            if (typeof mainLoader.monitorBuffer_ === 'function') mainLoader.monitorBuffer_();
+          }
+          const proto = Object.getPrototypeOf(mainLoader);
+          if (proto && proto.goalBufferLength_ !== mainLoader.goalBufferLength_) {
+            proto.goalBufferLength_ = () => targetSec;
+          }
         }
-      }, 1000);
+
+        if (audioLoader) {
+          if (typeof audioLoader.hasPlayed_ === 'function' && !audioLoader.hasPlayed_()) {
+            audioLoader.hasPlayed_ = () => true;
+          }
+          if (typeof audioLoader.goalBufferLength_ !== 'function' || audioLoader.goalBufferLength_() !== targetSec) {
+            audioLoader.goalBufferLength_ = () => targetSec;
+            if (typeof audioLoader.monitorBuffer_ === 'function') audioLoader.monitorBuffer_();
+          }
+        }
+      }
+
+      window.__pwBoosterInterval = setInterval(applyBooster, 1500);
+      applyBooster();
     }.toString()})(${targetBufferSec});`;
 
     (document.head || document.documentElement).appendChild(script);
