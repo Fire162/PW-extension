@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 All release timestamps are recorded in the `Asia/Kolkata` (India/Kolkata) timezone (IST).
 
+## [2.4.0] - 2026-09-28 15:53 IST
+
+### Added
+* **Seekbar Hover Timestamp & Slide Thumbnail Preview**:
+  * YouTube-style floating glass preview tooltip rendered above the video seek bar (`.vjs-progress-control`).
+  * Displays real-time formatted hover timestamp (`HH:MM:SS` or `MM:SS`).
+  * Matches and displays high-resolution lecture slide whiteboard thumbnails and slide titles for corresponding timestamp ranges without extra video decoding or DRM requests.
+  * Gracefully collapses to a sleek hover timestamp badge when slides are unavailable.
+  * Clamps horizontally within player bounds to prevent overflow off-screen.
+* **Forward Video Buffer Booster**:
+  * Automatically injects in-page buffer optimization on Video.js / VHS (`@videojs/http-streaming`) players on PW.
+  * Overrides `goalBufferLength_` from default 60 seconds to 600 seconds (10 minutes) for both video and audio loaders.
+  * Enables seamless, stutter-free playback by continuously caching upcoming DASH chunks in the background through the native CDN pipeline.
+
 ## [2.3.1] - 2026-09-27 23:25 IST
 
 ### Fixed

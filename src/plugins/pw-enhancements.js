@@ -472,10 +472,146 @@
     }
   }
 
+  // --- Video.js Seekbar Hover Preview & Slide Thumbnail ---
+  function getSlideForTime(time) {
+    if (!slidesCache || !slidesCache.slides || !slidesCache.slides.length) return null;
+    const slides = slidesCache.slides;
+    let match = null;
+    for (let i = 0; i < slides.length; i++) {
+      const ts = Number(slides[i].timeStamp || 0);
+      if (ts <= time) {
+        match = slides[i];
+      } else {
+        break;
+      }
+    }
+    return match || slides[0];
+  }
+
+  function initSeekbarPreview() {
+    const progressControl = document.querySelector('.vjs-progress-control');
+    const progressHolder = document.querySelector('.vjs-progress-holder');
+    const video = document.querySelector('video');
+    if (!progressControl || !progressHolder || !video) return;
+
+    if (progressHolder.dataset.pwPreviewHooked) return;
+    progressHolder.dataset.pwPreviewHooked = 'true';
+
+    let preview = document.getElementById('pw-seek-preview');
+    if (!preview) {
+      preview = document.createElement('div');
+      preview.id = 'pw-seek-preview';
+      preview.className = 'pw-seek-preview';
+      preview.innerHTML = `
+        <div class="pw-seek-preview-media" id="pw-seek-preview-media">
+          <img class="pw-seek-preview-thumb" id="pw-seek-preview-thumb" alt="Slide Preview" />
+          <div class="pw-seek-preview-title" id="pw-seek-preview-title"></div>
+        </div>
+        <div class="pw-seek-preview-time" id="pw-seek-preview-time">00:00</div>
+      `;
+      progressControl.appendChild(preview);
+    }
+
+    const mediaWrap = preview.querySelector('#pw-seek-preview-media');
+    const thumbImg = preview.querySelector('#pw-seek-preview-thumb');
+    const titleEl = preview.querySelector('#pw-seek-preview-title');
+    const timeEl = preview.querySelector('#pw-seek-preview-time');
+
+    let currentThumbUrl = '';
+
+    function handleSeekHover(e) {
+      const rect = progressHolder.getBoundingClientRect();
+      if (!rect.width || !video.duration) return;
+
+      const offsetX = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
+      const hoverRatio = offsetX / rect.width;
+      const hoverTime = hoverRatio * video.duration;
+
+      // Formatted timestamp
+      timeEl.textContent = formatTime(hoverTime);
+
+      // Match corresponding lecture slide
+      const slide = getSlideForTime(hoverTime);
+      if (slide) {
+        const imgUrl = getSlideImageUrl(slide);
+        if (imgUrl && imgUrl !== currentThumbUrl) {
+          currentThumbUrl = imgUrl;
+          thumbImg.src = imgUrl;
+        }
+        titleEl.textContent = slide.name || `Slide ${slide.serialNumber || ''}`;
+        mediaWrap.style.display = 'block';
+        preview.classList.remove('no-media');
+      } else {
+        mediaWrap.style.display = 'none';
+        preview.classList.add('no-media');
+      }
+
+      // Horizontally clamp preview tooltip inside progressControl
+      const previewWidth = preview.offsetWidth || 170;
+      const minCenter = previewWidth / 2 + 4;
+      const maxCenter = rect.width - previewWidth / 2 - 4;
+      const clampedX = Math.max(minCenter, Math.min(offsetX, maxCenter));
+
+      preview.style.left = `${clampedX}px`;
+      preview.classList.add('visible');
+    }
+
+    function handleSeekLeave() {
+      preview.classList.remove('visible');
+    }
+
+    progressHolder.addEventListener('mousemove', handleSeekHover);
+    progressHolder.addEventListener('mouseenter', handleSeekHover);
+    progressHolder.addEventListener('mouseleave', handleSeekLeave);
+    progressControl.addEventListener('mouseleave', handleSeekLeave);
+  }
+
+  // --- In-Page Forward Video Buffer Booster (600s default) ---
+  let bufferBoosterInjected = false;
+  function injectBufferBooster(targetBufferSec = 600) {
+    if (bufferBoosterInjected) return;
+    const script = document.createElement('script');
+    script.id = 'pw-buffer-booster-script';
+    script.textContent = `(${function (targetSec) {
+      let attempts = 0;
+      const timer = setInterval(() => {
+        attempts++;
+        const player = window.player;
+        const vhs = player?.tech_?.vhs;
+        const mpc = vhs?.masterPlaylistController_;
+        const mainLoader = mpc?.mainSegmentLoader_;
+        const audioLoader = mpc?.audioSegmentLoader_;
+
+        if (mainLoader && audioLoader) {
+          clearInterval(timer);
+          mainLoader.goalBufferLength_ = () => targetSec;
+          audioLoader.goalBufferLength_ = () => targetSec;
+          if (typeof mainLoader.monitorBuffer_ === 'function') mainLoader.monitorBuffer_();
+          if (typeof audioLoader.monitorBuffer_ === 'function') audioLoader.monitorBuffer_();
+          console.log('[PW Extension] Forward video buffer set to ' + targetSec + 's');
+        } else if (attempts > 30) {
+          clearInterval(timer);
+        }
+      }, 1000);
+    }.toString()})(${targetBufferSec});`;
+
+    (document.head || document.documentElement).appendChild(script);
+    script.remove();
+    bufferBoosterInjected = true;
+  }
+
   function runWatchEnhancements() {
     ensureSlidesButton();
     hookVideoTimeUpdates();
     updatePageTopicTitle();
+    initSeekbarPreview();
+    injectBufferBooster(600);
+
+    // Preload slides for instant preview on hover
+    const params = getWatchParams();
+    if (params && !slidesCache) {
+      fetchSlides(params).catch(() => {});
+    }
   }
 
   function runEnhancements() {
@@ -628,7 +764,12 @@
     if (location.href !== lastUrl) {
       lastUrl = location.href;
       slidesCache = null;
+      bufferBoosterInjected = false;
       closeSlidesDrawer();
+      const existingPreview = document.getElementById('pw-seek-preview');
+      if (existingPreview) existingPreview.remove();
+      const ph = document.querySelector('.vjs-progress-holder');
+      if (ph) delete ph.dataset.pwPreviewHooked;
       if (!checkPdfRedirect()) {
         setTimeout(runEnhancements, 800);
       }
