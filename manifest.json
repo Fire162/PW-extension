@@ -67,6 +67,15 @@
     },
     {
       "matches": [
+        "*://*.pw.live/*",
+        "*://penpencil-v2.pw.live/*"
+      ],
+      "js": ["src/plugins/pw-buffer-booster.js"],
+      "world": "MAIN",
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
         "*://*.youtube.com/*",
         "*://youtube.com/*"
       ],

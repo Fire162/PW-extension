@@ -410,12 +410,6 @@
       video.addEventListener('timeupdate', () => {
         highlightCurrentSlide(video.currentTime);
       });
-      video.addEventListener('loadeddata', () => {
-        injectBufferBooster(600);
-      });
-      video.addEventListener('play', () => {
-        injectBufferBooster(600);
-      });
     }
   }
 
@@ -572,68 +566,11 @@
     progressControl.addEventListener('mouseleave', handleSeekLeave);
   }
 
-  // --- In-Page Forward Video Buffer Booster (600s default) ---
-  let bufferBoosterInjected = false;
-  function injectBufferBooster(targetBufferSec = 600) {
-    if (bufferBoosterInjected && document.getElementById('pw-buffer-booster-script')) return;
-    const existing = document.getElementById('pw-buffer-booster-script');
-    if (existing) existing.remove();
-
-    const script = document.createElement('script');
-    script.id = 'pw-buffer-booster-script';
-    script.textContent = `(${function (targetSec) {
-      if (window.__pwBoosterInterval) clearInterval(window.__pwBoosterInterval);
-
-      function applyBooster() {
-        const player = window.player;
-        const vhs = player?.tech_?.vhs;
-        const mpc = vhs?.masterPlaylistController_;
-        const mainLoader = mpc?.mainSegmentLoader_;
-        const audioLoader = mpc?.audioSegmentLoader_;
-
-        [mainLoader, audioLoader].forEach(loader => {
-          if (!loader) return;
-
-          // Bypass VHS pause gating so it aggressively caches forward even while paused
-          loader.paused = () => false;
-          loader.hasPlayed_ = () => true;
-          loader.pause = function () {};
-
-          if (typeof loader.goalBufferLength_ !== 'function' || loader.goalBufferLength_() !== targetSec) {
-            loader.goalBufferLength_ = () => targetSec;
-            if (typeof loader.monitorBuffer_ === 'function') loader.monitorBuffer_();
-          }
-
-          const proto = Object.getPrototypeOf(loader);
-          if (proto && proto.goalBufferLength_ !== loader.goalBufferLength_) {
-            proto.goalBufferLength_ = () => targetSec;
-            proto.paused = () => false;
-            proto.hasPlayed_ = () => true;
-            proto.pause = function () {};
-          }
-
-          // If loader is ready and has more chunks to load, immediately fetch
-          if (loader.state_ === 'READY' && typeof loader.fillBuffer_ === 'function' && loader.chooseNextRequest_ && loader.chooseNextRequest_()) {
-            loader.fillBuffer_();
-          }
-        });
-      }
-
-      window.__pwBoosterInterval = setInterval(applyBooster, 1200);
-      applyBooster();
-      console.log('[PW Extension] Forward video buffer booster active (10m / ' + targetSec + 's)');
-    }.toString()})(${targetBufferSec});`;
-
-    (document.head || document.documentElement).appendChild(script);
-    bufferBoosterInjected = true;
-  }
-
   function runWatchEnhancements() {
     ensureSlidesButton();
     hookVideoTimeUpdates();
     updatePageTopicTitle();
     initSeekbarPreview();
-    injectBufferBooster(600);
 
     // Preload slides for instant preview on hover
     const params = getWatchParams();
@@ -792,7 +729,6 @@
     if (location.href !== lastUrl) {
       lastUrl = location.href;
       slidesCache = null;
-      bufferBoosterInjected = false;
       closeSlidesDrawer();
       const existingPreview = document.getElementById('pw-seek-preview');
       if (existingPreview) existingPreview.remove();
