@@ -232,7 +232,7 @@ input:checked + .slider:before {
   margin-top: 4px;
 }
 
-.bm-btn, .goal-btn {
+.bm-btn, .goal-btn, .buffer-btn {
   flex: 1;
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.15);
@@ -246,13 +246,13 @@ input:checked + .slider:before {
   transition: all 0.2s ease;
 }
 
-.bm-btn:hover, .goal-btn:hover {
+.bm-btn:hover, .goal-btn:hover, .buffer-btn:hover {
   background: rgba(255, 255, 255, 0.2);
   color: #FFF;
   transform: translateY(-1px);
 }
 
-.bm-btn.active, .goal-btn.active {
+.bm-btn.active, .goal-btn.active, .buffer-btn.active {
   background: linear-gradient(135deg, #6366F1, #4F46E5);
   color: #FFF;
   border-color: #A5B4FC;
