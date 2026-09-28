@@ -410,6 +410,12 @@
       video.addEventListener('timeupdate', () => {
         highlightCurrentSlide(video.currentTime);
       });
+      video.addEventListener('loadeddata', () => {
+        injectBufferBooster(600);
+      });
+      video.addEventListener('play', () => {
+        injectBufferBooster(600);
+      });
     }
   }
 
@@ -569,7 +575,10 @@
   // --- In-Page Forward Video Buffer Booster (600s default) ---
   let bufferBoosterInjected = false;
   function injectBufferBooster(targetBufferSec = 600) {
-    if (bufferBoosterInjected) return;
+    if (bufferBoosterInjected && document.getElementById('pw-buffer-booster-script')) return;
+    const existing = document.getElementById('pw-buffer-booster-script');
+    if (existing) existing.remove();
+
     const script = document.createElement('script');
     script.id = 'pw-buffer-booster-script';
     script.textContent = `(${function (targetSec) {
@@ -582,38 +591,40 @@
         const mainLoader = mpc?.mainSegmentLoader_;
         const audioLoader = mpc?.audioSegmentLoader_;
 
-        if (mainLoader) {
-          // Bypass VHS pause check (!hasPlayed_ && r >= 1) so it caches forward even before/while paused
-          if (typeof mainLoader.hasPlayed_ === 'function' && !mainLoader.hasPlayed_()) {
-            mainLoader.hasPlayed_ = () => true;
-          }
-          if (typeof mainLoader.goalBufferLength_ !== 'function' || mainLoader.goalBufferLength_() !== targetSec) {
-            mainLoader.goalBufferLength_ = () => targetSec;
-            if (typeof mainLoader.monitorBuffer_ === 'function') mainLoader.monitorBuffer_();
-          }
-          const proto = Object.getPrototypeOf(mainLoader);
-          if (proto && proto.goalBufferLength_ !== mainLoader.goalBufferLength_) {
-            proto.goalBufferLength_ = () => targetSec;
-          }
-        }
+        [mainLoader, audioLoader].forEach(loader => {
+          if (!loader) return;
 
-        if (audioLoader) {
-          if (typeof audioLoader.hasPlayed_ === 'function' && !audioLoader.hasPlayed_()) {
-            audioLoader.hasPlayed_ = () => true;
+          // Bypass VHS pause gating so it aggressively caches forward even while paused
+          loader.paused = () => false;
+          loader.hasPlayed_ = () => true;
+          loader.pause = function () {};
+
+          if (typeof loader.goalBufferLength_ !== 'function' || loader.goalBufferLength_() !== targetSec) {
+            loader.goalBufferLength_ = () => targetSec;
+            if (typeof loader.monitorBuffer_ === 'function') loader.monitorBuffer_();
           }
-          if (typeof audioLoader.goalBufferLength_ !== 'function' || audioLoader.goalBufferLength_() !== targetSec) {
-            audioLoader.goalBufferLength_ = () => targetSec;
-            if (typeof audioLoader.monitorBuffer_ === 'function') audioLoader.monitorBuffer_();
+
+          const proto = Object.getPrototypeOf(loader);
+          if (proto && proto.goalBufferLength_ !== loader.goalBufferLength_) {
+            proto.goalBufferLength_ = () => targetSec;
+            proto.paused = () => false;
+            proto.hasPlayed_ = () => true;
+            proto.pause = function () {};
           }
-        }
+
+          // If loader is ready and has more chunks to load, immediately fetch
+          if (loader.state_ === 'READY' && typeof loader.fillBuffer_ === 'function' && loader.chooseNextRequest_ && loader.chooseNextRequest_()) {
+            loader.fillBuffer_();
+          }
+        });
       }
 
-      window.__pwBoosterInterval = setInterval(applyBooster, 1500);
+      window.__pwBoosterInterval = setInterval(applyBooster, 1200);
       applyBooster();
+      console.log('[PW Extension] Forward video buffer booster active (10m / ' + targetSec + 's)');
     }.toString()})(${targetBufferSec});`;
 
     (document.head || document.documentElement).appendChild(script);
-    script.remove();
     bufferBoosterInjected = true;
   }
 
