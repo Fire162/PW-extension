@@ -18,6 +18,8 @@ All release timestamps are recorded in the `Asia/Kolkata` (India/Kolkata) timezo
 * **Forward Video Buffer Booster**:
   * Automatically injects in-page buffer optimization on Video.js / VHS (`@videojs/http-streaming`) players on PW.
   * Overrides `goalBufferLength_` from default 60 seconds to 600 seconds (10 minutes) for both video and audio loaders.
+  * Bypasses VHS's `!hasPlayed_` pause gating so forward video caching begins immediately even before/while playback is paused.
+  * Continuously enforces the buffer goal across dynamic ABR quality switches and seek re-initializations.
   * Enables seamless, stutter-free playback by continuously caching upcoming DASH chunks in the background through the native CDN pipeline.
 
 ## [2.3.1] - 2026-09-27 23:25 IST
