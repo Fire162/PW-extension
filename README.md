@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <strong>An ultra-lightweight, feature-packed browser extension for precision video playback control, real-time HUD overlays, intelligent silence skipping, and exam pace stopwatch tracking.</strong>
+  <strong>A lightweight browser extension for video speed control, silence skipping, HUD overlays, and an on-screen question stopwatch.</strong>
 </p>
 
 <p align="center">
@@ -19,7 +19,7 @@
 
 ## ⚡ Overview
 
-**Video Speed HUD & Question Time Watcher** is an open-source productivity extension engineered for online students, competitive exam aspirants, and power video consumers. Built on Manifest V3, it seamlessly injects into web video players (including PhysicsWallah, YouTube, Coursera, standard HTML5, and VideoJS players) to provide frictionless speed micro-adjustments, automatic dead-air skipping via the Web Audio API, and an interactive glassmorphic question timer.
+**Video Speed HUD & Question Time Watcher** is an open-source Chrome extension for students and video learners. Built on Manifest V3, it works with HTML5, YouTube, Coursera, PhysicsWallah, and VideoJS players. It provides granular playback speed controls, automatic silence skipping using the Web Audio API, and an on-screen question timer.
 
 ---
 
@@ -29,12 +29,12 @@
 * **Precision Speed Micro-Adjustments**: Fine-tune video playback speed from **0.25x up to 4.0x** using <kbd>Alt</kbd> + **Scroll** or <kbd>Alt</kbd> + <kbd>←</kbd> / <kbd>→</kbd> in fine **0.05x** increments.
 * **Speed Ramping (Progression Mode)**: Toggle with <kbd>Ctrl</kbd> + <kbd>/</kbd> to gradually accelerate video speed by `+0.1x` in scaling intervals (`waitTime = currentStep * 20` seconds) up to `2.5x` maximum.
 * **Instant Hold Fast-Forward**: Hold <kbd>Spacebar</kbd> (for `> 250ms`) to temporarily accelerate playback to **2.0x**. Releasing restores your exact speed; quick tap toggles standard Play/Pause.
-* **2x Speed Toggle**: Press <kbd>S</kbd> to instantly jump to **2.0x** playback speed. Press <kbd>S</kbd> again to restore your exact previous speed — a quick one-key toggle for rapid fast-forwarding.
+* **2x Speed Toggle**: Press <kbd>S</kbd> to jump to **2.0x** playback speed. Press <kbd>S</kbd> again to return to your previous speed.
 * **Remaining Time Badge**: Toggle with <kbd>R</kbd> to display real remaining video time alongside speed-adjusted time (e.g. `-10:00 | 05:00 at 2.0x`).
 * **Screen Brightness Overlay**: Adjust video brightness from **0.3x to 2.5x** using <kbd>Alt</kbd> + <kbd>↑</kbd> / <kbd>↓</kbd>.
 
 ### ⏱️ Question Time Watcher (Stopwatch HUD)
-* **Glassmorphic Floating Widget**: A translucent, liquid-glass widget docked on the video container so behind-player content remains readable.
+* **Glassmorphic Floating Widget**: A translucent widget docked on the video container so underlying video content remains visible.
 * **Exam Pace Benchmark ("Beat the Clock")**: Cycle target pacing benchmarks (**1m / 2m / 3m / 5m**) with <kbd>Alt</kbd> + <kbd>B</kbd>:
   * 🟢 **Green Glass Glow**: Time spent $\le$ 70% of benchmark.
   * 🟡 **Yellow Glass Glow**: Time spent between 70% and 100%.
@@ -50,12 +50,12 @@
 * **Temporary Suspension**: Hold <kbd>Shift</kbd> to pause silence skipping while writing notes.
 
 ### 📚 Productivity, Analytics & Integrations
-* **Automation Macros & 10s Fast-Trigger**: Record repetitive click sequences and navigation directly from the popup dashboard. Whenever you open that website, a sleek 10-second liquid glass prompt appears with 1-click buttons to instantly replay the recorded macro!
-* **Lecture Slides & Timeline Drawer**: When watching lectures on `pw.live/watch/?...`, automatically extracts lecture IDs (`parentId`, `batchSubjectId`, `scheduleId`) to load slides from the proxy API. Displays an interactive liquid glass drawer with high-res thumbnails and timestamps. Opening the drawer automatically center-scrolls to the slide nearest to the current playback time. Click any slide to immediately seek playback to that topic, or press <kbd>D</kbd> to toggle!
+* **Automation Macros & 10s Fast-Trigger**: Record repetitive click sequences from the popup dashboard. When you open that site, a prompt lets you replay the macro with one click.
+* **Lecture Slides & Timeline Drawer**: When watching lectures on `pw.live/watch/?...`, automatically extracts lecture IDs (`parentId`, `batchSubjectId`, `scheduleId`) to load slides from the proxy API. Displays an interactive drawer with thumbnails and timestamps. Opening the drawer automatically center-scrolls to the slide nearest to current playback time. Click any slide to seek playback to that topic, or press <kbd>D</kbd> to toggle.
 * **Focus Mode**: Press <kbd>Alt</kbd> + <kbd>F</kbd> to mute floating HUD toasts while keeping the stopwatch active.
 * **Auto-Hide Idle Cursor**: Automatically hides the mouse cursor if left motionless for 10 seconds to eliminate screen distractions during playback; instantly restores cursor on any mouse movement or click.
-* **Study Hour Tracker & Streaks**: Automatically logs active video consumption, real clock time vs. speed-adjusted content coverage, daily goals (4h, 6h, 8h, 10h), and streaks (🔥).
-* **YouTube Shorts & Playables Remover**: Toggle on/off from the popup dashboard to hide distracting Shorts shelves, sidebar buttons, search filters, and YouTube Playables in real-time without refreshing.
+* **Study Hour Tracker & Streaks**: Automatically logs active video consumption, real clock time vs. speed-adjusted content coverage, daily goals (4h, 6h, 8h, 10h), and streaks.
+* **YouTube Shorts & Playables Remover**: Toggle on/off from the popup dashboard to hide Shorts shelves, sidebar buttons, search filters, and YouTube Playables in real time without refreshing.
 * **Popup Dashboard**: Tap <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>D</kbd> to manage toggles, view daily statistics, copy question logs, and export sessions to `.csv`.
 
 ---
