@@ -25,8 +25,9 @@
 }
 
 
-/* --- Slides Launcher Button (Liquid Glass Water) --- */
-#pw-slides-btn {
+/* --- Slides & Action Buttons (Liquid Glass Water) --- */
+#pw-slides-btn,
+.pw-action-pill {
   background: rgba(15, 23, 42, 0.35);
   backdrop-filter: blur(12px) saturate(180%);
   -webkit-backdrop-filter: blur(12px) saturate(180%);
@@ -48,7 +49,8 @@
   user-select: none;
 }
 
-#pw-slides-btn:hover {
+#pw-slides-btn:hover,
+.pw-action-pill:hover {
   background: rgba(15, 23, 42, 0.6);
   border-color: rgba(99, 102, 241, 0.6);
   color: #FFF;
@@ -56,14 +58,25 @@
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3), 0 0 10px rgba(99, 102, 241, 0.35), inset 0 1px 0.5px rgba(255, 255, 255, 0.3);
 }
 
-#pw-slides-btn:active {
+#pw-slides-btn:active,
+.pw-action-pill:active {
   transform: scale(0.97);
 }
 
-#pw-slides-btn.loading {
+#pw-slides-btn.loading,
+.pw-action-pill.loading {
   opacity: 0.75;
   cursor: wait;
   pointer-events: none;
+}
+
+#pw-next-btn.has-next {
+  border-color: rgba(56, 189, 248, 0.5);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 0 0 8px rgba(56, 189, 248, 0.25), inset 0 1px 0.5px rgba(255, 255, 255, 0.18);
+}
+
+#pw-dpp-btn {
+  border-color: rgba(251, 191, 36, 0.4);
 }
 
 /* --- PW Slides Sliding Drawer --- */
@@ -482,5 +495,307 @@
 
 #pw-seek-preview.no-media .pw-seek-preview-time {
   margin-top: 0;
+}
+
+/* --- PW Playlist Sliding Drawer --- */
+#pw-playlist-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: clamp(320px, 34vw, 450px);
+  z-index: 2147483646;
+  background: rgba(15, 23, 42, 0.88);
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
+  border-left: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: -12px 0 35px rgba(0, 0, 0, 0.55);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  color: #F8FAFC;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  user-select: none;
+}
+
+#pw-playlist-drawer.open {
+  transform: translateX(0);
+}
+
+/* --- Playlist Lecture Cards --- */
+.pwp-lecture-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: rgba(30, 41, 59, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pwp-lecture-card:hover {
+  background: rgba(30, 41, 59, 0.75);
+  border-color: rgba(99, 102, 241, 0.45);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+.pwp-lecture-card.active-lecture {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.18) 0%, rgba(15, 23, 42, 0.7) 100%);
+  border-color: rgba(16, 185, 129, 0.5);
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.2);
+}
+
+.pwp-card-left {
+  flex-shrink: 0;
+}
+
+.pwp-num-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #94A3B8;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: monospace;
+}
+
+.pwp-lecture-card.active-lecture .pwp-num-badge {
+  background: rgba(16, 185, 129, 0.25);
+  color: #10B981;
+}
+
+.pwp-card-center {
+  flex: 1;
+  min-width: 0;
+}
+
+.pwp-card-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #E2E8F0;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pwp-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.pwp-badge-current {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #10B981;
+  background: rgba(16, 185, 129, 0.15);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.pwp-badge-lecture {
+  font-size: 9px;
+  font-weight: 600;
+  color: #94A3B8;
+  text-transform: uppercase;
+}
+
+.pwp-badge-dpp {
+  font-size: 9px;
+  font-weight: 700;
+  color: #FBBF24;
+  background: rgba(251, 191, 36, 0.15);
+  padding: 2px 6px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.pwp-badge-dpp:hover {
+  opacity: 0.8;
+}
+
+.pwp-card-right {
+  flex-shrink: 0;
+}
+
+.pwp-play-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  color: #E2E8F0;
+  font-size: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.pwp-lecture-card:hover .pwp-play-btn {
+  background: #6366F1;
+  color: #FFF;
+  transform: scale(1.1);
+}
+
+/* --- Smart End-of-Lecture Nudge Pill --- */
+.pw-end-nudge {
+  position: fixed;
+  bottom: 84px;
+  right: 24px;
+  z-index: 2147483645;
+  width: min(380px, calc(100vw - 48px));
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(20px) saturate(190%);
+  -webkit-backdrop-filter: blur(20px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 16px;
+  padding: 14px 16px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(99, 102, 241, 0.25);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #F8FAFC;
+  transform: translateY(20px) scale(0.96);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pw-end-nudge.visible {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.pw-nudge-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.15), transparent 70%);
+  pointer-events: none;
+}
+
+.pw-nudge-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.pw-nudge-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pw-nudge-icon {
+  font-size: 14px;
+}
+
+.pw-nudge-label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  color: #94A3B8;
+  text-transform: uppercase;
+}
+
+.pw-nudge-close {
+  background: transparent;
+  border: none;
+  color: #64748B;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 6px;
+  transition: color 0.15s ease;
+}
+
+.pw-nudge-close:hover {
+  color: #E2E8F0;
+}
+
+.pw-nudge-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pw-nudge-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: left;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+}
+
+.pw-nudge-primary {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.8) 0%, rgba(79, 70, 229, 0.85) 100%);
+  color: #FFF;
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+}
+
+.pw-nudge-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(99, 102, 241, 0.5);
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.95) 0%, rgba(79, 70, 229, 0.95) 100%);
+}
+
+.pw-nudge-secondary {
+  background: rgba(30, 41, 59, 0.6);
+  color: #F8FAFC;
+  border-color: rgba(251, 191, 36, 0.3);
+}
+
+.pw-nudge-secondary:hover {
+  background: rgba(30, 41, 59, 0.85);
+  border-color: rgba(251, 191, 36, 0.6);
+  transform: translateY(-1px);
+}
+
+.pw-nudge-btn-icon {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.pw-nudge-btn-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.pw-nudge-btn-main {
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.pw-nudge-btn-sub {
+  font-size: 10px;
+  opacity: 0.8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
 }
 

@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 All release timestamps are recorded in the `Asia/Kolkata` (India/Kolkata) timezone (IST).
 
+## [2.5.0] - 2026-10-26 15:42 IST
+
+### Added
+* **Next Lecture, Attempt DPP & Chapter Playlist Suite (PW)**:
+  * **Top Action Toolbar**: Added dedicated liquid-glass action buttons for `📋 Playlist`, `⏭️ Next Lecture`, and `📝 DPP` alongside `🖼️ Slides`.
+  * **Chapter Playlist Drawer**: Full-height right-side sliding drawer displaying the complete chapter lecture lineup, real-time "Playing Now" indicator, DPP status, and 1-click jump links with search filtering.
+  * **Smart End-of-Lecture Nudge**: Floating liquid-glass recommendation card triggered at 90% watch progress or video end with one-click "Next Lecture" navigation and direct "Attempt DPP" testing launcher.
+  * **Hotkeys**: Press <kbd>P</kbd> to toggle the Chapter Playlist drawer and <kbd>Shift</kbd> + <kbd>N</kbd> to jump directly to the next scheduled lecture.
+
 ## [2.4.1] - 2026-09-28 16:35 IST
 
 ### Added

@@ -98,6 +98,10 @@
     slidesCache = {
       scheduleId: params.scheduleId,
       topic: json.data.topic || '',
+      chapterId: json.data.chapterId || json.data.topicId || '',
+      dppScheduleId: json.data.dppScheduleId || '',
+      homeworkIds: json.data.homeworkIds || [],
+      exerciseIds: json.data.exerciseIds || [],
       slides: json.data.slides || []
     };
 
@@ -163,11 +167,149 @@
   }
   loadBufferSettings();
 
-  // Slides Button
-  function ensureSlidesButton() {
-    if (!isWatchPage() || !pwSlidesEnabled) {
-      const btn = document.getElementById('pw-slides-btn');
-      if (btn) btn.remove();
+  // Chapter Lectures & Recommendations Cache
+  let chapterCache = null; // { scheduleId, chapterId, lectures: [], currentLecture: null, nextLecture: null, dppScheduleId: '' }
+  let playlistDrawerOpen = false;
+  let endNudgeDismissed = false;
+
+  async function fetchChapterLectures(params) {
+    if (chapterCache && chapterCache.scheduleId === params.scheduleId) {
+      return chapterCache;
+    }
+
+    let slidesData = slidesCache;
+    if (!slidesData || slidesData.scheduleId !== params.scheduleId) {
+      try {
+        slidesData = await fetchSlides(params);
+      } catch (e) {
+        console.warn('[PW Extension] Slides preload failed:', e);
+      }
+    }
+
+    const chapterId = slidesData?.chapterId || '';
+    const token = localStorage.getItem('token') || '';
+
+    let lectures = [];
+    if (chapterId && token) {
+      try {
+        const url = `https://api.penpencil.co/v3/batch-service/v3/batch-subject-schedules/${params.batchId}/subject/${params.subjectId}/contents?page=1&limit=50&contentType=LECTURES&tagId=${chapterId}&isPlaylist=true`;
+        const res = await fetch(url, {
+          headers: {
+            'Authorization': `BEARER ${token}`,
+            'Accept': 'application/json'
+          }
+        });
+        if (res.ok) {
+          const json = await res.json();
+          const dataArr = Array.isArray(json.data) ? json.data : (json.data?.contents || []);
+          lectures = dataArr
+            .filter(item => (item.type === 'LECTURE' || item.contentType === 'LECTURES' || item.scheduleType === 'RECORDED' || item.scheduleType === 'LIVE') && (item._id || item.id))
+            .map(item => {
+              const raw = item.data || item;
+              return {
+                _id: raw._id || item._id,
+                topic: raw.topic || item.topic || 'Lecture',
+                startTime: raw.startTime || item.startTime || 0,
+                dppScheduleId: raw.dppScheduleId || item.dppScheduleId || '',
+                homeworkIds: raw.homeworkIds || item.homeworkIds || [],
+                exerciseIds: raw.exerciseIds || item.exerciseIds || [],
+                status: raw.status || item.status || ''
+              };
+            })
+            .sort((a, b) => new Date(a.startTime || 0).getTime() - new Date(b.startTime || 0).getTime());
+        }
+      } catch (e) {
+        console.warn('[PW Extension] PenPencil lectures fetch error:', e);
+      }
+    }
+
+    const curIdx = lectures.findIndex(l => l._id === params.scheduleId);
+    const currentLecture = curIdx >= 0 ? lectures[curIdx] : null;
+    const nextLecture = (curIdx >= 0 && curIdx < lectures.length - 1) ? lectures[curIdx + 1] : null;
+    const dppScheduleId = currentLecture?.dppScheduleId || slidesData?.dppScheduleId || '';
+
+    chapterCache = {
+      scheduleId: params.scheduleId,
+      chapterId,
+      lectures,
+      currentLecture,
+      nextLecture,
+      dppScheduleId
+    };
+
+    updateActionButtonsState();
+    return chapterCache;
+  }
+
+  function playNextLecture(nextItem) {
+    if (!nextItem || !nextItem._id) {
+      if (window.HUDManager) window.HUDManager.show('⚠️ No next lecture available in this chapter');
+      return;
+    }
+    if (window.HUDManager) {
+      window.HUDManager.show(`⏩ Playing Next: ${nextItem.topic}`);
+    }
+    const nextUrl = new URL(window.location.href);
+    nextUrl.searchParams.set('scheduleId', nextItem._id);
+    nextUrl.searchParams.set('childId', nextItem._id);
+    nextUrl.searchParams.set('entryPoint', `SCHEDULED_CLASS_VIDEOS_${nextItem._id}`);
+    window.location.href = nextUrl.toString();
+  }
+
+  function triggerNextLecture() {
+    if (chapterCache?.nextLecture) {
+      playNextLecture(chapterCache.nextLecture);
+      return;
+    }
+    const params = getWatchParams();
+    if (!params) return;
+    fetchChapterLectures(params).then(data => {
+      if (data.nextLecture) {
+        playNextLecture(data.nextLecture);
+      } else {
+        if (window.HUDManager) window.HUDManager.show('ℹ️ This is the latest lecture in the chapter');
+      }
+    });
+  }
+
+  function openDpp(dppScheduleId, params) {
+    if (dppScheduleId) {
+      const url = `https://www.pw.live/study-v2/test/${dppScheduleId}/instructions`;
+      window.open(url, '_blank');
+      if (window.HUDManager) window.HUDManager.show('📝 Opening DPP Practice Test');
+    } else if (params && params.batchId && params.subjectId) {
+      const chapterId = chapterCache?.chapterId || slidesCache?.chapterId || '';
+      const url = `https://www.pw.live/study-v2/batches/${params.batchId}/subject/${params.subjectId}/topics${chapterId ? `?topicId=${chapterId}&tab=dpp` : ''}`;
+      window.open(url, '_blank');
+      if (window.HUDManager) window.HUDManager.show('📝 Opening Batch DPP Section');
+    } else {
+      if (window.HUDManager) window.HUDManager.show('⚠️ No DPP linked to this lecture');
+    }
+  }
+
+  function updateActionButtonsState() {
+    const nextBtn = document.getElementById('pw-next-btn');
+    if (nextBtn && chapterCache?.nextLecture) {
+      nextBtn.title = `Next: ${chapterCache.nextLecture.topic} (Shift+N)`;
+      nextBtn.classList.add('has-next');
+    }
+    const dppBtn = document.getElementById('pw-dpp-btn');
+    if (dppBtn) {
+      const dppId = chapterCache?.dppScheduleId || slidesCache?.dppScheduleId;
+      if (dppId) {
+        dppBtn.style.display = 'inline-flex';
+        dppBtn.title = 'Attempt Lecture DPP';
+      } else {
+        dppBtn.style.display = 'none';
+      }
+    }
+  }
+
+  // Actions Bar Buttons (Slides, Playlist, Next Lecture, DPP)
+  function ensureActionBarButtons() {
+    if (!isWatchPage()) {
+      const bar = document.getElementById('pw-actions-bar');
+      if (bar) bar.remove();
       return;
     }
 
@@ -175,15 +317,67 @@
     if (!params) return;
 
     const bar = ensureActionsBar();
-    let btn = document.getElementById('pw-slides-btn');
-    if (!btn) {
-      btn = document.createElement('button');
-      btn.id = 'pw-slides-btn';
-      btn.innerHTML = '🖼️ Slides';
-      btn.title = 'Open lecture slides & timeline (D)';
-      btn.addEventListener('click', () => toggleSlidesDrawer());
-      bar.appendChild(btn);
+
+    // 1. Slides Button
+    if (pwSlidesEnabled) {
+      let slidesBtn = document.getElementById('pw-slides-btn');
+      if (!slidesBtn) {
+        slidesBtn = document.createElement('button');
+        slidesBtn.id = 'pw-slides-btn';
+        slidesBtn.className = 'pw-action-pill';
+        slidesBtn.innerHTML = '🖼️ Slides';
+        slidesBtn.title = 'Open lecture slides & timeline (D)';
+        slidesBtn.addEventListener('click', () => toggleSlidesDrawer());
+        bar.appendChild(slidesBtn);
+      }
+    } else {
+      document.getElementById('pw-slides-btn')?.remove();
     }
+
+    // 2. Playlist Button
+    let playlistBtn = document.getElementById('pw-playlist-btn');
+    if (!playlistBtn) {
+      playlistBtn = document.createElement('button');
+      playlistBtn.id = 'pw-playlist-btn';
+      playlistBtn.className = 'pw-action-pill';
+      playlistBtn.innerHTML = '📋 Playlist';
+      playlistBtn.title = 'Open Chapter Playlist (P)';
+      playlistBtn.addEventListener('click', () => togglePlaylistDrawer());
+      bar.appendChild(playlistBtn);
+    }
+
+    // 3. Next Lecture Button
+    let nextBtn = document.getElementById('pw-next-btn');
+    if (!nextBtn) {
+      nextBtn = document.createElement('button');
+      nextBtn.id = 'pw-next-btn';
+      nextBtn.className = 'pw-action-pill';
+      nextBtn.innerHTML = '⏭️ Next';
+      nextBtn.title = 'Jump to Next Lecture (Shift+N)';
+      nextBtn.addEventListener('click', () => triggerNextLecture());
+      bar.appendChild(nextBtn);
+    }
+
+    // 4. DPP Button
+    let dppBtn = document.getElementById('pw-dpp-btn');
+    if (!dppBtn) {
+      dppBtn = document.createElement('button');
+      dppBtn.id = 'pw-dpp-btn';
+      dppBtn.className = 'pw-action-pill';
+      dppBtn.innerHTML = '📝 DPP';
+      dppBtn.title = 'Attempt Associated DPP';
+      dppBtn.addEventListener('click', () => {
+        const dppId = chapterCache?.dppScheduleId || slidesCache?.dppScheduleId;
+        openDpp(dppId, params);
+      });
+      bar.appendChild(dppBtn);
+    }
+
+    updateActionButtonsState();
+  }
+
+  function ensureSlidesButton() {
+    ensureActionBarButtons();
   }
 
   // Lightbox Zoom Viewer
@@ -381,6 +575,10 @@
       return;
     }
 
+    if (playlistDrawerOpen) {
+      closePlaylistDrawer();
+    }
+
     const params = getWatchParams();
     if (!params) {
       if (window.HUDManager) window.HUDManager.show('⚠️ Not on a lecture watch page');
@@ -427,12 +625,285 @@
     drawerOpen = false;
   }
 
+  // Playlist Drawer
+  function renderPlaylistDrawer(data) {
+    let drawer = document.getElementById('pw-playlist-drawer');
+    if (!drawer) {
+      drawer = document.createElement('div');
+      drawer.id = 'pw-playlist-drawer';
+      document.body.appendChild(drawer);
+    }
+
+    const lectures = data.lectures || [];
+    const countText = `${lectures.length} Lecture${lectures.length === 1 ? '' : 's'}`;
+    const topic = slidesCache?.topic || 'Chapter Playlist';
+    const curScheduleId = getWatchParams()?.scheduleId;
+
+    drawer.innerHTML = `
+      <div class="pws-header">
+        <div class="pws-title-row">
+          <div class="pws-title-wrap">
+            <span class="pws-title">📋 Chapter Playlist</span>
+            <span class="pws-badge" id="pwp-count-badge">${countText}</span>
+          </div>
+          <button class="pws-close-btn" id="pwp-drawer-close" title="Close (P or Esc)">✕</button>
+        </div>
+        <div class="pws-subtitle" title="${topic}">${topic}</div>
+        <div class="pws-search-bar">
+          <span class="pws-search-icon">🔍</span>
+          <input type="text" class="pws-search-input" id="pwp-search" placeholder="Search lectures (e.g. 5, Part 02)..." />
+        </div>
+      </div>
+      <div class="pws-body" id="pwp-cards-container"></div>
+    `;
+
+    drawer.querySelector('#pwp-drawer-close').addEventListener('click', () => {
+      closePlaylistDrawer();
+    });
+
+    const searchInput = drawer.querySelector('#pwp-search');
+    searchInput.addEventListener('input', e => {
+      filterPlaylistCards(e.target.value.toLowerCase().trim());
+    });
+
+    populatePlaylistCards(lectures, curScheduleId);
+  }
+
+  function populatePlaylistCards(lectures, curScheduleId) {
+    const container = document.getElementById('pwp-cards-container');
+    if (!container) return;
+    container.innerHTML = '';
+
+    if (!lectures || lectures.length === 0) {
+      container.innerHTML = '<div class="pws-empty-msg">No playlist lectures found in this chapter.</div>';
+      return;
+    }
+
+    let activeCardEl = null;
+
+    lectures.forEach((lec, index) => {
+      const card = document.createElement('div');
+      card.className = 'pwp-lecture-card';
+      const isCurrent = lec._id === curScheduleId;
+      if (isCurrent) card.classList.add('active-lecture');
+
+      card.dataset.idx = index;
+      card.dataset.id = lec._id;
+      card.dataset.name = (lec.topic || '').toLowerCase();
+
+      const lecNum = String(index + 1).padStart(2, '0');
+      const displayName = lec.topic || `Lecture ${lecNum}`;
+
+      card.innerHTML = `
+        <div class="pwp-card-left">
+          <span class="pwp-num-badge">${lecNum}</span>
+        </div>
+        <div class="pwp-card-center">
+          <div class="pwp-card-title" title="${displayName}">${displayName}</div>
+          <div class="pwp-card-meta">
+            ${isCurrent ? '<span class="pwp-badge-current">▶ Playing Now</span>' : '<span class="pwp-badge-lecture">Lecture</span>'}
+            ${lec.dppScheduleId ? '<span class="pwp-badge-dpp" title="Attempt DPP">📝 DPP</span>' : ''}
+          </div>
+        </div>
+        <div class="pwp-card-right">
+          ${isCurrent ? '' : '<button class="pwp-play-btn" title="Watch Lecture">▶</button>'}
+        </div>
+      `;
+
+      card.addEventListener('click', e => {
+        if (e.target.closest('.pwp-badge-dpp')) {
+          e.stopPropagation();
+          openDpp(lec.dppScheduleId, getWatchParams());
+          return;
+        }
+        if (!isCurrent) {
+          playNextLecture(lec);
+        }
+      });
+
+      if (isCurrent) activeCardEl = card;
+      container.appendChild(card);
+    });
+
+    if (activeCardEl) {
+      setTimeout(() => {
+        activeCardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 150);
+    }
+  }
+
+  function filterPlaylistCards(query) {
+    const cards = document.querySelectorAll('.pwp-lecture-card');
+    let visibleCount = 0;
+    cards.forEach(card => {
+      const name = card.dataset.name || '';
+      const idx = String(Number(card.dataset.idx || 0) + 1);
+      const match = !query || name.includes(query) || idx === query || idx.includes(query);
+      card.style.display = match ? 'flex' : 'none';
+      if (match) visibleCount++;
+    });
+
+    let emptyMsg = document.getElementById('pwp-empty-search');
+    if (visibleCount === 0) {
+      if (!emptyMsg) {
+        emptyMsg = document.createElement('div');
+        emptyMsg.id = 'pwp-empty-search';
+        emptyMsg.className = 'pws-empty-msg';
+        emptyMsg.textContent = 'No lectures matched your search.';
+        document.getElementById('pwp-cards-container')?.appendChild(emptyMsg);
+      }
+    } else if (emptyMsg) {
+      emptyMsg.remove();
+    }
+  }
+
+  async function togglePlaylistDrawer() {
+    const drawer = document.getElementById('pw-playlist-drawer');
+    if (drawer && drawer.classList.contains('open')) {
+      closePlaylistDrawer();
+      return;
+    }
+
+    if (drawerOpen) {
+      closeSlidesDrawer();
+    }
+
+    const params = getWatchParams();
+    if (!params) {
+      if (window.HUDManager) window.HUDManager.show('⚠️ Not on a lecture watch page');
+      return;
+    }
+
+    const btn = document.getElementById('pw-playlist-btn');
+    if (btn) {
+      btn.classList.add('loading');
+      btn.innerHTML = '⏳ Loading...';
+    }
+
+    try {
+      const data = await fetchChapterLectures(params);
+      renderPlaylistDrawer(data);
+      const d = document.getElementById('pw-playlist-drawer');
+      if (d) {
+        d.classList.add('open');
+        playlistDrawerOpen = true;
+      }
+    } catch (err) {
+      console.error('[PW Extension] Error loading playlist:', err);
+      if (window.HUDManager) {
+        window.HUDManager.show('❌ Failed to load playlist: ' + (err.message || 'Error'));
+      }
+    } finally {
+      if (btn) {
+        btn.classList.remove('loading');
+        btn.innerHTML = '📋 Playlist';
+      }
+    }
+  }
+
+  function closePlaylistDrawer() {
+    const drawer = document.getElementById('pw-playlist-drawer');
+    if (drawer) drawer.classList.remove('open');
+    playlistDrawerOpen = false;
+  }
+
+  // End-of-Lecture Smart Recommendation Nudge
+  function checkEndNudge(video) {
+    if (endNudgeDismissed || !video || !video.duration) return;
+    const progress = video.currentTime / video.duration;
+
+    if (progress >= 0.90 || video.ended) {
+      showEndNudge();
+    }
+  }
+
+  function showEndNudge() {
+    if (endNudgeDismissed || document.getElementById('pw-end-nudge')) return;
+
+    const next = chapterCache?.nextLecture;
+    const dppId = chapterCache?.dppScheduleId || slidesCache?.dppScheduleId;
+
+    if (!next && !dppId) return;
+
+    const nudge = document.createElement('div');
+    nudge.id = 'pw-end-nudge';
+    nudge.className = 'pw-end-nudge';
+
+    const nextTitle = next ? (next.topic.length > 36 ? next.topic.slice(0, 36) + '...' : next.topic) : '';
+
+    nudge.innerHTML = `
+      <div class="pw-nudge-glow"></div>
+      <div class="pw-nudge-header">
+        <div class="pw-nudge-title-wrap">
+          <span class="pw-nudge-icon">✨</span>
+          <span class="pw-nudge-label">RECOMMENDED NEXT</span>
+        </div>
+        <button class="pw-nudge-close" id="pw-nudge-close" title="Dismiss (Esc)">✕</button>
+      </div>
+      <div class="pw-nudge-actions">
+        ${next ? `
+          <button class="pw-nudge-btn pw-nudge-primary" id="pw-nudge-next-btn" title="${next.topic}">
+            <span class="pw-nudge-btn-icon">⏭️</span>
+            <div class="pw-nudge-btn-text">
+              <span class="pw-nudge-btn-main">Next Lecture</span>
+              <span class="pw-nudge-btn-sub">${nextTitle}</span>
+            </div>
+          </button>
+        ` : ''}
+        ${dppId ? `
+          <button class="pw-nudge-btn pw-nudge-secondary" id="pw-nudge-dpp-btn">
+            <span class="pw-nudge-btn-icon">📝</span>
+            <div class="pw-nudge-btn-text">
+              <span class="pw-nudge-btn-main">Attempt DPP</span>
+              <span class="pw-nudge-btn-sub">Daily Practice Problem</span>
+            </div>
+          </button>
+        ` : ''}
+      </div>
+    `;
+
+    document.body.appendChild(nudge);
+
+    nudge.querySelector('#pw-nudge-close').addEventListener('click', () => {
+      dismissEndNudge();
+    });
+
+    if (next) {
+      nudge.querySelector('#pw-nudge-next-btn')?.addEventListener('click', () => {
+        playNextLecture(next);
+      });
+    }
+
+    if (dppId) {
+      nudge.querySelector('#pw-nudge-dpp-btn')?.addEventListener('click', () => {
+        openDpp(dppId, getWatchParams());
+      });
+    }
+
+    requestAnimationFrame(() => {
+      nudge.classList.add('visible');
+    });
+  }
+
+  function dismissEndNudge() {
+    endNudgeDismissed = true;
+    const nudge = document.getElementById('pw-end-nudge');
+    if (nudge) {
+      nudge.classList.remove('visible');
+      setTimeout(() => nudge.remove(), 250);
+    }
+  }
+
   function hookVideoTimeUpdates() {
     const video = document.querySelector('video');
-    if (video && !video.dataset.pwSlidesHooked) {
-      video.dataset.pwSlidesHooked = 'true';
+    if (video && !video.dataset.pwHooked) {
+      video.dataset.pwHooked = 'true';
       video.addEventListener('timeupdate', () => {
         highlightCurrentSlide(video.currentTime);
+        checkEndNudge(video);
+      });
+      video.addEventListener('ended', () => {
+        showEndNudge();
       });
     }
   }
@@ -591,15 +1062,17 @@
   }
 
   function runWatchEnhancements() {
-    ensureSlidesButton();
+    ensureActionBarButtons();
     hookVideoTimeUpdates();
     updatePageTopicTitle();
     initSeekbarPreview();
 
-    // Preload slides for instant preview on hover
+    // Preload slides and chapter contents for instant buttons & preview
     const params = getWatchParams();
     if (params && !slidesCache) {
-      fetchSlides(params).catch(() => {});
+      fetchSlides(params)
+        .then(() => fetchChapterLectures(params))
+        .catch(() => {});
     }
   }
 
@@ -655,15 +1128,24 @@
 
   // PW Platform specific shortcuts
   document.addEventListener('keydown', e => {
-    // Escape -> Close Drawer or Lightbox (works even if typing in search)
+    // Escape -> Close Drawer, Lightbox, or End Nudge (works even if typing in search)
     if (e.key === 'Escape') {
       const lb = document.getElementById('pws-lightbox');
       if (lb && lb.classList.contains('open')) {
         lb.classList.remove('open');
         return;
       }
+      if (playlistDrawerOpen) {
+        closePlaylistDrawer();
+        return;
+      }
       if (drawerOpen) {
         closeSlidesDrawer();
+        return;
+      }
+      const nudge = document.getElementById('pw-end-nudge');
+      if (nudge) {
+        dismissEndNudge();
         return;
       }
     }
@@ -680,6 +1162,22 @@
       e.preventDefault();
       e.stopImmediatePropagation();
       toggleSlidesDrawer();
+      return;
+    }
+
+    // 'p' or 'P' -> Toggle Chapter Playlist Drawer
+    if ((e.key === 'p' || e.key === 'P') && !e.ctrlKey && !e.altKey && !e.metaKey) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      togglePlaylistDrawer();
+      return;
+    }
+
+    // Shift + 'N' or 'n' -> Jump to Next Lecture
+    if (e.shiftKey && (e.key === 'N' || e.key === 'n') && !e.ctrlKey && !e.altKey && !e.metaKey) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      triggerNextLecture();
       return;
     }
 
@@ -753,7 +1251,11 @@
     if (location.href !== lastUrl) {
       lastUrl = location.href;
       slidesCache = null;
+      chapterCache = null;
+      endNudgeDismissed = false;
       closeSlidesDrawer();
+      closePlaylistDrawer();
+      dismissEndNudge();
       const existingPreview = document.getElementById('pw-seek-preview');
       if (existingPreview) existingPreview.remove();
       const ph = document.querySelector('.vjs-progress-holder');
