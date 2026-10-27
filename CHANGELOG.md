@@ -6,9 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 All release timestamps are recorded in the `Asia/Kolkata` (India/Kolkata) timezone (IST).
 
-## [2.5.0] - 2026-10-26 15:42 IST
+## [2.5.0] - 2026-10-27 21:22 IST
 
 ### Added
+* **Priority Study Material Cards Hierarchy**:
+  * Automatically organizes and highlights study material cards into 4 distinct priority tiers with CSS Grid pin-to-top (`order`):
+    * **Tier 1 (Priority 1)**: KPP Problem Solving, JEE Mains PYQs, and JEE Replica Sheet (Indigo glow, `⭐ PRIORITY 1` badge).
+    * **Tier 2 (2nd Priority)**: 11th & 12th Class SKC PDF master notes (Sky blue glow, `📌 SKC PDF` badge).
+    * **Tier 3 (3rd Priority)**: Revision in 2 Hours and detailed revision lectures (Emerald glow, `⚡ REVISION` badge).
+    * **Tier 4 (4th Priority)**: Summary lectures and concise summary notes (Amber glow, `📝 SUMMARY` badge).
 * **Next Lecture, Attempt DPP & Chapter Playlist Suite (PW)**:
   * **Top Action Toolbar**: Added dedicated liquid-glass action buttons for `📋 Playlist`, `⏭️ Next Lecture`, and `📝 DPP` alongside `🖼️ Slides`.
   * **Chapter Playlist Drawer**: Full-height right-side sliding drawer displaying the complete chapter lecture lineup, real-time "Playing Now" indicator, DPP status, and 1-click jump links with search filtering.

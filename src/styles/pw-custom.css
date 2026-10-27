@@ -12,6 +12,113 @@
   box-shadow: 0 8px 20px rgba(99, 102, 241, 0.2);
 }
 
+/* ==========================================================================
+   Priority Study Material Cards Hierarchy
+   Tier 1: KPP & JEE Replica (Indigo/Violet Glow - Priority 1)
+   Tier 2: SKC Class Notes (Sky Blue Glow - 2nd Priority)
+   Tier 3: Revision Sprints (Emerald Green Glow - 3rd Priority)
+   Tier 4: Summary Lectures & Notes (Amber Glow - 4th Priority)
+   ========================================================================== */
+
+.topicCardContainer-fPGJwe.pw-tier-kpp {
+  order: -4 !important;
+  border: 1px solid rgba(99, 102, 241, 0.8) !important;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(15, 23, 42, 0.05) 100%) !important;
+  box-shadow: 0 0 16px rgba(99, 102, 241, 0.22) !important;
+  border-radius: 12px !important;
+  position: relative !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.topicCardContainer-fPGJwe.pw-tier-kpp:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 22px rgba(99, 102, 241, 0.35) !important;
+}
+
+.topicCardContainer-fPGJwe.pw-tier-skc {
+  order: -3 !important;
+  border: 1px solid rgba(14, 165, 233, 0.8) !important;
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.12) 0%, rgba(15, 23, 42, 0.05) 100%) !important;
+  box-shadow: 0 0 16px rgba(14, 165, 233, 0.22) !important;
+  border-radius: 12px !important;
+  position: relative !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.topicCardContainer-fPGJwe.pw-tier-skc:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 22px rgba(14, 165, 233, 0.35) !important;
+}
+
+.topicCardContainer-fPGJwe.pw-tier-revision {
+  order: -2 !important;
+  border: 1px solid rgba(16, 185, 129, 0.8) !important;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(15, 23, 42, 0.05) 100%) !important;
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.22) !important;
+  border-radius: 12px !important;
+  position: relative !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.topicCardContainer-fPGJwe.pw-tier-revision:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 22px rgba(16, 185, 129, 0.35) !important;
+}
+
+.topicCardContainer-fPGJwe.pw-tier-summary {
+  order: -1 !important;
+  border: 1px solid rgba(245, 158, 11, 0.8) !important;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(15, 23, 42, 0.05) 100%) !important;
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.22) !important;
+  border-radius: 12px !important;
+  position: relative !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.topicCardContainer-fPGJwe.pw-tier-summary:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 22px rgba(245, 158, 11, 0.35) !important;
+}
+
+/* Priority Tier Badges */
+.pw-tier-badge {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  pointer-events: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.pw-badge-kpp {
+  color: #818CF8;
+  background: rgba(99, 102, 241, 0.15);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+}
+
+.pw-badge-skc {
+  color: #38BDF8;
+  background: rgba(14, 165, 233, 0.15);
+  border: 1px solid rgba(14, 165, 233, 0.3);
+}
+
+.pw-badge-revision {
+  color: #34D399;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.pw-badge-summary {
+  color: #FBBF24;
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
 /* --- PW Lecture Top-Left Action Toolbar --- */
 #pw-actions-bar {
   position: fixed;

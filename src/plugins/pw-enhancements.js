@@ -22,6 +22,13 @@
     );
   }
 
+  function isSubjectTopicsPage() {
+    return (
+      window.location.pathname.includes('/subject-topics') ||
+      window.location.href.includes('subject-topics')
+    );
+  }
+
   function isWatchPage() {
     return (
       window.location.pathname.includes('/watch') ||
@@ -946,6 +953,71 @@
     }
   }
 
+  // --- Study Material Priority Tiers Configuration ---
+  const STUDY_MATERIAL_TIERS = [
+    {
+      tierClass: 'pw-tier-kpp',
+      badgeClass: 'pw-badge-kpp',
+      keywords: ['kpp', 'jee mains', 'jee replica'],
+      badgeText: '⭐ PRIORITY 1'
+    },
+    {
+      tierClass: 'pw-tier-skc',
+      badgeClass: 'pw-badge-skc',
+      keywords: ['skc pdf', 'skc'],
+      badgeText: '📌 SKC PDF'
+    },
+    {
+      tierClass: 'pw-tier-revision',
+      badgeClass: 'pw-badge-revision',
+      keywords: ['revision in 2 hours', 'revision'],
+      badgeText: '⚡ REVISION'
+    },
+    {
+      tierClass: 'pw-tier-summary',
+      badgeClass: 'pw-badge-summary',
+      keywords: ['summary lecture', 'summary notes', 'summary'],
+      badgeText: '📝 SUMMARY'
+    }
+  ];
+
+  function runSubjectTopicsEnhancements() {
+    const cards = document.querySelectorAll('.topicCardContainer-fPGJwe');
+    if (!cards || cards.length === 0) return;
+
+    cards.forEach(c => {
+      const text = c.innerText.toLowerCase();
+      let matched = false;
+
+      for (const tier of STUDY_MATERIAL_TIERS) {
+        if (tier.keywords.some(kw => text.includes(kw))) {
+          matched = true;
+          STUDY_MATERIAL_TIERS.forEach(t => {
+            if (t.tierClass !== tier.tierClass) c.classList.remove(t.tierClass);
+          });
+          c.classList.add(tier.tierClass);
+
+          let badge = c.querySelector('.pw-tier-badge');
+          if (!badge) {
+            badge = document.createElement('span');
+            badge.className = `pw-tier-badge ${tier.badgeClass}`;
+            badge.innerHTML = tier.badgeText;
+            c.appendChild(badge);
+          } else if (badge.innerHTML !== tier.badgeText) {
+            badge.className = `pw-tier-badge ${tier.badgeClass}`;
+            badge.innerHTML = tier.badgeText;
+          }
+          break;
+        }
+      }
+
+      if (!matched) {
+        STUDY_MATERIAL_TIERS.forEach(t => c.classList.remove(t.tierClass));
+        c.querySelector('.pw-tier-badge')?.remove();
+      }
+    });
+  }
+
   async function updatePageTopicTitle() {
     const params = getWatchParams();
     if (!params) return;
@@ -1079,6 +1151,9 @@
   function runEnhancements() {
     if (isOverviewPage()) {
       runOverviewEnhancements();
+    }
+    if (isSubjectTopicsPage()) {
+      runSubjectTopicsEnhancements();
     }
     if (isWatchPage()) {
       runWatchEnhancements();
