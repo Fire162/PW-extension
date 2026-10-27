@@ -15,11 +15,6 @@ All release timestamps are recorded in the `Asia/Kolkata` (India/Kolkata) timezo
     * **Tier 2 (2nd Priority)**: 11th & 12th Class SKC PDF master notes (Sky blue glow, `📌 SKC PDF` badge).
     * **Tier 3 (3rd Priority)**: Revision in 2 Hours and detailed revision lectures (Emerald glow, `⚡ REVISION` badge).
     * **Tier 4 (4th Priority)**: Summary lectures and concise summary notes (Amber glow, `📝 SUMMARY` badge).
-* **Next Lecture, Attempt DPP & Chapter Playlist Suite (PW)**:
-  * **Top Action Toolbar**: Added dedicated liquid-glass action buttons for `📋 Playlist`, `⏭️ Next Lecture`, and `📝 DPP` alongside `🖼️ Slides`.
-  * **Chapter Playlist Drawer**: Full-height right-side sliding drawer displaying the complete chapter lecture lineup, real-time "Playing Now" indicator, DPP status, and 1-click jump links with search filtering.
-  * **Smart End-of-Lecture Nudge**: Floating liquid-glass recommendation card triggered at 90% watch progress or video end with one-click "Next Lecture" navigation and direct "Attempt DPP" testing launcher.
-  * **Hotkeys**: Press <kbd>P</kbd> to toggle the Chapter Playlist drawer and <kbd>Shift</kbd> + <kbd>N</kbd> to jump directly to the next scheduled lecture.
 
 ## [2.4.1] - 2026-09-28 16:35 IST
 

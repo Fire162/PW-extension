@@ -16,8 +16,7 @@
   "host_permissions": [
     "*://*.pw.live/*",
     "*://pw.abhinav.eu.cc/*",
-    "*://static.pw.live/*",
-    "*://*.penpencil.co/*"
+    "*://static.pw.live/*"
   ],
   "declarative_net_request": {
     "rule_resources": [
