@@ -13,6 +13,60 @@
 }
 
 /* ==========================================================================
+   All Classes Subject Card Progress Fills (Tiered Glow)
+   Tier Emerald: >= 40% completion
+   Tier Indigo:  20% - 39% completion
+   Tier Sky:     1% - 19% completion
+   ========================================================================== */
+
+.subjectCard-Ytcdxf {
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.subjectCard-Ytcdxf > * {
+  position: relative;
+  z-index: 1;
+}
+
+.pw-subject-progress-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0%;
+  pointer-events: none;
+  z-index: 0;
+  transition: width 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 12px 0 0 12px;
+}
+
+.pw-subject-progress-fill.full {
+  border-radius: 12px;
+}
+
+/* Tier Emerald: >= 40% */
+.pw-subject-progress-fill.pw-progress-emerald {
+  background: linear-gradient(90deg, rgba(16, 185, 129, 0.06) 0%, rgba(16, 185, 129, 0.16) 100%);
+  border-right: 2px solid rgba(16, 185, 129, 0.7);
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+}
+
+/* Tier Indigo: 20% - 39% */
+.pw-subject-progress-fill.pw-progress-indigo {
+  background: linear-gradient(90deg, rgba(99, 102, 241, 0.06) 0%, rgba(99, 102, 241, 0.16) 100%);
+  border-right: 2px solid rgba(99, 102, 241, 0.7);
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
+}
+
+/* Tier Sky: 1% - 19% */
+.pw-subject-progress-fill.pw-progress-sky {
+  background: linear-gradient(90deg, rgba(14, 165, 233, 0.06) 0%, rgba(14, 165, 233, 0.16) 100%);
+  border-right: 2px solid rgba(14, 165, 233, 0.7);
+  box-shadow: 0 0 10px rgba(14, 165, 233, 0.3);
+}
+
+/* ==========================================================================
    Priority Study Material Cards Hierarchy
    Tier 1: KPP & JEE Replica (Indigo/Violet Glow - Priority 1)
    Tier 2: SKC Class Notes (Sky Blue Glow - 2nd Priority)

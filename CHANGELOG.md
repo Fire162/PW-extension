@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 All release timestamps are recorded in the `Asia/Kolkata` (India/Kolkata) timezone (IST).
 
+## [2.6.0] - 2026-10-29 21:10 IST
+
+### Added
+* **Subject Progress Card Fills (Tiered Glow)**:
+  * Proportional liquid-glass background progress fill rendered directly on subject cards in All Classes / Batch Overview.
+  * Dynamically animates card fill width according to syllabus completion percentage:
+    * **Tier Emerald (≥40% completion)**: Mint/emerald gradient with glowing frontier border (`#10B981`).
+    * **Tier Indigo (20%–39% completion)**: Royal indigo gradient (`#6366F1`).
+    * **Tier Sky (1%–19% completion)**: Sky cyan notch (`#0EA5E9`).
+  * Non-intrusive translucent background styling ensuring 100% crisp typography contrast and zero click/navigation interference.
+
 ## [2.5.0] - 2026-10-27 21:22 IST
 
 ### Added

@@ -17,8 +17,9 @@
 
   function isOverviewPage() {
     return (
-      window.location.href.includes('batch-overview') &&
-      window.location.href.includes('#Subjects_2')
+      window.location.href.includes('batch-overview') ||
+      window.location.pathname.includes('/batch-overview') ||
+      document.querySelector('.subjectCard-Ytcdxf') !== null
     );
   }
 
@@ -480,6 +481,55 @@
       grid.style.gridTemplateColumns = '1fr';
       grid.style.rowGap = '12px';
     }
+
+    applySubjectProgressFills();
+  }
+
+  function applySubjectProgressFills() {
+    const cards = document.querySelectorAll('.subjectCard-Ytcdxf');
+    if (!cards || cards.length === 0) return;
+
+    cards.forEach(card => {
+      let pct = 0;
+      const allEls = card.querySelectorAll('*');
+      allEls.forEach(el => {
+        if (el.children.length === 0 && el.textContent.includes('%')) {
+          const match = el.textContent.match(/(\d+)\s*%/);
+          if (match) pct = parseInt(match[1], 10);
+        }
+      });
+
+      let fill = card.querySelector('.pw-subject-progress-fill');
+      if (pct > 0) {
+        if (!fill) {
+          fill = document.createElement('div');
+          fill.className = 'pw-subject-progress-fill';
+          card.insertBefore(fill, card.firstChild);
+        }
+
+        if (fill.dataset.pct === String(pct)) return;
+        fill.dataset.pct = String(pct);
+
+        fill.classList.remove('pw-progress-emerald', 'pw-progress-indigo', 'pw-progress-sky', 'full');
+        if (pct >= 40) {
+          fill.classList.add('pw-progress-emerald');
+        } else if (pct >= 20) {
+          fill.classList.add('pw-progress-indigo');
+        } else {
+          fill.classList.add('pw-progress-sky');
+        }
+
+        if (pct >= 100) {
+          fill.classList.add('full');
+        }
+
+        requestAnimationFrame(() => {
+          fill.style.width = `${Math.min(pct, 100)}%`;
+        });
+      } else if (fill) {
+        fill.remove();
+      }
+    });
   }
 
   // --- Study Material Priority Tiers Configuration ---
