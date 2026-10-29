@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 All release timestamps are recorded in the `Asia/Kolkata` (India/Kolkata) timezone (IST).
 
+## [2.6.1] - 2026-10-29 21:18 IST
+
+### Added
+* **Chapter Cards Split Dual-Track Progress (Lectures + DPP)**:
+  * Two-part split background progress fill rendered directly on chapter syllabus cards (`.topicCardContainer-fPGJwe`).
+  * **Upper Track (Top 50%)**: Proportional Mint/Emerald gradient based on real `Lecture: X/Y` watch ratio with glowing frontier needle.
+  * **Lower Track (Bottom 50%)**: Proportional Warm Amber/Gold gradient based on real `DPP: X/Y` completion ratio.
+  * **Adaptive Full-Height**: Chapters without assigned DPPs automatically expand the lecture track to full 100% card height.
+* **Red Tier & 0% Backlog Notch (Subjects & Chapters)**:
+  * Cards or tracks between **0% and 10%** progress render in a crimson red gradient (`#EF4444`) with a glowing frontier needle.
+  * Unstarted elements at **0%** render a sleek 0.5% red sliver notch along the left edge for instant backlog identification.
+
 ## [2.6.0] - 2026-10-29 21:10 IST
 
 ### Added

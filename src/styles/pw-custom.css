@@ -66,6 +66,91 @@
   box-shadow: 0 0 10px rgba(14, 165, 233, 0.3);
 }
 
+/* Tier Red: > 0% && <= 10% */
+.pw-subject-progress-fill.pw-progress-red,
+.pw-track-bar.pw-progress-red {
+  background: linear-gradient(90deg, rgba(239, 68, 68, 0.08) 0%, rgba(239, 68, 68, 0.22) 100%) !important;
+  border-right: 2px solid rgba(239, 68, 68, 0.85) !important;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.35) !important;
+}
+
+/* 0% Red Indicator Notch: covers 0.5% area */
+.pw-subject-progress-fill.notch-zero,
+.pw-track-bar.notch-zero {
+  width: 0.5% !important;
+  min-width: 3px !important;
+  background: rgba(239, 68, 68, 0.8) !important;
+  border-right: 1px solid rgba(239, 68, 68, 0.95) !important;
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.45) !important;
+}
+
+/* ==========================================================================
+   Chapter Cards Split Dual-Track Progress (Lectures Top, DPP Bottom)
+   ========================================================================== */
+
+.topicCardContainer-fPGJwe {
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.topicCardContainer-fPGJwe > *:not(.pw-chapter-bg-layer) {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+.pw-chapter-bg-layer {
+  position: absolute !important;
+  inset: 0 !important;
+  pointer-events: none !important;
+  z-index: 0 !important;
+  overflow: hidden !important;
+  border-radius: inherit !important;
+}
+
+.pw-track-bar {
+  position: absolute;
+  left: 0;
+  width: 0%;
+  transition: width 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pw-track-bar.top {
+  top: 0;
+  height: 50%;
+}
+
+.pw-track-bar.top.single {
+  height: 100%;
+}
+
+.pw-track-bar.bottom {
+  bottom: 0;
+  height: 50%;
+}
+
+/* Lectures: Emerald Gradient */
+.pw-track-bar.lecture {
+  background: linear-gradient(90deg, rgba(16, 185, 129, 0.07) 0%, rgba(16, 185, 129, 0.18) 100%);
+  border-right: 2px solid rgba(16, 185, 129, 0.75);
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+}
+
+/* DPP: Amber/Gold Gradient */
+.pw-track-bar.dpp {
+  background: linear-gradient(90deg, rgba(245, 158, 11, 0.07) 0%, rgba(245, 158, 11, 0.20) 100%);
+  border-right: 2px solid rgba(245, 158, 11, 0.8);
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
+}
+
+.pw-track-divider {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.05);
+}
+
 /* ==========================================================================
    Priority Study Material Cards Hierarchy
    Tier 1: KPP & JEE Replica (Indigo/Violet Glow - Priority 1)

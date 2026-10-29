@@ -500,34 +500,40 @@
       });
 
       let fill = card.querySelector('.pw-subject-progress-fill');
-      if (pct > 0) {
-        if (!fill) {
-          fill = document.createElement('div');
-          fill.className = 'pw-subject-progress-fill';
-          card.insertBefore(fill, card.firstChild);
-        }
+      if (!fill) {
+        fill = document.createElement('div');
+        fill.className = 'pw-subject-progress-fill';
+        card.insertBefore(fill, card.firstChild);
+      }
 
-        if (fill.dataset.pct === String(pct)) return;
-        fill.dataset.pct = String(pct);
+      if (fill.dataset.pct === String(pct)) return;
+      fill.dataset.pct = String(pct);
 
-        fill.classList.remove('pw-progress-emerald', 'pw-progress-indigo', 'pw-progress-sky', 'full');
-        if (pct >= 40) {
-          fill.classList.add('pw-progress-emerald');
-        } else if (pct >= 20) {
-          fill.classList.add('pw-progress-indigo');
-        } else {
-          fill.classList.add('pw-progress-sky');
-        }
-
-        if (pct >= 100) {
-          fill.classList.add('full');
-        }
-
+      fill.classList.remove('pw-progress-emerald', 'pw-progress-indigo', 'pw-progress-sky', 'pw-progress-red', 'notch-zero', 'full');
+      if (pct === 0) {
+        fill.classList.add('notch-zero');
+        fill.style.width = '0.5%';
+      } else if (pct <= 10) {
+        fill.classList.add('pw-progress-red');
+        requestAnimationFrame(() => {
+          fill.style.width = `${pct}%`;
+        });
+      } else if (pct < 20) {
+        fill.classList.add('pw-progress-sky');
+        requestAnimationFrame(() => {
+          fill.style.width = `${pct}%`;
+        });
+      } else if (pct < 40) {
+        fill.classList.add('pw-progress-indigo');
+        requestAnimationFrame(() => {
+          fill.style.width = `${pct}%`;
+        });
+      } else {
+        fill.classList.add('pw-progress-emerald');
+        if (pct >= 100) fill.classList.add('full');
         requestAnimationFrame(() => {
           fill.style.width = `${Math.min(pct, 100)}%`;
         });
-      } else if (fill) {
-        fill.remove();
       }
     });
   }
@@ -593,8 +599,89 @@
       if (!matched) {
         STUDY_MATERIAL_TIERS.forEach(t => c.classList.remove(t.tierClass));
         c.querySelector('.pw-tier-badge')?.remove();
+
+        // Check for Chapter Syllabus Progress (Lecture: X/Y and optional DPP: X/Y)
+        const matchLectures = c.innerText.match(/Lecture:\s*(\d+)\s*\/\s*(\d+)/i);
+        if (matchLectures) {
+          applyChapterProgress(c, matchLectures);
+        } else {
+          c.querySelector('.pw-chapter-bg-layer')?.remove();
+        }
+      } else {
+        c.querySelector('.pw-chapter-bg-layer')?.remove();
       }
     });
+  }
+
+  function applyChapterProgress(card, matchLectures) {
+    const raw = card.innerText;
+    const lWatched = parseInt(matchLectures[1], 10);
+    const lTotal = parseInt(matchLectures[2], 10);
+    const lPct = lTotal > 0 ? Math.round((lWatched / lTotal) * 100) : 0;
+
+    const matchDpp = raw.match(/DPP:\s*(\d+)\s*\/\s*(\d+)/i);
+    const hasDpp = !!matchDpp;
+    const dWatched = matchDpp ? parseInt(matchDpp[1], 10) : 0;
+    const dTotal = matchDpp ? parseInt(matchDpp[2], 10) : 0;
+    const dPct = dTotal > 0 ? Math.round((dWatched / dTotal) * 100) : 0;
+
+    const stateKey = `${lPct}_${dPct}_${hasDpp}`;
+    let bgLayer = card.querySelector('.pw-chapter-bg-layer');
+
+    if (bgLayer && bgLayer.dataset.state === stateKey) {
+      return;
+    }
+
+    if (!bgLayer) {
+      bgLayer = document.createElement('div');
+      bgLayer.className = 'pw-chapter-bg-layer';
+      card.insertBefore(bgLayer, card.firstChild);
+    }
+
+    bgLayer.dataset.state = stateKey;
+    bgLayer.innerHTML = '';
+
+    if (hasDpp) {
+      const divider = document.createElement('div');
+      divider.className = 'pw-track-divider';
+      bgLayer.appendChild(divider);
+    }
+
+    // Top Track: Lectures
+    const lBar = document.createElement('div');
+    if (lPct === 0) {
+      lBar.className = `pw-track-bar top notch-zero ${hasDpp ? '' : 'single'}`;
+    } else if (lPct <= 10) {
+      lBar.className = `pw-track-bar top pw-progress-red ${hasDpp ? '' : 'single'}`;
+      requestAnimationFrame(() => {
+        lBar.style.width = `${lPct}%`;
+      });
+    } else {
+      lBar.className = `pw-track-bar top lecture ${hasDpp ? '' : 'single'}`;
+      requestAnimationFrame(() => {
+        lBar.style.width = `${Math.min(lPct, 100)}%`;
+      });
+    }
+    bgLayer.appendChild(lBar);
+
+    // Bottom Track: DPP
+    if (hasDpp) {
+      const dBar = document.createElement('div');
+      if (dPct === 0) {
+        dBar.className = 'pw-track-bar bottom notch-zero';
+      } else if (dPct <= 10) {
+        dBar.className = 'pw-track-bar bottom pw-progress-red';
+        requestAnimationFrame(() => {
+          dBar.style.width = `${dPct}%`;
+        });
+      } else {
+        dBar.className = 'pw-track-bar bottom dpp';
+        requestAnimationFrame(() => {
+          dBar.style.width = `${Math.min(dPct, 100)}%`;
+        });
+      }
+      bgLayer.appendChild(dBar);
+    }
   }
 
   async function updatePageTopicTitle() {
