@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 All release timestamps are recorded in the `Asia/Kolkata` (India/Kolkata) timezone (IST).
 
+## [2.6.2] - 2026-11-02 06:53 IST
+
+### Fixed
+* **Forward Video Buffer Booster**:
+  * Corrected VHS controller lookup from legacy `vhs.masterPlaylistController_` to modern `vhs.playlistController_`.
+  * Corrected segment loader state check from `loader.state_` to `loader.state`.
+  * Overrode `PlaylistController.prototype.goalBufferLength` and `videojs.Vhs.GOAL_BUFFER_LENGTH / MAX_GOAL_BUFFER_LENGTH` directly to bypass the 60s hardcoded engine cap.
+  * Added fallback player discovery via `.video-js` container and dual `document` / `window` event dispatching across execution worlds.
+
+### Added
+* **30-Minute and 2-Hour Buffer Targets**:
+  * Added `30m` (1800s) and `2h` (7200s - entire lecture pre-cache) options to the extension popup dashboard under Smart Settings.
+  * Optimized button grid styling in dashboard popup to accommodate all 7 buffer targets with zero layout overflow.
+
 ## [2.6.1] - 2026-10-29 21:18 IST
 
 ### Added

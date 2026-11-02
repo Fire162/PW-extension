@@ -246,6 +246,17 @@ input:checked + .slider:before {
   transition: all 0.2s ease;
 }
 
+#pw-buffer-selector {
+  display: flex;
+  gap: 4px;
+}
+
+#pw-buffer-selector .buffer-btn {
+  padding: 6px 2px;
+  font-size: 10px;
+  line-height: 1.15;
+}
+
 .bm-btn:hover, .goal-btn:hover, .buffer-btn:hover {
   background: rgba(255, 255, 255, 0.2);
   color: #FFF;

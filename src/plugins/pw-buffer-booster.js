@@ -8,54 +8,77 @@
   // Default forward buffer goal: 2 minutes (120 seconds)
   let targetBufferSec = 120;
 
-  // Initialize from dataset if set by isolated content script
-  if (document.documentElement && document.documentElement.dataset.pwBufferSec) {
-    const parsed = Number(document.documentElement.dataset.pwBufferSec);
-    if (!isNaN(parsed) && parsed > 0) targetBufferSec = parsed;
+  function updateTargetFromValue(sec) {
+    const parsed = Number(sec);
+    if (!isNaN(parsed) && parsed > 0 && parsed !== targetBufferSec) {
+      targetBufferSec = parsed;
+      console.log(`[PW Extension] Updated forward buffer target: ${targetBufferSec}s`);
+      applyBooster();
+    }
   }
 
-  // Listen for buffer target updates from isolated content script
-  window.addEventListener('pw-set-buffer-target', (e) => {
-    if (e.detail && e.detail.bufferSec) {
-      const parsed = Number(e.detail.bufferSec);
-      if (!isNaN(parsed) && parsed > 0) {
-        targetBufferSec = parsed;
-        console.log(`[PW Extension] Updated forward buffer target: ${targetBufferSec}s`);
-        applyBooster();
-      }
+  function checkDatasetTarget() {
+    if (document.documentElement && document.documentElement.dataset.pwBufferSec) {
+      updateTargetFromValue(document.documentElement.dataset.pwBufferSec);
     }
-  });
+  }
+
+  // Initial check from DOM attribute
+  checkDatasetTarget();
+
+  // Listen for buffer target updates from isolated content script via window and document
+  const handleBufferEvent = (e) => {
+    if (e.detail && e.detail.bufferSec) {
+      updateTargetFromValue(e.detail.bufferSec);
+    }
+  };
+  window.addEventListener('pw-set-buffer-target', handleBufferEvent);
+  document.addEventListener('pw-set-buffer-target', handleBufferEvent);
 
   function applyBooster() {
-    const player = window.player;
+    checkDatasetTarget();
+
+    const player = window.player || document.querySelector('.video-js')?.player || document.querySelector('video')?.parentElement?.player;
     const vhs = player?.tech_?.vhs;
-    const mpc = vhs?.masterPlaylistController_;
-    const mainLoader = mpc?.mainSegmentLoader_;
-    const audioLoader = mpc?.audioSegmentLoader_;
+    // In modern Video.js VHS, playlist controller is named playlistController_
+    const pc = vhs?.playlistController_ || vhs?.masterPlaylistController_;
+    if (!pc) return;
+
+    // 1. Update Video.js VHS global constants
+    if (window.videojs?.Vhs) {
+      try {
+        window.videojs.Vhs.GOAL_BUFFER_LENGTH = targetBufferSec;
+        window.videojs.Vhs.MAX_GOAL_BUFFER_LENGTH = targetBufferSec;
+      } catch (e) {}
+    }
+    if (vhs.constructor) {
+      try {
+        if (vhs.constructor.GOAL_BUFFER_LENGTH !== undefined) vhs.constructor.GOAL_BUFFER_LENGTH = targetBufferSec;
+        if (vhs.constructor.MAX_GOAL_BUFFER_LENGTH !== undefined) vhs.constructor.MAX_GOAL_BUFFER_LENGTH = targetBufferSec;
+      } catch (e) {}
+    }
+
+    // 2. Override PlaylistController buffer target & hasPlayed state
+    pc.goalBufferLength = () => targetBufferSec;
+    pc.hasPlayed_ = true;
+
+    // 3. Configure both segment loaders directly
+    const mainLoader = pc.mainSegmentLoader_;
+    const audioLoader = pc.audioSegmentLoader_;
 
     [mainLoader, audioLoader].forEach(loader => {
       if (!loader) return;
 
-      // Bypass pause gating so forward caching proceeds even while paused
-      loader.paused = () => false;
+      loader.goalBufferLength_ = () => targetBufferSec;
       loader.hasPlayed_ = () => true;
-      loader.pause = function () {};
 
-      if (typeof loader.goalBufferLength_ !== 'function' || loader.goalBufferLength_() !== targetBufferSec) {
-        loader.goalBufferLength_ = () => targetBufferSec;
-        if (typeof loader.monitorBuffer_ === 'function') loader.monitorBuffer_();
+      // Keep continuous monitor tick loop alive
+      if (typeof loader.monitorBuffer_ === 'function' && loader.paused && loader.paused()) {
+        loader.monitorBuffer_();
       }
 
-      const proto = Object.getPrototypeOf(loader);
-      if (proto && proto.goalBufferLength_ !== loader.goalBufferLength_) {
-        proto.goalBufferLength_ = () => targetBufferSec;
-        proto.paused = () => false;
-        proto.hasPlayed_ = () => true;
-        proto.pause = function () {};
-      }
-
-      // If loader is ready and has more chunks pending, actively fetch
-      if (loader.state_ === 'READY' && typeof loader.fillBuffer_ === 'function' && loader.chooseNextRequest_ && loader.chooseNextRequest_()) {
+      // If loader is in READY state, immediately trigger segment request
+      if (loader.state === 'READY' && typeof loader.fillBuffer_ === 'function') {
         loader.fillBuffer_();
       }
     });
@@ -81,5 +104,5 @@
   } catch (e) {}
 
   applyBooster();
-  console.log(`[PW Extension] Buffer booster initialized in MAIN world (default: ${targetBufferSec}s)`);
+  console.log(`[PW Extension] Buffer booster initialized in MAIN world (target: ${targetBufferSec}s)`);
 })();

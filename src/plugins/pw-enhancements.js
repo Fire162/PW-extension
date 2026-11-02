@@ -152,6 +152,7 @@
     const bufferSec = Math.round(min * 60);
     document.documentElement.dataset.pwBufferSec = String(bufferSec);
     window.dispatchEvent(new CustomEvent('pw-set-buffer-target', { detail: { bufferSec, min } }));
+    document.dispatchEvent(new CustomEvent('pw-set-buffer-target', { detail: { bufferSec, min } }));
   }
 
   function loadBufferSettings() {
